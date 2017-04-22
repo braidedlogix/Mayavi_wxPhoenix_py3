@@ -20,7 +20,7 @@ def gradient_editor_factory(parent, trait_editor):
     """
     tvtk_obj = getattr(trait_editor.object, trait_editor.name)
     if ETSConfig.toolkit == 'wx':
-        from .wx_gradient_editor import wxGradientEditorWidget
+        from wx_gradient_editor import wxGradientEditorWidget
         widget = wxGradientEditorWidget(parent, tvtk_obj)
     elif ETSConfig.toolkit == 'qt4':
         from .qt_gradient_editor import QGradientEditorWidget
@@ -40,7 +40,7 @@ VolumePropertyEditor = CustomEditor(gradient_editor_factory)
 # Test case related code.
 ##########################################################################
 def make_test_table(lut=False):
-    from .ctf import ColorTransferFunction, PiecewiseFunction
+    from ctf import ColorTransferFunction, PiecewiseFunction
     if lut:
         table = tvtk.LookupTable()
         table.table_range = (255, 355)

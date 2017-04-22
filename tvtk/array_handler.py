@@ -25,8 +25,11 @@ except ImportError:
 import numpy
 
 # Enthought library imports.
-from tvtk.array_ext import set_id_type_array
-from tvtk.common import is_old_pipeline
+#from tvtk.array_ext import set_id_type_array
+#from tvtk.common import is_old_pipeline
+from .array_ext import set_id_type_array
+from .common import is_old_pipeline
+
 
 # Useful constants for VTK arrays.
 VTK_ID_TYPE_SIZE = vtk.vtkIdTypeArray().GetDataTypeSize()

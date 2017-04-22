@@ -691,7 +691,7 @@ class GradientTable:
                 return +1
             else:
                 return 0
-        self.control_points.sort( lambda x, y: pred(x.pos, y.pos) )
+        self.control_points=sorted(self.control_points, key=lambda x:x.pos)#self.control_points.sort( lambda x, y: pred(x.pos, y.pos) )
 
     def update(self):
         """Recalculate the gradient table from the control points. The

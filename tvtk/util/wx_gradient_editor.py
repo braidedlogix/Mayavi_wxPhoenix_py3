@@ -15,7 +15,7 @@ Copyright (c) 2005-2015, Gerald Knizia, Pete Schmitt and Prabhu Ramachandran
 import wx
 
 # Local imports
-from .gradient_editor import (ColorControlPoint, ChannelBase, FunctionControl,
+from gradient_editor import (ColorControlPoint, ChannelBase, FunctionControl,
     GradientEditorWidget)
 
 ##########################################################################
@@ -39,7 +39,7 @@ class wxGradientControl(wx.Panel):
         # ^- currently only able to use gradient tables in the same size as the canvas width
 
         # bind paint event to redraw  when resizing/creating window...
-        wx.EVT_PAINT(self, self.OnPaint)
+        self.Bind(wx.EVT_PAINT, self.OnPaint)
 
     def OnPaint(self, event):
         """ Paint event handler for when the window is resized and
@@ -72,7 +72,7 @@ class wxGradientControl(wx.Panel):
             start_y = height/2
 
         # paint the original gradient as it stands in the table.
-        dc.BeginDrawing()
+        #dc.BeginDrawing()
         for x in range(width):
             (r,g,b,a) = self.gradient_table.get_pos_rgba_color_lerped(float(x)/(width-1))
             dc.SetPen(wx.Pen(wx.Colour(int(255*r),int(255*g),int(255*b))))
@@ -87,7 +87,7 @@ class wxGradientControl(wx.Panel):
                 (r,g,b,a) = self.gradient_table.get_pos_rgba_color_lerped(xform(f))
                 dc.SetBrush(wx.Brush((int(255*r),int(255*g),int(255*b)), wx.SOLID))
                 dc.DrawLine(x, start_y, x, end_y)
-        dc.EndDrawing()
+        #dc.EndDrawing()
 
 
 ##########################################################################
@@ -108,7 +108,7 @@ class Channel(ChannelBase):
         relevant_control_points = [
             x for x in table.control_points if self.name in x.active_channels
         ]
-        dc.BeginDrawing()
+        #dc.BeginDrawing()
         # lines between control points
         dc.SetPen(wx.Pen(self.rgb_color,1))
         #dc.SetBrush(wx.Brush((255,255,255), wx.SOLID))
@@ -132,7 +132,7 @@ class Channel(ChannelBase):
             #print(x,y)
             dc.DrawRectangle(x-(radius/2.0), y-(radius/2.0),radius,radius)
             dc.DrawRectangle(100,80,6,6)
-        dc.EndDrawing()
+        #dc.EndDrawing()
 
 
 ##########################################################################
@@ -179,13 +179,13 @@ class wxFunctionControl(wx.Panel, FunctionControl):
 
         self.update()
 
-        wx.EVT_LEFT_DOWN(self, self.on_left_button_down)
-        wx.EVT_LEFT_UP(self, self.on_left_button_up)
-        wx.EVT_RIGHT_DOWN(self, self.on_right_button_down)
-        wx.EVT_RIGHT_UP(self, self.on_right_button_up)
-        wx.EVT_MOTION(self, self.on_mouse_move)
-        wx.EVT_PAINT(self, self.on_paint)
-        wx.EVT_LEAVE_WINDOW(self, self.on_leave_window)
+        self.Bind(wx.EVT_LEFT_DOWN, self.on_left_button_down)
+        self.Bind(wx.EVT_LEFT_UP, self.on_left_button_up)
+        self.Bind(wx.EVT_RIGHT_DOWN, self.on_right_button_down)
+        self.Bind(wx.EVT_RIGHT_UP, self.on_right_button_up)
+        self.Bind(wx.EVT_MOTION, self.on_mouse_move)
+        self.Bind(wx.EVT_PAINT, self.on_paint)
+        self.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave_window)
 
     ######################################################################
     # wxPython event methods.
@@ -503,14 +503,14 @@ class wxGradientEditor(wx.Frame):
 # Test application.
 ##########################################################################
 def main():
-    from .traitsui_gradient_editor import make_test_table
+    from traitsui_gradient_editor import make_test_table
     table, ctf, otf = make_test_table(lut=False)
     # the actual gradient editor code.
     def on_color_table_changed():
         """If we had a vtk window running, update it here"""
         print("Update Render Window")
 
-    app = wx.PySimpleApp()
+    app = wx.App()
     editor = wxGradientEditor(table,
                               on_color_table_changed,
                               colors=['rgb', 'a', 'h', 's', 'v'],

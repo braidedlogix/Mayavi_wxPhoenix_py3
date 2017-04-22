@@ -113,7 +113,7 @@ class _ActorEditor(Editor):
         self._sizer.Add(scene.control, 1, wx.EXPAND)
         self._sizer.Layout()
 
-        wx.EVT_IDLE(scene.control, None)
+        scene.control.Bind(wx.EVT_IDLE, None)
 
         # Force a render.
         scene.render()
