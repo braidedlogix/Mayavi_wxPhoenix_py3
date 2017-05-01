@@ -190,12 +190,13 @@ class UnparseCompilerAst:
             if comma: self._write(", ")
             else: comma = True
             self._dispatch(e)
-        if t.starargs:
+        #if t.starargs:
+        if getattr(t, "starargs", None):
             if comma: self._write(", ")
             else: comma = True
             self._write("*")
             self._dispatch(t.starargs)
-        if t.kwargs:
+        if getattr(t, "kwargs", None):#if t.kwargs:
             if comma: self._write(", ")
             else: comma = True
             self._write("**")
