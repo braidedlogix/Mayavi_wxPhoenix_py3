@@ -62,17 +62,18 @@ class MenuHelper(HasTraits):
             if len(src.extensions) > 0:
                 if wildcard.endswith('|') or \
                    src.wildcard.startswith('|'):
-                       wildcard += src.wildcard
+                    wildcard += src.wildcard
                 else:
                     wildcard += '|' + src.wildcard
 
-        dialog = FileDialog(parent=None,
-                            title='Open supported data file',
-                            action='open', wildcard=wildcard
-                            )
+        dialog = FileDialog(
+            parent=None,
+            title='Open supported data file',
+            action='open',
+            wildcard=wildcard)
         if dialog.open() == OK:
             if not isfile(dialog.path):
-                error("File '%s' does not exist!"%dialog.path)
+                error("File '%s' does not exist!" % dialog.path)
                 return
             # FIXME: Ask for user input if a filetype is unknown and
             # choose appropriate reader.
@@ -119,20 +120,24 @@ class MenuHelper(HasTraits):
 
     def _build_source_actions(self):
         actions = []
-        a = Action(name='Open File ...',
-                   action='object.menu_helper.open_file_action',
-                   tooltip='Open a supported data file')
+        a = Action(
+            name='Open File ...',
+            action='object.menu_helper.open_file_action',
+            tooltip='Open a supported data file')
         actions.append(a)
 
         for src in registry.sources:
             if len(src.extensions) == 0:
                 # The method that creates the source.
-                setattr(self, src.id,
-                        lambda self=self, md=src, select=True:
-                        self._create_source(md, select))
-                a = Action(name=src.menu_name,
-                           action='object.menu_helper.'+src.id,
-                           tooltip=src.tooltip)
+                setattr(
+                    self,
+                    src.id,
+                    lambda self=self, md=src, select=True: self._create_source(md, select)
+                )
+                a = Action(
+                    name=src.menu_name,
+                    action='object.menu_helper.' + src.id,
+                    tooltip=src.tooltip)
                 actions.append(a)
         return actions
 
@@ -140,17 +145,22 @@ class MenuHelper(HasTraits):
         actions = []
         for fil in registry.filters:
             # The method that creates the object.
-            setattr(self, fil.id,
-                    lambda self=self, md=fil, select=True:
-                    self._create_object(md, select))
+            setattr(
+                self,
+                fil.id,
+                lambda self=self, md=fil, select=True: self._create_object(md, select)
+            )
             # The method that checks if the menu can be activated or
             # not.
-            setattr(self, 'check_' + fil.id,
-                    lambda self=self, md=fil: self.check_active(md))
-            a = Action(name=fil.menu_name,
-                       action='object.menu_helper.' + fil.id,
-                       enabled_when='object.menu_helper.check_%s()'%fil.id,
-                       tooltip=fil.tooltip)
+            setattr(
+                self,
+                'check_' + fil.id,
+                lambda self=self, md=fil: self.check_active(md))
+            a = Action(
+                name=fil.menu_name,
+                action='object.menu_helper.' + fil.id,
+                enabled_when='object.menu_helper.check_%s()' % fil.id,
+                tooltip=fil.tooltip)
             actions.append(a)
         return actions
 
@@ -158,17 +168,22 @@ class MenuHelper(HasTraits):
         actions = []
         for mod in registry.modules:
             # The method that creates the module.
-            setattr(self, mod.id,
-                    lambda self=self, md=mod, select=True:
-                    self._create_object(md, select))
+            setattr(
+                self,
+                mod.id,
+                lambda self=self, md=mod, select=True: self._create_object(md, select)
+            )
             # The method that checks if the menu can be activated or
             # not.
-            setattr(self, 'check_' + mod.id,
-                    lambda self=self, md=mod: self.check_active(md))
-            a = Action(name=mod.menu_name,
-                       action='object.menu_helper.' + mod.id,
-                       enabled_when='object.menu_helper.check_%s()'%mod.id,
-                       tooltip=mod.tooltip)
+            setattr(
+                self,
+                'check_' + mod.id,
+                lambda self=self, md=mod: self.check_active(md))
+            a = Action(
+                name=mod.menu_name,
+                action='object.menu_helper.' + mod.id,
+                enabled_when='object.menu_helper.check_%s()' % mod.id,
+                tooltip=mod.tooltip)
             actions.append(a)
         return actions
 
@@ -177,7 +192,6 @@ class MenuHelper(HasTraits):
 # `SourceMenuHelper` class.
 ################################################################################
 class SourceMenuHelper(MenuHelper):
-
     def _actions_default(self):
         actions = self._build_source_actions()
         return [Menu(name='Add Source', *actions)]
@@ -187,18 +201,20 @@ class SourceMenuHelper(MenuHelper):
 # `FilterMenuHelper` class.
 ################################################################################
 class FilterMenuHelper(MenuHelper):
-
     def _actions_default(self):
         filter_actions = self._build_filter_actions()
         module_actions = self._build_module_actions()
-        return [Menu(name='Add Filter', *filter_actions),
-                Menu(name='Add Module', *module_actions)]
+        return [
+            Menu(
+                name='Add Filter', *filter_actions), Menu(
+                    name='Add Module', *module_actions)
+        ]
+
 
 ################################################################################
 # `ModuleMenuHelper` class.
 ################################################################################
 class ModuleMenuHelper(MenuHelper):
-
     def _actions_default(self):
         module_actions = self._build_module_actions()
         return [Menu(name='Add Module', *module_actions)]

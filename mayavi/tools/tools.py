@@ -139,10 +139,10 @@ def get_vtk_src(mayavi_object, stop_at_filter=True):
             return [mayavi_object]
         elif hasattr(mayavi_object, 'output'):
             return [mayavi_object.output]
-    if not (hasattr(mayavi_object, 'parent')
-            or isinstance(mayavi_object, Source)):
-        raise TypeError('Cannot find data source for given object %s' % (
-                                            mayavi_object))
+    if not (hasattr(mayavi_object, 'parent') or
+            isinstance(mayavi_object, Source)):
+        raise TypeError('Cannot find data source for given object %s' %
+                        (mayavi_object))
     while True:
         # XXX: If the pipeline is not a DAG, this is an infinite loop
         if isinstance(mayavi_object, Source):
@@ -210,10 +210,10 @@ def _find_module_manager(object=None, data_type=None):
                 return object
     else:
         if hasattr(object, 'module_manager'):
-            if ((data_type == 'scalar' and _has_scalar_data(object))
-               or (data_type == 'vector' and _has_vector_data(object))
-               or (data_type == 'tensor' and _has_tensor_data(object))
-                or data_type is None):
+            if ((data_type == 'scalar' and _has_scalar_data(object)) or
+                (data_type == 'vector' and _has_vector_data(object)) or
+                (data_type == 'tensor' and _has_tensor_data(object)) or
+                    data_type is None):
                 return object.module_manager
             else:
                 print("This object has no %s data" % data_type)
@@ -228,9 +228,9 @@ def _typical_distance(data_obj):
         by the cubic root of the number of points.
     """
     x_min, x_max, y_min, y_max, z_min, z_max = data_obj.bounds
-    distance = numpy.sqrt(((x_max - x_min) ** 2 + (y_max - y_min) ** 2 +
-                           (z_max - z_min) ** 2) / (4 *
-                           data_obj.number_of_points ** (0.33)))
+    distance = numpy.sqrt(((x_max - x_min)**2 + (y_max - y_min)**2 +
+                           (z_max - z_min)**2) / (4 * data_obj.number_of_points
+                                                  **(0.33)))
     if distance == 0:
         return 1
     else:
@@ -242,10 +242,9 @@ def _min_distance(x, y, z):
         This is done by brute force calculation of all the distances
         between particle couples.
     """
-    distances = numpy.sqrt((x.reshape((-1,)) - x.reshape((1, -1))) ** 2
-                           + (y.reshape((-1,)) - y.reshape((1, -1))) ** 2
-                           + (z.reshape((-1,)) - z.reshape((1, -1))) ** 2
-                          )
+    distances = numpy.sqrt((x.reshape((-1, )) - x.reshape((1, -1)))**2 + (
+        y.reshape((-1, )) - y.reshape((1, -1)))**2 + (z.reshape((-1, )) -
+                                                      z.reshape((1, -1)))**2)
     return distances[distances != 0].min()
 
 
@@ -255,12 +254,14 @@ def _min_axis_distance(x, y, z):
         This is done by brute force calculation of all the distances with
         norm infinity between particle couples.
     """
+
     def axis_min(a):
-        a = numpy.abs(a.reshape((-1,)) - a.reshape((-1, 1)))
+        a = numpy.abs(a.reshape((-1, )) - a.reshape((-1, 1)))
         a = a[a > 0]
         if a.size == 0:
             return numpy.inf
         return a.min()
+
     distances = min(axis_min(x), axis_min(y), axis_min(z))
     if distances == numpy.inf:
         return 1
@@ -335,10 +336,9 @@ def set_extent(module, extents):
     ycenter = 0.5 * (ymax + ymin)
     zcenter = 0.5 * (zmax + zmin)
     # Center the object
-    actor.origin = (0.,  0.,  0.)
+    actor.origin = (0., 0., 0.)
     xpos, ypos, zpos = actor.position
-    actor.position = (xpos + xo - xcenter,
-                      ypos + yo - ycenter,
+    actor.position = (xpos + xo - xcenter, ypos + yo - ycenter,
                       zpos + zo - zcenter)
 
 

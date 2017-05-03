@@ -11,7 +11,6 @@ from mayavi.components.common import convert_to_poly_data
 # `PolyDataFilterBase` class.
 ######################################################################
 class PolyDataFilterBase(FilterBase):
-
     """ Base class for a filter requiring polydata input. Converts the
         source to polydata.
     """

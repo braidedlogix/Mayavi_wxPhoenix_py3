@@ -1,6 +1,5 @@
 """ The interface for TVTK scene managers. """
 
-
 # Enthought library imports.
 from tvtk.pyface.tvtk_scene import TVTKScene
 from pyface.workbench.api import WorkbenchWindow
@@ -20,7 +19,5 @@ class ISceneManager(Interface):
     # per workbench window).
     window = Instance(WorkbenchWindow)
 
+
 #### EOF ######################################################################
-
-
-

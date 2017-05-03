@@ -15,6 +15,7 @@ from pyface.api import GUI
 # Local imports.
 from common import TestCase
 
+
 def is_timer_running(timer):
     """Written to work around a pyface bug.
     """
@@ -58,7 +59,6 @@ def run_mlab_examples():
 
 
 class TestMlab(TestCase):
-
     def test(self):
         self.main()
 
@@ -98,6 +98,7 @@ class TestMlab(TestCase):
 
         # Test glyphs with number-only coordinnates
         mlab.points3d(0, 0, 0, resolution=50)
+
 
 if __name__ == "__main__":
     t = TestMlab()

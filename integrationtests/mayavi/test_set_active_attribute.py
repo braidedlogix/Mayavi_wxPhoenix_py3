@@ -74,9 +74,9 @@ class TestSetActiveAttribute(TestCase):
 
         # Save visualization.
         f = BytesIO()
-        f.name = abspath('test.mv2') # We simulate a file.
+        f.name = abspath('test.mv2')  # We simulate a file.
         mayavi.save_visualization(f)
-        f.seek(0) # So we can read this saved data.
+        f.seek(0)  # So we can read this saved data.
 
         # Remove existing scene.
         engine = mayavi.engine
@@ -111,6 +111,7 @@ class TestSetActiveAttribute(TestCase):
         self.check()
 
         # If we have come this far, we are golden!
+
 
 if __name__ == '__main__':
     t = TestSetActiveAttribute()

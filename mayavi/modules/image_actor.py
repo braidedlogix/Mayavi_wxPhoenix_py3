@@ -4,7 +4,6 @@
 # Copyright (c) 2007, Enthought, Inc.
 # License: BSD Style.
 
-
 # Enthought library imports.
 from traits.api import Instance, Bool, on_trait_change, \
         Property
@@ -15,6 +14,7 @@ from tvtk.api import tvtk
 from mayavi.core.module import Module
 from mayavi.core.pipeline_info import PipelineInfo
 
+
 ######################################################################
 # `ImageActor` class
 ######################################################################
@@ -23,14 +23,13 @@ class ImageActor(Module):
     # An image actor.
     actor = Instance(tvtk.ImageActor, allow_none=False, record=True)
 
-    input_info = PipelineInfo(datasets=['image_data'],
-                              attribute_types=['any'],
-                              attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['image_data'], attribute_types=['any'], attributes=['any'])
 
     # An ImageMapToColors TVTK filter to adapt datasets without color
     # information
-    image_map_to_color = Instance(tvtk.ImageMapToColors, (),
-                                            allow_none=False, record=True)
+    image_map_to_color = Instance(
+        tvtk.ImageMapToColors, (), allow_none=False, record=True)
 
     map_scalars_to_color = Bool
 
@@ -39,20 +38,26 @@ class ImageActor(Module):
     ########################################
     # The view of this module.
 
-    view = View(Group(Item(name='actor', style='custom',
-                           resizable=True),
-                      show_labels=False, label='Actor'),
-                Group(
-                      Group(Item('map_scalars_to_color',
-                            enabled_when='not _force_map_scalars_to_color')),
-                      Item('image_map_to_color', style='custom',
-                            enabled_when='map_scalars_to_color',
-                            show_label=False),
-                      label='Map Scalars',
-                     ),
-                width=500,
-                height=600,
-                resizable=True)
+    view = View(
+        Group(
+            Item(
+                name='actor', style='custom', resizable=True),
+            show_labels=False,
+            label='Actor'),
+        Group(
+            Group(
+                Item(
+                    'map_scalars_to_color',
+                    enabled_when='not _force_map_scalars_to_color')),
+            Item(
+                'image_map_to_color',
+                style='custom',
+                enabled_when='map_scalars_to_color',
+                show_label=False),
+            label='Map Scalars', ),
+        width=500,
+        height=600,
+        resizable=True)
 
     ######################################################################
     # `Module` interface

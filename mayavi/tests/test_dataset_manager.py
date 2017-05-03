@@ -13,10 +13,22 @@ from mayavi.core.dataset_manager import DatasetManager
 
 
 def make_data():
-    points = N.array([[0,0,0], [1,0,0], [0,1,0], [0,0,1], # tets
-                    [1,0,0], [2,0,0], [1,1,0], [1,0,1],
-                    [2,0,0], [3,0,0], [2,1,0], [2,0,1],
-                    ], 'f')
+    points = N.array(
+        [
+            [0, 0, 0],
+            [1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1],  # tets
+            [1, 0, 0],
+            [2, 0, 0],
+            [1, 1, 0],
+            [1, 0, 1],
+            [2, 0, 0],
+            [3, 0, 0],
+            [2, 1, 0],
+            [2, 0, 1],
+        ],
+        'f')
     tets = N.array([[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11]])
     tet_type = tvtk.Tetra().cell_type
     ug = tvtk.UnstructuredGrid(points=points)
@@ -139,16 +151,14 @@ class TestDataSetManager(unittest.TestCase):
         dm.rename_array('ten', 'ten1', 'point')
         self.assertEqual(list(dm.point_tensors.keys()), ['ten1'])
         pd = data.point_data
-        arrs = [pd.get_array_name(x) for x in
-                range(pd.number_of_arrays)]
+        arrs = [pd.get_array_name(x) for x in range(pd.number_of_arrays)]
         arrs.sort()
         self.assertEqual(arrs, ['p', 't', 'ten1', 'v'])
 
         dm.rename_array('t', 'temp', 'cell')
         self.assertEqual(list(dm.cell_scalars.keys()), ['temp'])
         cd = data.cell_data
-        arrs = [cd.get_array_name(x) for x in
-                range(cd.number_of_arrays)]
+        arrs = [cd.get_array_name(x) for x in range(cd.number_of_arrays)]
         arrs.sort()
         self.assertEqual(arrs, ['temp', 'ten', 'v'])
 
@@ -161,7 +171,7 @@ class TestDataSetManager(unittest.TestCase):
 
         # Point data.
         s = N.random.randn(12)
-        v = N.random.randn(12,3)
+        v = N.random.randn(12, 3)
         t = N.random.randn(12, 9)
         dm.add_array(s, 'scalar')
         sc = sorted(self.dm.point_scalars.keys())

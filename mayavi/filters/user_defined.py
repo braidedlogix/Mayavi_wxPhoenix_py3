@@ -15,7 +15,6 @@ from mayavi.core.pipeline_info import PipelineInfo
 # `UserDefined` class.
 ################################################################################
 class UserDefined(FilterBase):
-
     """
     This filter lets the user define their own filter
     dynamically/interactively.  It is like `FilterBase` but allows a
@@ -25,13 +24,11 @@ class UserDefined(FilterBase):
     # The version of this class.  Used for persistence.
     __version__ = 0
 
-    input_info = PipelineInfo(datasets=['any'],
-                              attribute_types=['any'],
-                              attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])
 
-    output_info = PipelineInfo(datasets=['any'],
-                               attribute_types=['any'],
-                               attributes=['any'])
+    output_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])
 
     ######################################################################
     # `object` interface.
@@ -55,7 +52,7 @@ class UserDefined(FilterBase):
         if not self._check_object(obj):
             if obj is not None:
                 cname = obj.__class__.__name__
-                error('Invalid filter %s chosen!  Try again!'%cname)
+                error('Invalid filter %s chosen!  Try again!' % cname)
             obj = self._choose_filter()
             self.filter = obj
 
@@ -78,6 +75,5 @@ class UserDefined(FilterBase):
         return False
 
     def _filter_changed(self, old, new):
-        self.name = 'UserDefined:%s'%new.__class__.__name__
+        self.name = 'UserDefined:%s' % new.__class__.__name__
         super(UserDefined, self)._filter_changed(old, new)
-

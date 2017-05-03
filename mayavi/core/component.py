@@ -25,7 +25,6 @@ class Component(PipelineBase):
     # A list of sources for this component.
     sources = List(record=False)
 
-
     ######################################################################
     # `object` interface
     ######################################################################
@@ -146,10 +145,10 @@ class Component(PipelineBase):
 
     def _setup_events(self, removed, added):
         for object in removed:
-            object.on_trait_event(self.update_pipeline, 'pipeline_changed',
-                                  remove=True)
-            object.on_trait_event(self.update_data, 'data_changed',
-                                  remove=True)
+            object.on_trait_event(
+                self.update_pipeline, 'pipeline_changed', remove=True)
+            object.on_trait_event(
+                self.update_data, 'data_changed', remove=True)
         for object in added:
             object.on_trait_event(self.update_pipeline, 'pipeline_changed')
             object.on_trait_event(self.update_data, 'data_changed')

@@ -9,13 +9,13 @@ Author: Prabhu Ramachandran <prabhu@enthought.com>
 Copyright (c) 2012-2013 Enthought, Inc., Mumbai, India.
 """
 
-
 # Enthought library imports
 from pyface.qt import QtCore, QtGui
 
 # Local imports
 from .gradient_editor import (ColorControlPoint, ChannelBase, FunctionControl,
-    GradientEditorWidget)
+                              GradientEditorWidget)
+
 
 ##########################################################################
 # `QGradientControl` class.
@@ -23,7 +23,8 @@ from .gradient_editor import (ColorControlPoint, ChannelBase, FunctionControl,
 class QGradientControl(QtGui.QWidget):
     """Widget which displays the gradient represented by an GradientTable
     object (and does nothing beyond that)"""
-    def __init__(self, parent, gradient_table, width, height ):
+
+    def __init__(self, parent, gradient_table, width, height):
         """master: panel in which to place the control. GradientTable is the
         Table to which to attach."""
         super(QGradientControl, self).__init__(parent=parent)
@@ -33,7 +34,7 @@ class QGradientControl(QtGui.QWidget):
         self.width = width
         self.height = height
         self.gradient_table = gradient_table
-        assert( gradient_table.size == width )
+        assert (gradient_table.size == width)
         self.setMinimumSize(100, 50)
         # currently only able to use gradient tables in the same size as the
         # canvas width
@@ -43,7 +44,7 @@ class QGradientControl(QtGui.QWidget):
         super(QGradientControl, self).paintEvent(event)
 
         painter = QtGui.QPainter(self)
-        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0) )
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
         painter.setBrush(brush)
         painter.setBackgroundMode(QtCore.Qt.OpaqueMode)
         sz = self.size()
@@ -55,13 +56,14 @@ class QGradientControl(QtGui.QWidget):
         if xform:
             # if a scaling transformation is provided, paint the original
             # gradient under the scaled gradient.
-            start_y = height/2
+            start_y = height / 2
 
         # paint the original gradient as it stands in the table.
         color = QtGui.QColor()
         for x in range(width):
-            (r,g,b,a) = self.gradient_table.get_pos_rgba_color_lerped(float(x)/(width-1))
-            color.setRgb(int(255*r), int(255*g), int(255*b))
+            (r, g, b, a) = self.gradient_table.get_pos_rgba_color_lerped(
+                float(x) / (width - 1))
+            color.setRgb(int(255 * r), int(255 * g), int(255 * b))
             painter.setPen(color)
             brush.setColor(color)
             painter.drawLine(x, start_y, x, end_y)
@@ -70,9 +72,10 @@ class QGradientControl(QtGui.QWidget):
             end_y = start_y
             start_y = 0
             for x in range(width):
-                f = float(x)/(width-1)
-                (r,g,b,a) = self.gradient_table.get_pos_rgba_color_lerped(xform(f))
-                color.set(int(255*r), int(255*g), int(255*b))
+                f = float(x) / (width - 1)
+                (r, g, b,
+                 a) = self.gradient_table.get_pos_rgba_color_lerped(xform(f))
+                color.set(int(255 * r), int(255 * g), int(255 * b))
                 brush.setColor(color)
                 painter.drawLine(x, start_y, x, end_y)
 
@@ -101,25 +104,27 @@ class Channel(ChannelBase):
         brush = QtGui.QBrush(color)
         painter.setBrush(brush)
         painter.setBackgroundMode(QtCore.Qt.OpaqueMode)
-        for k in range( len(relevant_control_points) - 1 ):
+        for k in range(len(relevant_control_points) - 1):
             cur_point = relevant_control_points[k]
-            next_point = relevant_control_points[1+k]
+            next_point = relevant_control_points[1 + k]
 
-            painter.drawLine(self.get_pos_index(cur_point.pos),
-                             self.get_value_index(cur_point.color),
-                             self.get_pos_index(next_point.pos),
-                             self.get_value_index(next_point.color))
+            painter.drawLine(
+                self.get_pos_index(cur_point.pos),
+                self.get_value_index(cur_point.color),
+                self.get_pos_index(next_point.pos),
+                self.get_value_index(next_point.color))
 
         # control points themself.
         color = QtCore.Qt.black
         painter.setPen(color)
         for control_point in relevant_control_points:
-            x = self.get_pos_index( control_point.pos )
-            y = self.get_value_index( control_point.color )
-            radius=6
+            x = self.get_pos_index(control_point.pos)
+            y = self.get_value_index(control_point.color)
+            radius = 6
             #print(x,y)
-            painter.drawRect(x-(radius/2.0), y-(radius/2.0), radius, radius)
-            painter.drawRect(100,80,6,6)
+            painter.drawRect(x - (radius / 2.0), y -
+                             (radius / 2.0), radius, radius)
+            painter.drawRect(100, 80, 6, 6)
 
 
 ##########################################################################
@@ -187,7 +192,7 @@ class QFunctionControl(QtGui.QWidget, FunctionControl):
     def mouseReleaseEvent(self, event):
         if event.button() == QtCore.Qt.LeftButton:
             if self.cur_drag:
-                self.table_config_changed( final_update = True )
+                self.table_config_changed(final_update=True)
                 self.cur_drag = None
         elif event.button() == QtCore.Qt.RightButton:
             # toggle control point. check if there is a control point
@@ -197,7 +202,7 @@ class QFunctionControl(QtGui.QWidget, FunctionControl):
             if cur_control_point:
                 # found a marker at the click position. delete it and return,
                 # unless it is a fixed marker (at pos 0 or 1)..
-                if ( cur_control_point[1].fixed ):
+                if (cur_control_point[1].fixed):
                     # in this case do nothing. Fixed markers cannot be deleted.
                     return
                 self.table.control_points.remove(cur_control_point[1])
@@ -205,22 +210,25 @@ class QFunctionControl(QtGui.QWidget, FunctionControl):
             else:
                 # since there was no marker to remove at the point, we assume
                 # that we should place one there
-                new_control_point = ColorControlPoint(active_channels=self.active_channels_string)
-                new_control_point.set_pos(self.channels[0].get_index_pos(event.x()))
+                new_control_point = ColorControlPoint(
+                    active_channels=self.active_channels_string)
+                new_control_point.set_pos(self.channels[0].get_index_pos(
+                    event.x()))
 
                 # set new control point color to the color currently present
                 # at its designated position
-                new_control_point.color = self.table.get_pos_color(new_control_point.pos)
+                new_control_point.color = self.table.get_pos_color(
+                    new_control_point.pos)
 
                 self.table.insert_control_point(new_control_point)
-                self.table_config_changed(final_update = True)
+                self.table_config_changed(final_update=True)
 
         if isinstance(event, QtGui.QMouseEvent):
             super(QFunctionControl, self).mouseReleaseEvent(event)
 
     def leaveEvent(self, event):
         if self.cur_drag:
-            self.table_config_changed( final_update = True )
+            self.table_config_changed(final_update=True)
             self.cur_drag = None
         super(QFunctionControl, self).leaveEvent(event)
 
@@ -236,12 +244,12 @@ class QFunctionControl(QtGui.QWidget, FunctionControl):
         if self.cur_drag:
             channel = self.cur_drag[0]
             point = self.cur_drag[1]
-            if ( not point.fixed ):
-                point.set_pos( channel.get_index_pos(event.x()) )
-                point.activate_channels( self.active_channels_string )
+            if (not point.fixed):
+                point.set_pos(channel.get_index_pos(event.x()))
+                point.activate_channels(self.active_channels_string)
                 self.table.sort_control_points()
-            channel.set_value_index( point.color, event.y() )
-            self.table_config_changed( final_update = False )
+            channel.set_value_index(point.color, event.y())
+            self.table_config_changed(final_update=False)
 
         screenX = event.x()
         screenY = event.y()
@@ -250,15 +258,16 @@ class QFunctionControl(QtGui.QWidget, FunctionControl):
         s1, s2 = master.get_table_range()
         if channel is not None:
             name = self.text_map[channel.name]
-            pos = s1 + (s2 - s1)*point.pos
+            pos = s1 + (s2 - s1) * point.pos
             val = channel.get_value(point.color)
-            txt = '%s: (%.3f, %.3f)'%(name, pos, val)
+            txt = '%s: (%.3f, %.3f)' % (name, pos, val)
         else:
-            x = s1 + (s2 - s1)*float(screenX)/(width-1)
-            y = 1.0 - float(screenY)/(height-1)
-            txt = "position: (%.3f, %.3f)"%(x, y)
+            x = s1 + (s2 - s1) * float(screenX) / (width - 1)
+            y = 1.0 - float(screenY) / (height - 1)
+            txt = "position: (%.3f, %.3f)" % (x, y)
 
         self.master.set_status_text(txt)
+
 
 ##########################################################################
 # `QGradientEditorWidget` class.
@@ -266,7 +275,11 @@ class QFunctionControl(QtGui.QWidget, FunctionControl):
 class QGradientEditorWidget(QtGui.QWidget, GradientEditorWidget):
     """A Gradient Editor widget that can be used anywhere.
     """
-    def __init__(self, master, vtk_table, on_change_color_table=None,
+
+    def __init__(self,
+                 master,
+                 vtk_table,
+                 on_change_color_table=None,
                  colors=None):
         """
 
@@ -307,8 +320,7 @@ class QGradientEditorWidget(QtGui.QWidget, GradientEditorWidget):
         grid.setColumnStretch(1, 1)
 
         # "Gradient Viewer" panel, in position (0,1) for sizer
-        self.gradient_control = QGradientControl(self,
-                                                 self.gradient_table,
+        self.gradient_control = QGradientControl(self, self.gradient_table,
                                                  gradient_preview_width,
                                                  gradient_preview_height)
         self.setToolTip('Right click for menu')
@@ -372,10 +384,8 @@ class QGradientEditorWidget(QtGui.QWidget, GradientEditorWidget):
         and ``*.jpg`` (image of the gradient)
         """
         wildcard = "Gradient Files (*.grad);;All Files (*.*)"
-        filename, filter = QtGui.QFileDialog.getSaveFileName(self,
-                                                "Save LUT to...",
-                                                '',
-                                                wildcard)
+        filename, filter = QtGui.QFileDialog.getSaveFileName(
+            self, "Save LUT to...", '', wildcard)
         if filename:
             self.save(filename)
 
@@ -384,10 +394,8 @@ class QGradientEditorWidget(QtGui.QWidget, GradientEditorWidget):
         Load a ``*.grad`` lookuptable file.
         """
         wildcard = "Gradient Files (*.grad);;All Files (*.*)"
-        filename, filter = QtGui.QFileDialog.getOpenFileName(self,
-                                                "Open gradient file...",
-                                                '',
-                                                wildcard)
+        filename, filter = QtGui.QFileDialog.getOpenFileName(
+            self, "Open gradient file...", '', wildcard)
         if filename:
             self.load(filename)
 
@@ -400,7 +408,8 @@ class QGradientEditor(QtGui.QMainWindow):
     i.e. the thing that contains the gradient display, the function
     controls and the buttons.
     """
-    def __init__(self, vtk_table, on_change_color_table = None, colors=None):
+
+    def __init__(self, vtk_table, on_change_color_table=None, colors=None):
         """Initialize the gradient editor window.
 
         Parameters
@@ -414,8 +423,7 @@ class QGradientEditor(QtGui.QMainWindow):
         super(QGradientEditor, self).__init__()
         self.setWindowTitle("Color Gradient Editor")
         self.widget = QGradientEditorWidget(self, vtk_table,
-                                            on_change_color_table,
-                                            colors)
+                                            on_change_color_table, colors)
 
         self.setCentralWidget(self.widget)
         self.resize(300, 500)
@@ -450,7 +458,6 @@ class QGradientEditor(QtGui.QMainWindow):
         action.triggered.connect(self.on_about)
         help_menu.addAction(action)
 
-
     def on_help(self, event=None):
         """ Help defining the mouse interactions """
         message = "Right click to add control points.  Left click to move control points"
@@ -469,16 +476,17 @@ def main():
     from .traitsui_gradient_editor import make_test_table
     import sys
     table, ctf, otf = make_test_table(lut=False)
+
     # the actual gradient editor code.
     def on_color_table_changed():
         """If we had a vtk window running, update it here"""
         print("Update Render Window")
 
     app = QtGui.QApplication.instance()
-    editor = QGradientEditor(table,
-                              on_color_table_changed,
-                              colors=['rgb', 'a', 'h', 's', 'v'],
-                              )
+    editor = QGradientEditor(
+        table,
+        on_color_table_changed,
+        colors=['rgb', 'a', 'h', 's', 'v'], )
     editor.setWindowTitle("Gradient editor")
     editor.show()
     sys.exit(app.exec_())

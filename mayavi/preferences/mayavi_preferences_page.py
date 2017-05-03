@@ -5,10 +5,11 @@
 # License: BSD Style.
 
 # Enthought library imports.
-from traits.api import (Bool, Enum, Tuple, Range, List,
-        Str, Instance, HasTraits)
+from traits.api import (Bool, Enum, Tuple, Range, List, Str, Instance,
+                        HasTraits)
 from traitsui.api import View, Group, Item, RGBColorEditor
 from apptools.preferences.ui.api import PreferencesPage
+
 
 ################################################################################
 # `MayaviRootPreferencesPage` class
@@ -51,15 +52,15 @@ class MayaviRootPreferencesPage(PreferencesPage):
 
     # Specifies if the adder nodes are shown on the mayavi tree view.
     open_help_in_light_browser = Bool(
-                    desc='if the help pages are opened in a chromeless'
-                             'browser window (only works with Firefox')
+        desc='if the help pages are opened in a chromeless'
+        'browser window (only works with Firefox')
 
     # Contrib directories to load on startup.
     contrib_packages = List(Str, desc='contrib packages to load on startup')
 
     # Whether or not to use IPython for the Shell.
     use_ipython = Bool(desc='use IPython for the embedded shell '
-                            '(if available)')
+                       '(if available)')
 
     ########################################
     # Private traits.
@@ -68,30 +69,25 @@ class MayaviRootPreferencesPage(PreferencesPage):
     #### Traits UI views ######################################################
 
     traits_view = View(
-                    Group(
-                        Group(
-                            Item(name='confirm_delete'),
-                            Item(name='show_splash_screen'),
-                            Item(name='show_helper_nodes'),
-                            Item(name='open_help_in_light_browser'),
-                            Item(name='use_ipython'),
-                            label='General settings',
-                            show_border=True,
-                            ),
-                        Group(
-                            Group(
-                                Item('_contrib_finder',
-                                     style='custom',
-                                     show_label=False,
-                                     resizable=True,
-                                     ),
-                                ),
-                            label='Contribution settings',
-                            show_border=True,
-                            ),
-                        ),
-                    resizable=True
-                    )
+        Group(
+            Group(
+                Item(name='confirm_delete'),
+                Item(name='show_splash_screen'),
+                Item(name='show_helper_nodes'),
+                Item(name='open_help_in_light_browser'),
+                Item(name='use_ipython'),
+                label='General settings',
+                show_border=True, ),
+            Group(
+                Group(
+                    Item(
+                        '_contrib_finder',
+                        style='custom',
+                        show_label=False,
+                        resizable=True, ), ),
+                label='Contribution settings',
+                show_border=True, ), ),
+        resizable=True)
 
     ######################################################################
     # Non-public interface.
@@ -126,36 +122,36 @@ class MayaviMlabPreferencesPage(PreferencesPage):
     #### Preferences ##########################################################
 
     # The mlab backend to use.
-    backend = Enum('auto', 'envisage', 'simple', 'test',
-                   desc='the mlab backend to use')
+    backend = Enum(
+        'auto', 'envisage', 'simple', 'test', desc='the mlab backend to use')
 
     # The background color of the renderer.
-    background_color = Tuple(Range(0., 1., 1.),
-                             Range(0., 1., 1.),
-                             Range(0., 1., 1.),
-                             editor=RGBColorEditor,
-                             desc='the background color of the scene')
+    background_color = Tuple(
+        Range(0., 1., 1.),
+        Range(0., 1., 1.),
+        Range(0., 1., 1.),
+        editor=RGBColorEditor,
+        desc='the background color of the scene')
 
     # The foreground color of the renderer.
-    foreground_color = Tuple(Range(0., 1., 0.),
-                             Range(0., 1., 0.),
-                             Range(0., 1., 0.),
-                             editor=RGBColorEditor,
-                             desc='the foreground color of the scene')
+    foreground_color = Tuple(
+        Range(0., 1., 0.),
+        Range(0., 1., 0.),
+        Range(0., 1., 0.),
+        editor=RGBColorEditor,
+        desc='the foreground color of the scene')
 
     # Offscreen rendering.
     offscreen = Bool(desc='if mlab should use offscreen rendering'
-                          ' (no window will show up in this case)')
-
+                     ' (no window will show up in this case)')
 
     ######################################################################
     # Traits UI view.
 
-    traits_view = View(Group(
-                             Item('backend'),
-                             Item('background_color'),
-                             Item('foreground_color'),
-                             Item('offscreen'),
-                             ),
-                       resizable=True
-                      )
+    traits_view = View(
+        Group(
+            Item('backend'),
+            Item('background_color'),
+            Item('foreground_color'),
+            Item('offscreen'), ),
+        resizable=True)

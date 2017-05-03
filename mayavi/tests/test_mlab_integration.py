@@ -54,6 +54,7 @@ class TestMlabNullEngine(unittest.TestCase):
 class TestMlabNullEngineMisc(TestMlabNullEngine):
     """ Misc tests for mlab with the null engine
     """
+
     def test_contour_filter(self):
         a = np.zeros((3, 3, 3))
         a[1, 1, 1] = 1
@@ -64,9 +65,9 @@ class TestMlabNullEngineMisc(TestMlabNullEngine):
         x, y, z = filter.get_output_dataset().points.to_array().T
 
         # Check that the contour filter indeed did its work:
-        np.testing.assert_almost_equal(x, [ 2. ,  2. ,  1.5,  2.5,  2. ,  2. ])
-        np.testing.assert_almost_equal(y, [ 2. ,  1.5,  2. ,  2. ,  2.5,  2. ])
-        np.testing.assert_almost_equal(z, [ 1.5,  2. ,  2. ,  2. ,  2. ,  2.5])
+        np.testing.assert_almost_equal(x, [2., 2., 1.5, 2.5, 2., 2.])
+        np.testing.assert_almost_equal(y, [2., 1.5, 2., 2., 2.5, 2.])
+        np.testing.assert_almost_equal(z, [1.5, 2., 2., 2., 2., 2.5])
 
         # Check that the filter was not added to a live scene:
         if filter.scene is not None:
@@ -78,7 +79,8 @@ class TestMlabNullEngineMisc(TestMlabNullEngine):
         density = mlab.pipeline.user_defined(src, filter='GaussianSplatter')
 
         self.assertEqual(len(density.outputs), 1)
-        self.assertTrue(isinstance(density.get_output_dataset(), tvtk.ImageData))
+        self.assertTrue(
+            isinstance(density.get_output_dataset(), tvtk.ImageData))
 
     def test_mlab_source(self):
         """ Check that the different objects created by mlab have an
@@ -106,9 +108,8 @@ class TestMlabNullEngineMisc(TestMlabNullEngine):
             (mlab.quiver3d, ),
             (mlab.pipeline.vector_scatter, ),
             (mlab.pipeline.vector_scatter,
-                            mlab.pipeline.extract_vector_components),
-            (mlab.pipeline.vector_scatter,
-                            mlab.pipeline.extract_vector_norm),
+             mlab.pipeline.extract_vector_components),
+            (mlab.pipeline.vector_scatter, mlab.pipeline.extract_vector_norm),
             (mlab.pipeline.array2d_source, ), )
         for pipeline in pipelines:
             obj = pipeline[0](x, y, z)
@@ -183,17 +184,15 @@ class TestMlabNullEngineMisc(TestMlabNullEngine):
         # test of the source, as to get a segfault, we need a module
         # opened on the source.
         n = 100
-        triangles = np.c_[np.arange(n-3),
-                            np.arange(n-3)+1,
-                            n-1-np.arange(n-3)]
+        triangles = np.c_[np.arange(n - 3), np.arange(n - 3) + 1, n - 1 -
+                          np.arange(n - 3)]
         x, y, z = np.random.random((3, n))
         src = mlab.triangular_mesh(x, y, z, triangles)
 
         # Now grow the mesh
         n = 1000
-        triangles = np.c_[np.arange(n-3),
-                            np.arange(n-3)+1,
-                            n-1-np.arange(n-3)]
+        triangles = np.c_[np.arange(n - 3), np.arange(n - 3) + 1, n - 1 -
+                          np.arange(n - 3)]
         x, y, z = np.random.random((3, n))
         src.mlab_source.reset(x=x, y=y, z=z, triangles=triangles)
 
@@ -205,12 +204,10 @@ class TestMlabNullEngineMisc(TestMlabNullEngine):
         s1 = mlab.surf(a, colormap='gist_earth')
         s2 = mlab.surf(a, color=(0, 0, 0))
         mlab.colorbar()
-        self.assertEqual(
-                    s2.module_manager.scalar_lut_manager.show_scalar_bar,
-                    False)
-        self.assertEqual(
-                    s1.module_manager.scalar_lut_manager.show_scalar_bar,
-                    True)
+        self.assertEqual(s2.module_manager.scalar_lut_manager.show_scalar_bar,
+                         False)
+        self.assertEqual(s1.module_manager.scalar_lut_manager.show_scalar_bar,
+                         True)
 
     def test_source_can_save_output_to_file(self):
         # Given
@@ -241,9 +238,7 @@ class TestMlabNullEngineMisc(TestMlabNullEngine):
         sug = mlab.pipeline.slice_unstructured_grid(eg)
 
         # Then
-        assert_allclose(
-            sug.actor.actor.bounds, (1.0, 2.0, 0.0, 1.0, 0.0, 1.0)
-        )
+        assert_allclose(sug.actor.actor.bounds, (1.0, 2.0, 0.0, 1.0, 0.0, 1.0))
 
 
 ################################################################################
@@ -284,18 +279,13 @@ class TestMlabPipeline(TestMlabNullEngine):
         iso = mlab.contour3d(x, y, z, r)
         x_, y_, z_ = np.random.random((3, 10, 4, 2))
         r_ = mlab.pipeline.probe_data(iso, x_, y_, z_)
-        np.testing.assert_array_almost_equal(r_,
-                                             np.sqrt(x_**2 + y_**2 + z_**2),
-                                             decimal=1)
+        np.testing.assert_array_almost_equal(
+            r_, np.sqrt(x_**2 + y_**2 + z_**2), decimal=1)
         flow = mlab.flow(x, y, z, x, y, z)
-        u_, v_, w_ = mlab.pipeline.probe_data(flow, x_, y_, z_,
-                                              type='vectors')
-        np.testing.assert_array_almost_equal(u_, x_,
-                                             decimal=2)
-        np.testing.assert_array_almost_equal(v_, y_,
-                                             decimal=2)
-        np.testing.assert_array_almost_equal(w_, z_,
-                                             decimal=3)
+        u_, v_, w_ = mlab.pipeline.probe_data(flow, x_, y_, z_, type='vectors')
+        np.testing.assert_array_almost_equal(u_, x_, decimal=2)
+        np.testing.assert_array_almost_equal(v_, y_, decimal=2)
+        np.testing.assert_array_almost_equal(w_, z_, decimal=3)
 
 
 ################################################################################
@@ -323,8 +313,7 @@ class TestMlabHelperFunctions(TestMlabNullEngine, UnittestTools):
         obj = mlab.imshow(s)
 
     def test_imshow_extent(self):
-        mlab.imshow(np.random.rand(10, 20),
-                    extent=[-1, 11, -1, 21, 0, 0])
+        mlab.imshow(np.random.rand(10, 20), extent=[-1, 11, -1, 21, 0, 0])
 
     def test_imshow_colormap(self):
         # Check if the pipeline is refreshed when we change colormap.
@@ -349,6 +338,7 @@ class TestMlabHelperFunctions(TestMlabNullEngine, UnittestTools):
 class TestMlabModules(TestMlabNullEngine):
     """ Test the mlab modules.
     """
+
     def test_volume(self):
         """ Test the mlab volume factory.
         """
@@ -363,9 +353,9 @@ class TestMlabModules(TestMlabNullEngine):
             # use allclose() to match the tuples.
             np.allclose(vol._ctf.get_color(value), color)
         # Test the vmin and vmax features
-        for value in 0.5*np.random.random(10):
+        for value in 0.5 * np.random.random(10):
             self.assertEqual(vol._otf.get_value(value), 0)
-        for value in (0.9+0.1*np.random.random(10)):
+        for value in (0.9 + 0.1 * np.random.random(10)):
             self.assertEqual(vol._otf.get_value(value), 0.2)
         # Test the rescaling of the colormap when using vmin and vmax
         # Rmq: we have to be careful: the range of the ctf can change
@@ -373,20 +363,20 @@ class TestMlabModules(TestMlabNullEngine):
         range1 = vol1._ctf.range[1] - vol1._ctf.range[0]
         vol2 = mlab.pipeline.volume(src, vmin=0.25, vmax=0.75)
         range2 = vol2._ctf.range[1] - vol2._ctf.range[0]
-        for value in 0.5*np.random.random(10):
+        for value in 0.5 * np.random.random(10):
             np.testing.assert_array_almost_equal(
-                        vol1._ctf.get_color(2*range1*value),
-                        vol2._ctf.get_color(0.25+range2*value))
+                vol1._ctf.get_color(2 * range1 * value),
+                vol2._ctf.get_color(0.25 + range2 * value))
         # Test outside the special [0, 1] range
-        src = mlab.pipeline.scalar_field(2*scalars)
+        src = mlab.pipeline.scalar_field(2 * scalars)
         vol1 = mlab.pipeline.volume(src)
         range1 = vol1._ctf.range[1] - vol1._ctf.range[0]
         vol2 = mlab.pipeline.volume(src, vmin=0.5, vmax=1.5)
         range2 = vol2._ctf.range[1] - vol2._ctf.range[0]
         for value in np.random.random(10):
             np.testing.assert_array_almost_equal(
-                        vol1._ctf.get_color(2*range1*value),
-                        vol2._ctf.get_color(0.5+range2*value))
+                vol1._ctf.get_color(2 * range1 * value),
+                vol2._ctf.get_color(0.5 + range2 * value))
 
     def test_text(self):
         """ Test the text module.
@@ -406,9 +396,16 @@ class TestMlabModules(TestMlabNullEngine):
         """
         data = np.random.random((3, 3, 3))
         src = mlab.pipeline.scalar_field(data)
-        t = mlab.text3d(0, 0, 0, 'foo', opacity=0.5, scale=2,
-                    orient_to_camera=False, color=(0, 0, 0),
-                    orientation=(90, 0, 0))
+        t = mlab.text3d(
+            0,
+            0,
+            0,
+            'foo',
+            opacity=0.5,
+            scale=2,
+            orient_to_camera=False,
+            color=(0, 0, 0),
+            orientation=(90, 0, 0))
 
     def test_contour_grid_plane(self):
         """Test the contour_grid_plane.
@@ -422,7 +419,7 @@ class TestMlabModules(TestMlabNullEngine):
     def test_barchart(self):
         """Test the barchart function."""
 
-        s = np.abs(np.random.random((3,3)))
+        s = np.abs(np.random.random((3, 3)))
         b = mlab.barchart(s)
         self.assertEqual(b.glyph.glyph.scale_mode,
                          'scale_by_vector_components')
@@ -435,20 +432,19 @@ class TestMlabModules(TestMlabNullEngine):
         s = mlab.test_plot3d()
         a = mlab.axes(s)
         assert_allclose(
-            a.axes.ranges, [-1.5, 1.5, -1.5, 1.5, -0.5, 0.5],
-            rtol=0, atol=0.1
-        )
+            a.axes.ranges, [-1.5, 1.5, -1.5, 1.5, -0.5, 0.5], rtol=0, atol=0.1)
+
 
 ################################################################################
 # class `TestMlabAnimate`
 ################################################################################
 class TestMlabAnimate(TestMlabNullEngine):
-
     def test_animate_sets_up_movie_maker(self):
         # Given
         @mlab.animate(ui=False)
         def anim():
-            for i in range(5): yield
+            for i in range(5):
+                yield
 
         self.e.new_scene()
         from mayavi.tests.test_file_timestep import make_mock_scene

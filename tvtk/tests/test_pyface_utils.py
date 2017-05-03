@@ -5,7 +5,6 @@ from pyface.api import FileDialog, NO, OK
 
 
 class TestPopupSave(unittest.TestCase):
-
     def _make_mock_file_dialog(self, return_value):
         m = mock.Mock(spec=FileDialog)
         m.open.return_value = return_value

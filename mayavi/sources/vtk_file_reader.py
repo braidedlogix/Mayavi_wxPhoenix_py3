@@ -13,8 +13,7 @@ from traits.api import Instance
 from tvtk.api import tvtk
 
 # Local imports.
-from mayavi.core.pipeline_info import (PipelineInfo,
-        get_tvtk_dataset_name)
+from mayavi.core.pipeline_info import (PipelineInfo, get_tvtk_dataset_name)
 from .utils import has_attributes
 from .vtk_xml_file_reader import VTKXMLFileReader
 
@@ -23,7 +22,6 @@ from .vtk_xml_file_reader import VTKXMLFileReader
 # `VTKFileReader` class
 ########################################################################
 class VTKFileReader(VTKXMLFileReader):
-
     """A VTK file reader.  This does not handle the new XML file
     format but only the older format.  The reader supports all the
     different types of data sets.  This reader also supports a time
@@ -34,16 +32,19 @@ class VTKFileReader(VTKXMLFileReader):
     __version__ = 0
 
     # The VTK data file reader.
-    reader = Instance(tvtk.DataSetReader, args=(),
-                      kw={'read_all_scalars':True,
-                          'read_all_vectors': True,
-                          'read_all_tensors': True,
-                          'read_all_fields': True} )
+    reader = Instance(
+        tvtk.DataSetReader,
+        args=(),
+        kw={
+            'read_all_scalars': True,
+            'read_all_vectors': True,
+            'read_all_tensors': True,
+            'read_all_fields': True
+        })
 
     # Information about what this object can produce.
-    output_info = PipelineInfo(datasets=['any'],
-                               attribute_types=['any'],
-                               attributes=['any'])
+    output_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])
 
     ######################################################################
     # `FileDataSource` interface
@@ -74,7 +75,7 @@ class VTKFileReader(VTKXMLFileReader):
             # event.
             try:
                 n = self.reader.number_of_outputs
-            except AttributeError: # for VTK >= 4.5
+            except AttributeError:  # for VTK >= 4.5
                 n = self.reader.number_of_output_ports
 
             if n > 0:
@@ -103,7 +104,7 @@ class VTKFileReader(VTKXMLFileReader):
         """ Gets the name to display on the tree view.
         """
         fname = basename(self.file_path.get())
-        ret = "VTK file (%s)"%fname
+        ret = "VTK file (%s)" % fname
         if len(self.file_list) > 1:
             ret += " (timeseries)"
         if '[Hidden]' in self.name:

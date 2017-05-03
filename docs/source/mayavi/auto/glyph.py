@@ -19,6 +19,7 @@ from mayavi.modules.glyph import Glyph
 from mayavi.modules.vector_cut_plane import VectorCutPlane
 from mayavi.filters.mask_points import MaskPoints
 
+
 @mayavi2.standalone
 def glyph():
     """The script itself.  We needn't have defined a function but
@@ -30,8 +31,8 @@ def glyph():
 
     # Read a VTK (old style) data file.
     r = VTKXMLFileReader()
-    r.initialize(join(mayavi2.get_data_dir(dirname(abspath(__file__))),
-                      'fire_ug.vtu'))
+    r.initialize(
+        join(mayavi2.get_data_dir(dirname(abspath(__file__))), 'fire_ug.vtu'))
     mayavi.add_source(r)
 
     # Create an outline and a vector cut plane.

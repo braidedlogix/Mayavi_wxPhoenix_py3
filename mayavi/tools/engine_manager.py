@@ -77,26 +77,30 @@ class EngineManager(HasTraits):
                 self.current_engine = None
 
         if self.current_engine is not None:
-            engines = list((self.current_engine,))
+            engines = list((self.current_engine, ))
         else:
             engines = list()
         engines.extend(list(registry.engines.values()))
         if options.backend == 'envisage':
-            suitable = [e for e in engines
-                                if e.__class__.__name__ == 'EnvisageEngine']
+            suitable = [
+                e for e in engines if e.__class__.__name__ == 'EnvisageEngine'
+            ]
         elif options.backend == 'test':
-            suitable = [e for e in engines
-                                if e.__class__.__name__ == 'NullEngine']
+            suitable = [
+                e for e in engines if e.__class__.__name__ == 'NullEngine'
+            ]
         elif options.offscreen:
-            suitable = [e for e in engines
-                                if e.__class__.__name__ == 'OffScreenEngine']
+            suitable = [
+                e for e in engines if e.__class__.__name__ == 'OffScreenEngine'
+            ]
         elif options.backend == 'auto':
-            suitable = [e for e in engines
-                        if e.__class__.__name__ not in ('NullEngine',
-                                                        'OffScreenEngine')]
+            suitable = [
+                e for e in engines
+                if e.__class__.__name__ not in ('NullEngine', 'OffScreenEngine'
+                                                )
+            ]
         else:
-            suitable = [e for e in engines
-                                if e.__class__.__name__ == 'Engine']
+            suitable = [e for e in engines if e.__class__.__name__ == 'Engine']
         if len(suitable) == 0:
             return self.new_engine()
         else:
@@ -116,7 +120,7 @@ class EngineManager(HasTraits):
                 self.current_engine = None
 
         if self.current_engine is not None:
-            engines = list((self.current_engine,))
+            engines = list((self.current_engine, ))
         else:
             engines = list()
         engines.extend(list(registry.engines.values()))

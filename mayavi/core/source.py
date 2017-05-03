@@ -22,6 +22,7 @@ from mayavi.core.common import handle_children_state, \
 from mayavi.core.pipeline_info import PipelineInfo
 from mayavi.core.adder_node import ModuleFilterAdderNode
 
+
 ######################################################################
 # Utility functions.
 ######################################################################
@@ -70,7 +71,6 @@ class Source(PipelineBase):
         # Now setup the children.
         set_state(self, state, first=['children'], ignore=['*'])
 
-
     ######################################################################
     # `Source` interface
     ######################################################################
@@ -91,8 +91,10 @@ class Source(PipelineBase):
             self.children.append(mm)
             if self.recorder is not None:
                 index = len(self.children) - 1
-                self.recorder.register(mm, parent=self,
-                                       trait_name_on_parent='children[%d]'%index)
+                self.recorder.register(
+                    mm,
+                    parent=self,
+                    trait_name_on_parent='children[%d]' % index)
         mm.children.append(module)
 
     @recordable
@@ -189,7 +191,6 @@ class Source(PipelineBase):
                isinstance(dropped_object, ModuleManager):
             return dropped_object
 
-
     ######################################################################
     # Non-public interface
     ######################################################################
@@ -222,11 +223,11 @@ class Source(PipelineBase):
         for obj in self.children:
             obj.scene = new
 
-    def _visible_changed(self,value):
+    def _visible_changed(self, value):
         for c in self.children:
             c.visible = value
 
-        super(Source,self)._visible_changed(value)
+        super(Source, self)._visible_changed(value)
 
     def _menu_helper_default(self):
         from mayavi.core.traits_menu import FilterMenuHelper
@@ -234,9 +235,10 @@ class Source(PipelineBase):
 
     def _extra_menu_items(self):
         """Return a save output menu action."""
-        save_output = Action(name='Save output to file',
-                             action='object._save_output_action',
-                             enabled_when='len(object.outputs) > 0')
+        save_output = Action(
+            name='Save output to file',
+            action='object._save_output_action',
+            enabled_when='len(object.outputs) > 0')
         return [save_output]
 
     def _save_output_action(self):
@@ -253,8 +255,7 @@ class Source(PipelineBase):
                    'Unstructured Grid (*.vtu)|*.vtu|'\
                    'Old-style VTK files (*.vtk)|*.vtk'
 
-        dialog = FileDialog(title='Save output to file',
-                            action='save as', wildcard=wildcard
-                            )
+        dialog = FileDialog(
+            title='Save output to file', action='save as', wildcard=wildcard)
         if dialog.open() == OK:
             self.save_output(dialog.path)

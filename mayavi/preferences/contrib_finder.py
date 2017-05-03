@@ -11,8 +11,7 @@ import sys
 from os.path import isdir, exists, join
 from os import listdir
 
-from traits.api import (HasTraits, List, Str, Instance,
-    DelegatesTo, Button)
+from traits.api import (HasTraits, List, Str, Instance, DelegatesTo, Button)
 from traitsui.api import View, Item, SetEditor
 
 
@@ -32,12 +31,13 @@ class ContribFinder(HasTraits):
     contrib_packages = DelegatesTo('preference_helper')
 
     # The found contrib packages.
-    found_contrib = List(Str, desc='the mayavi contribution '
-                                   'packages on the system')
+    found_contrib = List(
+        Str, desc='the mayavi contribution '
+        'packages on the system')
 
     # Search for contributions.
-    search = Button('Search for packages',
-                    desc='search again for contributions')
+    search = Button(
+        'Search for packages', desc='search again for contributions')
 
     ########################################
     # View related code.

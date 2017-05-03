@@ -76,8 +76,7 @@ class MayaviWorkbenchApplication(WorkbenchApplication):
         if self.start():
             # Create and open the first workbench window.
             window = self.workbench.create_window(
-                position=self.window_position, size=self.window_size
-            )
+                position=self.window_position, size=self.window_size)
             window.open()
 
             # We stop the application when the workbench has exited.
@@ -90,7 +89,6 @@ class MayaviWorkbenchApplication(WorkbenchApplication):
 
         return
 
-
     ######################################################################
     # Non-public interface.
     ######################################################################
@@ -100,15 +98,14 @@ class MayaviWorkbenchApplication(WorkbenchApplication):
         from vtk import vtkVersion
         vtk_version = vtkVersion().GetVTKVersion()
         about_dialog = AboutDialog(
-            parent = self.workbench.active_window.control,
-            image  = ImageResource('m2_about.jpg',
-                                   search_path=[IMG_DIR]),
-            additions = ['Authors: Prabhu Ramachandran',
-                            'and Gael Varoquaux',
-                            '',
-                            'Mayavi version %s \t - \t VTK version %s' %
-                            (api.__version__, vtk_version)],
-        )
+            parent=self.workbench.active_window.control,
+            image=ImageResource(
+                'm2_about.jpg', search_path=[IMG_DIR]),
+            additions=[
+                'Authors: Prabhu Ramachandran', 'and Gael Varoquaux', '',
+                'Mayavi version %s \t - \t VTK version %s' %
+                (api.__version__, vtk_version)
+            ], )
 
         return about_dialog
 
@@ -116,12 +113,10 @@ class MayaviWorkbenchApplication(WorkbenchApplication):
         """ Trait initializer. """
         if preference_manager.root.show_splash_screen:
             splash_screen = SplashScreen(
-                image             = ImageResource('m2_about.jpg',
-                                                  search_path=[IMG_DIR]),
-                show_log_messages = True,
-            )
+                image=ImageResource(
+                    'm2_about.jpg', search_path=[IMG_DIR]),
+                show_log_messages=True, )
         else:
             splash_screen = None
 
         return splash_screen
-

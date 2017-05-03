@@ -24,9 +24,11 @@ class PreviewWindow(HasTraits):
 
     _scene = Instance(SceneModel, ())
 
-    view = View(Item('_scene', editor=SceneEditor(scene_class=Scene),
-                        show_label=False),
-                width=500, height=500)
+    view = View(
+        Item(
+            '_scene', editor=SceneEditor(scene_class=Scene), show_label=False),
+        width=500,
+        height=500)
 
     #-----------------------------------------------------------------------
     # Public API
@@ -55,6 +57,7 @@ class PreviewWindow(HasTraits):
         e.start()
         e.new_scene(self._scene)
         return e
+
 
 if __name__ == '__main__':
     from pyface.api import GUI

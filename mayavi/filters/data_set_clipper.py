@@ -43,12 +43,10 @@ class DataSetClipper(Filter):
     # ImplicitWidgets.
     update_mode = Delegate('widget', modify=True)
 
-    input_info = PipelineInfo(datasets=['any'],
-                              attribute_types=['any'],
-                              attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])
 
-    output_info = PipelineInfo(datasets=['any'],
-                               attributes=['any'])
+    output_info = PipelineInfo(datasets=['any'], attributes=['any'])
 
     ########################################
     # View related traits.
@@ -56,25 +54,25 @@ class DataSetClipper(Filter):
     # Button to reset the boundaries of the implicit_widget.
     reset_button = Button('Reset Boundaries')
 
-    view = View(Group(Group(Item('update_mode'),
-                            ),
-                      Group(Item('reset_button'),
-                            Item(name='widget', style='custom', resizable=True),
-                            show_labels=False
-                            ),
-                      label='ImplicitWidget'
-                      ),
-                Group(Group(Item('filter', style='custom'),
-                            show_labels=False),
-                      label='Clipper'
-                     ),
-                resizable=True
-                )
+    view = View(
+        Group(
+            Group(Item('update_mode'), ),
+            Group(
+                Item('reset_button'),
+                Item(
+                    name='widget', style='custom', resizable=True),
+                show_labels=False),
+            label='ImplicitWidget'),
+        Group(
+            Group(
+                Item(
+                    'filter', style='custom'), show_labels=False),
+            label='Clipper'),
+        resizable=True)
 
     ########################################
     # Private traits.
     _transform = Instance(tvtk.Transform, allow_none=False)
-
 
     ######################################################################
     # `object` interface.
@@ -92,7 +90,6 @@ class DataSetClipper(Filter):
         state_pickler.set_state(self, state)
         self._transform.set_matrix(cPickle.loads(mat))
         self.widget.set_transform(self._transform)
-
 
     ######################################################################
     # `Filter` interface
@@ -156,12 +153,11 @@ class DataSetClipper(Filter):
             new.inputs = self.inputs
             new.update_pipeline()
         self._observer_id = new.widget.add_observer(self.update_mode_,
-                                             self._on_interaction_event)
-
+                                                    self._on_interaction_event)
 
     def _filter_changed(self, old, new):
         if old is not None:
-                old.on_trait_change(self.render, remove=True)
+            old.on_trait_change(self.render, remove=True)
         new.on_trait_change(self.render)
         if len(self.inputs) > 0:
             self.configure_connection(new, self.inputs[0])

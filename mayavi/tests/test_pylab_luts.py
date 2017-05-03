@@ -5,7 +5,6 @@ from mock import patch
 
 
 class TestPylabLuts(unittest.TestCase):
-
     @unittest.skipIf("mayavi.core.lut_manager" in sys.modules,
                      ("mayavi.core.lut_manager is already loaded in "
                       "another tests. Can't run this test."))

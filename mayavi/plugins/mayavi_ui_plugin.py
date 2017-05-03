@@ -21,6 +21,7 @@ CURRENT_SELECTION_VIEW = 'mayavi.core.engine.Engine.current_selection'
 SHELL_VIEW = 'envisage.plugins.python_shell_view'
 LOGGER_VIEW = 'apptools.logger.plugin.view.logger_view.LoggerView'
 
+
 ###############################################################################
 # `MayaviPerspective` class.
 ###############################################################################
@@ -41,10 +42,14 @@ class MayaviPerspective(Perspective):
 
     def _contents_default(self):
         contents = [
-            PerspectiveItem(id=ENGINE_VIEW, position='left'),
-            PerspectiveItem(id=CURRENT_SELECTION_VIEW, position='bottom',
-                            relative_to=ENGINE_VIEW),
-            PerspectiveItem(id=SHELL_VIEW, position='bottom'),
+            PerspectiveItem(
+                id=ENGINE_VIEW, position='left'),
+            PerspectiveItem(
+                id=CURRENT_SELECTION_VIEW,
+                position='bottom',
+                relative_to=ENGINE_VIEW),
+            PerspectiveItem(
+                id=SHELL_VIEW, position='bottom'),
         ]
         show_logger = True
         if ETSConfig.toolkit == 'wx':
@@ -54,8 +59,9 @@ class MayaviPerspective(Perspective):
                 show_logger = False
 
         if show_logger:
-            contents.append(PerspectiveItem(id=LOGGER_VIEW, position='with',
-                                            relative_to=SHELL_VIEW))
+            contents.append(
+                PerspectiveItem(
+                    id=LOGGER_VIEW, position='with', relative_to=SHELL_VIEW))
         return contents
 
 
@@ -65,12 +71,11 @@ class MayaviPerspective(Perspective):
 class MayaviUIPlugin(Plugin):
 
     # Extension point Ids.
-    VIEWS             = 'envisage.ui.workbench.views'
-    PERSPECTIVES      = 'envisage.ui.workbench.perspectives'
+    VIEWS = 'envisage.ui.workbench.views'
+    PERSPECTIVES = 'envisage.ui.workbench.perspectives'
     PREFERENCES_PAGES = 'envisage.ui.workbench.preferences_pages'
-    ACTION_SETS       = 'envisage.ui.workbench.action_sets'
-    BANNER            = 'envisage.plugins.ipython_shell.banner'
-
+    ACTION_SETS = 'envisage.ui.workbench.action_sets'
+    BANNER = 'envisage.plugins.ipython_shell.banner'
 
     # The plugins name.
     name = 'Mayavi UI plugin'
@@ -97,8 +102,9 @@ class MayaviUIPlugin(Plugin):
 
     def _views_default(self):
         """ Trait initializer. """
-        return [self._engine_view_factory,
-                self._current_selection_view_factory]
+        return [
+            self._engine_view_factory, self._current_selection_view_factory
+        ]
 
     def _perspectives_default(self):
         """ Trait initializer. """
@@ -112,18 +118,18 @@ class MayaviUIPlugin(Plugin):
 
     def _action_sets_default(self):
         """ Trait initializer. """
-        from mayavi.plugins.mayavi_ui_action_set import (
-            MayaviUIActionSet
-        )
+        from mayavi.plugins.mayavi_ui_action_set import (MayaviUIActionSet)
         return [MayaviUIActionSet]
 
     def _banner_default(self):
         """Trait initializer """
-        return ["""Welcome to Mayavi, this is the interactive IPython shell.
+        return [
+            """Welcome to Mayavi, this is the interactive IPython shell.
 
 If this is your first time using Mayavi, take a quick look at the tutorial examples section of the user guide, accessible via the help menu.
 To use Mayavi, you need to load your data in "data sources" and apply "visualization modules" to it.
-"""]
+"""
+        ]
 
     ######################################################################
     # Private methods.
@@ -135,13 +141,13 @@ To use Mayavi, you need to load your data in "data sources" and apply "visualiza
                             EngineView
 
         engine_view = EngineView(engine=self._get_engine(window))
-        tui_engine_view = TraitsUIView(obj=engine_view,
-                                       id=ENGINE_VIEW,
-                                       name='Mayavi',
-                                       window=window,
-                                       position='left',
-                                       **traits
-                                       )
+        tui_engine_view = TraitsUIView(
+            obj=engine_view,
+            id=ENGINE_VIEW,
+            name='Mayavi',
+            window=window,
+            position='left',
+            **traits)
         return tui_engine_view
 
     def _current_selection_view_factory(self, window, **traits):
@@ -151,15 +157,15 @@ To use Mayavi, you need to load your data in "data sources" and apply "visualiza
                 TraitsUIView
 
         engine = self._get_engine(window)
-        tui_engine_view = TraitsUIView(obj=engine,
-                                       view='current_selection_view',
-                                       id=CURRENT_SELECTION_VIEW,
-                                       name='Mayavi object editor',
-                                       window=window,
-                                       position='bottom',
-                                       relative_to=ENGINE_VIEW,
-                                       **traits
-                                       )
+        tui_engine_view = TraitsUIView(
+            obj=engine,
+            view='current_selection_view',
+            id=CURRENT_SELECTION_VIEW,
+            name='Mayavi object editor',
+            window=window,
+            position='bottom',
+            relative_to=ENGINE_VIEW,
+            **traits)
         return tui_engine_view
 
     def _get_engine(self, window):
@@ -195,7 +201,7 @@ To use Mayavi, you need to load your data in "data sources" and apply "visualiza
         id = SHELL_VIEW
         py = window.get_view_by_id(id)
         if py is None:
-            logger.warn('*'*80)
+            logger.warn('*' * 80)
             logger.warn("Can't find the Python shell view to bind variables")
             return
 

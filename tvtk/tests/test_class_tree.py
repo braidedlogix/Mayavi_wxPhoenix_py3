@@ -1,7 +1,6 @@
 # Author: Prabhu Ramachandran
 # License: BSD style
 # Copyright (c) 2004, Enthought, Inc.
-
 """Tests class_tree.py.  Uses the vtk module to test the code.  Also
 tests if the tree generation works for the __builtin__ module.
 
@@ -24,6 +23,7 @@ _cache = class_tree.ClassTree(vtk)
 _cache.create()
 
 vtk_major_version = vtk.vtkVersion.GetVTKMajorVersion()
+
 
 def get_level(klass):
     """Gets the inheritance level of a given class."""
@@ -53,48 +53,53 @@ class TestClassTree(unittest.TestCase):
         """Basic tests for the VTK module."""
         t = self.t
         self.assertEqual(t.get_node('vtkObject').name, 'vtkObject')
-        self.assertEqual(t.get_node('vtkObject').parents[0].name,
-                         'vtkObjectBase')
+        self.assertEqual(
+            t.get_node('vtkObject').parents[0].name, 'vtkObjectBase')
         if (hasattr(vtk, 'vtkTuple')):
             names = [x.name for x in t.tree[0]]
             names.sort()
             if vtk_major_version < 6:
-                expect = ['object', 'vtkColor3', 'vtkColor4', 'vtkDenseArray',
-                          'vtkObjectBase', 'vtkRect',
-                          'vtkSparseArray', 'vtkTuple',
-                          'vtkTypedArray', 'vtkVector', 'vtkVector2',
-                          'vtkVector3']
+                expect = [
+                    'object', 'vtkColor3', 'vtkColor4', 'vtkDenseArray',
+                    'vtkObjectBase', 'vtkRect', 'vtkSparseArray', 'vtkTuple',
+                    'vtkTypedArray', 'vtkVector', 'vtkVector2', 'vtkVector3'
+                ]
             elif len(vtk.vtkObjectBase.__bases__) > 0:
                 if vtk_major_version == 7:
-                    expect = ['object', 'vtkColor3', 'vtkColor4', 'vtkDenseArray',
-                            'vtkQuaternion', 'vtkRect',
-                            'vtkSparseArray', 'vtkTuple',
-                            'vtkTypedArray', 'vtkVariantStrictWeakOrderKey',
-                            'vtkVector', 'vtkVector2', 'vtkVector3']
+                    expect = [
+                        'object', 'vtkColor3', 'vtkColor4', 'vtkDenseArray',
+                        'vtkQuaternion', 'vtkRect', 'vtkSparseArray',
+                        'vtkTuple', 'vtkTypedArray',
+                        'vtkVariantStrictWeakOrderKey', 'vtkVector',
+                        'vtkVector2', 'vtkVector3'
+                    ]
                 else:
-                    expect = ['object', 'vtkColor3', 'vtkColor4', 'vtkDenseArray',
-                            'vtkQuaternion', 'vtkRect',
-                            'vtkSparseArray', 'vtkTuple',
-                            'vtkTypedArray', 'vtkVector', 'vtkVector2',
-                            'vtkVector3']
+                    expect = [
+                        'object', 'vtkColor3', 'vtkColor4', 'vtkDenseArray',
+                        'vtkQuaternion', 'vtkRect', 'vtkSparseArray',
+                        'vtkTuple', 'vtkTypedArray', 'vtkVector', 'vtkVector2',
+                        'vtkVector3'
+                    ]
             else:
-                expect = ['object', 'vtkColor3', 'vtkColor4', 'vtkDenseArray',
-                          'vtkObjectBase', 'vtkQuaternion', 'vtkRect',
-                          'vtkSparseArray', 'vtkTuple',
-                          'vtkTypedArray', 'vtkVector', 'vtkVector2',
-                          'vtkVector3']
+                expect = [
+                    'object', 'vtkColor3', 'vtkColor4', 'vtkDenseArray',
+                    'vtkObjectBase', 'vtkQuaternion', 'vtkRect',
+                    'vtkSparseArray', 'vtkTuple', 'vtkTypedArray', 'vtkVector',
+                    'vtkVector2', 'vtkVector3'
+                ]
             self.assertEqual(names, expect)
         elif (hasattr(vtk, 'vtkVector')):
             self.assertEqual(len(t.tree[0]), 11)
             names = [x.name for x in t.tree[0]]
             names.sort()
-            expect = ['object', 'vtkColor3', 'vtkColor4', 'vtkDenseArray',
-                      'vtkObjectBase', 'vtkRect', 'vtkSparseArray',
-                      'vtkTypedArray', 'vtkVector', 'vtkVector2',
-                      'vtkVector3']
+            expect = [
+                'object', 'vtkColor3', 'vtkColor4', 'vtkDenseArray',
+                'vtkObjectBase', 'vtkRect', 'vtkSparseArray', 'vtkTypedArray',
+                'vtkVector', 'vtkVector2', 'vtkVector3'
+            ]
             self.assertEqual(names, expect)
-        elif (hasattr(vtk, 'vtkArrayCoordinates')
-                        and issubclass(vtk.vtkArrayCoordinates, object)):
+        elif (hasattr(vtk, 'vtkArrayCoordinates') and
+              issubclass(vtk.vtkArrayCoordinates, object)):
             self.assertEqual(len(t.tree[0]), 2)
             names = [x.name for x in t.tree[0]]
             names.sort()
@@ -136,8 +141,7 @@ class TestClassTree(unittest.TestCase):
             t.create()
             n = t.get_node('TabError')
             bases = [x.__name__ for x in _get_ancestors(TabError)]
-            self.assertEqual([x.name for x in n.get_ancestors()],
-                            bases)
+            self.assertEqual([x.name for x in n.get_ancestors()], bases)
 
     def test_parent_child(self):
         """Check if the node's parent and children are correct."""

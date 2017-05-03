@@ -33,7 +33,6 @@ class EngineRichViewHandler(EngineViewHandler):
         info.on_trait_change(self.select_selected, 'initialized')
         return
 
-
     def select_selected(self, initialized):
         """ Force the tree editor to select the current engine selection,
             and eventually collapse other scenes.
@@ -66,8 +65,7 @@ class EngineRichViewHandler(EngineViewHandler):
             for scene in self.info.object.engine.scenes:
                 if scene is not current_selection:
                     tree_editor._tree.Collapse(
-                                            tree_editor._get_object_nid(scene))
-
+                        tree_editor._get_object_nid(scene))
 
     def _on_dclick(self, object):
         """ Called when a node in the tree editor is double-clicked.
@@ -95,37 +93,37 @@ class EngineRichView(EngineView):
     def default_traits_view(self):
         """The default traits view of the Engine View.
         """
-        view = View(HSplit(
-                        Item('engine',
-                            id='mayavi.engine_rich_view.pipeline_view',
-                            springy=True,
-                            resizable=True,
-                            editor=self.tree_editor,
-                            dock='tab',
-                            label='Pipeline'),
-                        Item('engine',
-                            id='mayavi.engine_rich_view.current_selection',
-                            editor=InstanceEditor(
-                                        view='current_selection_view'),
-                            springy=True,
-                            resizable=True,
-                            style='custom'),
-                    show_labels=False,
-                    id='mayavi.engine_rich_view_group',
-                    ),
-                    id='mayavi.engine_rich_view',
-                    help=False,
+        view = View(
+            HSplit(
+                Item(
+                    'engine',
+                    id='mayavi.engine_rich_view.pipeline_view',
+                    springy=True,
                     resizable=True,
-                    undo=False,
-                    revert=False,
-                    ok=False,
-                    cancel=False,
-                    title='Mayavi pipeline',
-                    icon=self.icon,
-                    toolbar=self.toolbar,
-                    handler=EngineRichViewHandler)
+                    editor=self.tree_editor,
+                    dock='tab',
+                    label='Pipeline'),
+                Item(
+                    'engine',
+                    id='mayavi.engine_rich_view.current_selection',
+                    editor=InstanceEditor(view='current_selection_view'),
+                    springy=True,
+                    resizable=True,
+                    style='custom'),
+                show_labels=False,
+                id='mayavi.engine_rich_view_group', ),
+            id='mayavi.engine_rich_view',
+            help=False,
+            resizable=True,
+            undo=False,
+            revert=False,
+            ok=False,
+            cancel=False,
+            title='Mayavi pipeline',
+            icon=self.icon,
+            toolbar=self.toolbar,
+            handler=EngineRichViewHandler)
         return view
-
 
     def _actions_default(self):
         """ Append a preferences action to the toolbar: this view of the

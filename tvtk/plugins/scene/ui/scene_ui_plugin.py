@@ -1,6 +1,5 @@
 """ A TVTK render window scene UI plugin. """
 
-
 # Enthought library imports.
 from envisage.api import Plugin
 from traits.api import List
@@ -15,7 +14,7 @@ class SceneUIPlugin(Plugin):
     """
 
     # Extension point Ids.
-    ACTION_SETS       = 'envisage.ui.workbench.action_sets'
+    ACTION_SETS = 'envisage.ui.workbench.action_sets'
     PREFERENCES_PAGES = 'envisage.ui.workbench.preferences_pages'
 
     #### 'IPlugin' interface ##################################################
@@ -38,8 +37,7 @@ class SceneUIPlugin(Plugin):
         """ Trait initializer. """
 
         from tvtk.plugins.scene.ui.scene_ui_action_set import (
-            SceneUIActionSet
-        )
+            SceneUIActionSet)
 
         return [SceneUIActionSet]
 
@@ -49,9 +47,9 @@ class SceneUIPlugin(Plugin):
         """ Trait initializer. """
 
         from tvtk.plugins.scene.ui.scene_preferences_page import (
-            ScenePreferencesPage
-        )
+            ScenePreferencesPage)
 
         return [ScenePreferencesPage]
+
 
 #### EOF ######################################################################

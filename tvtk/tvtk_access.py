@@ -24,11 +24,10 @@ from os.path import exists, join, dirname, isdir
 _zip = join(dirname(__file__), 'tvtk_classes.zip')
 tvtk_class_dir = join(dirname(__file__), 'tvtk_classes')
 
-if not ( exists(tvtk_class_dir) and isdir(tvtk_class_dir)
-         or exists(_zip)):
+if not (exists(tvtk_class_dir) and isdir(tvtk_class_dir) or exists(_zip)):
     raise ImportError("TVTK not built properly. "
-        "Unable to find either a directory: %s or a file: %s "
-        "with the TVTK classes." % (tvtk_class_dir, _zip) )
+                      "Unable to find either a directory: %s or a file: %s "
+                      "with the TVTK classes." % (tvtk_class_dir, _zip))
 
 # Check if the VTK version is the same as that used to build TVTK.
 from tvtk.tvtk_classes.vtk_version import vtk_build_version

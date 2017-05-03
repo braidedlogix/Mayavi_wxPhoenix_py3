@@ -18,7 +18,6 @@ MAYAVI_DIR = os.path.split(mlab.__file__)[0]
 
 
 class TestTextureUnitTest(unittest.TestCase):
-
     def setUp(self):
         # Make a temporary directory for saved figures
         self.temp_dir = tempfile.mkdtemp()
@@ -31,9 +30,9 @@ class TestTextureUnitTest(unittest.TestCase):
         # the image is a black-white checker box pattern
         image_path = os.path.join(
             MAYAVI_DIR, "../integrationtests/mayavi/images/checker.jpg")
-        img=tvtk.JPEGReader(file_name=image_path)
-        self.texture=tvtk.Texture(input_connection=img.output_port,
-                                  interpolate=1)
+        img = tvtk.JPEGReader(file_name=image_path)
+        self.texture = tvtk.Texture(
+            input_connection=img.output_port, interpolate=1)
 
     def remove_tempdir(self):
         shutil.rmtree(self.temp_dir)
@@ -43,16 +42,16 @@ class TestTextureUnitTest(unittest.TestCase):
 
     def add_texture(self, source, mode):
         # Add texture
-        source.actor.actor.mapper.scalar_visibility=False
-        source.actor.enable_texture=True
-        source.actor.tcoord_generator_mode=mode
-        source.actor.actor.texture=self.texture
+        source.actor.actor.mapper.scalar_visibility = False
+        source.actor.enable_texture = True
+        source.actor.tcoord_generator_mode = mode
+        source.actor.actor.texture = self.texture
 
     def test_texture_curve(self):
         """ Test texture on mlab.surf """
         mlab.figure()
-        X, Y = numpy.mgrid[-1:1:20j,-1:1:20j]
-        Z = -numpy.cos(Y*X)+.5
+        X, Y = numpy.mgrid[-1:1:20j, -1:1:20j]
+        Z = -numpy.cos(Y * X) + .5
         source = mlab.surf(X, Y, Z, color=(1., 1., 1.))
 
         # ensure the figure is closed at the end of the test
@@ -81,7 +80,7 @@ class TestTextureUnitTest(unittest.TestCase):
         self.add_texture(source, "sphere")
 
         # Zoom in closer for analysis
-        mlab.view(-158., 10.4,  2., [0, 0, 0])
+        mlab.view(-158., 10.4, 2., [0, 0, 0])
 
         mlab.savefig(self.filename, size=(400, 300))
 
@@ -120,7 +119,6 @@ class TestTextureUnitTest(unittest.TestCase):
 
 
 class TestTexture(TestCase):
-
     def test(self):
         self.main()
 

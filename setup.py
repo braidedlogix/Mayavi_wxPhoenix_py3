@@ -2,7 +2,6 @@
 #
 # Copyright (c) 2008-2016 by Enthought, Inc.
 # All rights reserved.
-
 """The Mayavi scientific data 3-dimensional visualizer.
 
 The Mayavi *project* includes two related *packages* for 3-dimensional
@@ -74,21 +73,23 @@ import shutil
 import re
 import sys
 import traceback
-from os.path import (abspath, basename, dirname, exists, getmtime, isdir,
-                     join, split, splitext)
+from os.path import (abspath, basename, dirname, exists, getmtime, isdir, join,
+                     split, splitext)
 
 from numpy.distutils.command import build, install_data
 from distutils.command import clean
 from distutils import log
 from setuptools.command import develop, install_scripts
 
-
 info = {}
 fname = join('mayavi', '__init__.py')
 exec(compile(open(fname).read(), fname, 'exec'), info)
 
 DEFAULT_HTML_TARGET_DIR = join('docs', 'build')
-DEFAULT_INPUT_DIR = join('docs', 'source',)
+DEFAULT_INPUT_DIR = join(
+    'docs',
+    'source', )
+
 
 class GenDocs(Command):
 
@@ -97,9 +98,7 @@ class GenDocs(Command):
         "when needed. It's run automatically before a build_docs, and that's " \
         "the only time it needs to be run."
 
-    user_options = [
-        ('None', None, 'this command has no options'),
-        ]
+    user_options = [('None', None, 'this command has no options'), ]
 
     def latest_modified(self, the_path, filetypes='', ignore_dirs=''):
         """Traverses a path looking for the most recently modified file
@@ -163,21 +162,22 @@ class GenDocs(Command):
         # for different projects, but it ended up being. This part is
         # mayavi-specific.
 
-        mlab_ref_dir = join(DEFAULT_INPUT_DIR, 'mayavi','auto')
+        mlab_ref_dir = join(DEFAULT_INPUT_DIR, 'mayavi', 'auto')
 
         source_path = 'mayavi'
         sources = '(\.py)|(\.rst)$'
         excluded_dirs = '^\.'
         target_path = mlab_ref_dir
-        target_time = self.latest_modified(target_path,
-                                           ignore_dirs=excluded_dirs)[0]
+        target_time = self.latest_modified(
+            target_path, ignore_dirs=excluded_dirs)[0]
 
-        if (self.latest_modified(source_path, filetypes=sources,
-                                 ignore_dirs=excluded_dirs)[0] > target_time
-            or self.latest_modified('mlab_reference.py')[0] > target_time
-            or not exists(join('docs', 'source', 'mayavi', 'auto',
-                               'mlab_reference.rst'))
-            ):
+        if (self.latest_modified(
+                source_path, filetypes=sources,
+                ignore_dirs=excluded_dirs)[0] > target_time or
+                self.latest_modified('mlab_reference.py')[0] > target_time or
+                not exists(
+                    join('docs', 'source', 'mayavi', 'auto',
+                         'mlab_reference.rst'))):
             try:
                 from mayavi import mlab
                 from mayavi.tools import auto_doc
@@ -189,33 +189,33 @@ class GenDocs(Command):
     def example_files(self):
         """ Generate the documentation files for the examples.
         """
-        mlab_ref_dir = join(DEFAULT_INPUT_DIR, 'mayavi','auto')
+        mlab_ref_dir = join(DEFAULT_INPUT_DIR, 'mayavi', 'auto')
 
         source_path = join('examples', 'mayavi')
         sources = '(\.py)|(\.rst)$'
         excluded_dirs = '^\.'
         target_path = mlab_ref_dir
-        target_time = self.latest_modified(target_path,
-                                           ignore_dirs=excluded_dirs)[0]
+        target_time = self.latest_modified(
+            target_path, ignore_dirs=excluded_dirs)[0]
 
         script_file_name = join('docs', 'source', 'render_examples.py')
 
-        if (self.latest_modified(source_path, filetypes=sources,
-                                 ignore_dirs=excluded_dirs)[0] > target_time
-            or  self.latest_modified(script_file_name)[0] > target_time
-            or not  exists(join('docs', 'source', 'mayavi', 'auto',
-                                'examples.rst'))
-            ):
+        if (self.latest_modified(
+                source_path, filetypes=sources,
+                ignore_dirs=excluded_dirs)[0] > target_time or
+                self.latest_modified(script_file_name)[0] > target_time or
+                not exists(
+                    join('docs', 'source', 'mayavi', 'auto', 'examples.rst'))):
             try:
                 from mayavi import mlab
                 from mayavi.tools import auto_doc
                 print("Generating the example list")
-                subprocess.call('python %s' %
-                                basename(script_file_name), shell=True,
-                                cwd=dirname(script_file_name))
+                subprocess.call(
+                    'python %s' % basename(script_file_name),
+                    shell=True,
+                    cwd=dirname(script_file_name))
             except:
                 pass
-
 
     def run(self):
         self.mlab_reference()
@@ -227,16 +227,14 @@ class GenDocs(Command):
     def finalize_options(self):
         pass
 
+
 class BuildDocs(Command):
 
     description = \
         "This command generates the documentation by running Sphinx. " \
         "It then zips the docs into an html.zip file."
 
-    user_options = [
-        ('None', None, 'this command has no options'),
-        ]
-
+    user_options = [('None', None, 'this command has no options'), ]
 
     def make_docs(self):
         if os.name == 'nt':
@@ -259,13 +257,13 @@ def list_doc_projects():
     """ List the different source directories under DEFAULT_INPUT_DIR
         for which we have docs.
     """
-    source_dir = join(abspath(dirname(__file__)),
-                      DEFAULT_INPUT_DIR)
+    source_dir = join(abspath(dirname(__file__)), DEFAULT_INPUT_DIR)
     source_list = os.listdir(source_dir)
     # Check to make sure we're using non-hidden directories.
-    source_dirs = [listing for listing in source_list
-                   if isdir(join(source_dir, listing))
-                   and not listing.startswith('.')]
+    source_dirs = [
+        listing for listing in source_list
+        if isdir(join(source_dir, listing)) and not listing.startswith('.')
+    ]
     return source_dirs
 
 
@@ -358,7 +356,7 @@ class MyInstallData(install_data.install_data):
         install_data_command = self.get_finalized_command('install_data')
         for project in list_doc_projects():
             install_data_command.data_files.extend(
-                                    list_docs_data_files(project))
+                list_docs_data_files(project))
 
         # make sure tvtk_classes.zip always get created before putting it
         # in the install data.
@@ -374,14 +372,12 @@ class MyClean(clean.clean):
     """Reimplements to remove the extension module array_ext to guarantee a
     fresh rebuild every time. The module hanging around could introduce
     problems when doing develop for a different vtk version."""
+
     def run(self):
         MY_DIR = os.path.dirname(__file__)
 
-        ext_file = os.path.join(
-            MY_DIR,
-            "tvtk",
-            "array_ext" + (".pyd" if sys.platform == "win32" else ".so")
-        )
+        ext_file = os.path.join(MY_DIR, "tvtk", "array_ext" +
+                                (".pyd" if sys.platform == "win32" else ".so"))
 
         if os.path.exists(ext_file):
             print("Removing in-place array extensions {}".format(ext_file))
@@ -398,8 +394,7 @@ def configuration(parent_package=None, top_path=None):
         ignore_setup_xxx_py=True,
         assume_default_configuration=True,
         delegate_options_to_subpackages=True,
-        quiet=True,
-    )
+        quiet=True, )
 
     config.add_subpackage('tvtk')
     config.add_data_dir('mayavi/core/lut')
@@ -419,6 +414,7 @@ def configuration(parent_package=None, top_path=None):
 
     return config
 
+
 ###########################################################################
 # Similar to package_data, but installed before build
 build_package_data = {'mayavi.images': ['docs/source/mayavi/m2_about.jpg']}
@@ -434,22 +430,23 @@ for package, files in build_package_data.items():
 # Build the full set of packages by appending any found by setuptools'
 # find_packages to those discovered by numpy.distutils.
 config = configuration().todict()
-packages = setuptools.find_packages(exclude=config['packages'] +
-                                    ['docs', 'examples'])
+packages = setuptools.find_packages(
+    exclude=config['packages'] + ['docs', 'examples'])
 config['packages'] += packages
-
 
 # The actual setup call
 DOCLINES = __doc__.split("\n")
 numpy.distutils.core.setup(
-    name = 'mayavi',
-    version = info['__version__'],
-    author = "Prabhu Ramachandran, et. al.",
-    author_email = "prabhu@aero.iitb.ac.in",
-    maintainer = 'ETS Developers',
-    maintainer_email = 'enthought-dev@enthought.com',
-    url = 'http://docs.enthought.com/mayavi/mayavi/',
-    classifiers = [c.strip() for c in """\
+    name='mayavi',
+    version=info['__version__'],
+    author="Prabhu Ramachandran, et. al.",
+    author_email="prabhu@aero.iitb.ac.in",
+    maintainer='ETS Developers',
+    maintainer_email='enthought-dev@enthought.com',
+    url='http://docs.enthought.com/mayavi/mayavi/',
+    classifiers=[
+        c.strip()
+        for c in """\
         Development Status :: 5 - Production/Stable
         Intended Audience :: Developers
         Intended Audience :: Science/Research
@@ -464,8 +461,9 @@ numpy.distutils.core.setup(
         Topic :: Scientific/Engineering
         Topic :: Software Development
         Topic :: Software Development :: Libraries
-        """.splitlines() if len(c.split()) > 0],
-    cmdclass = {
+        """.splitlines() if len(c.split()) > 0
+    ],
+    cmdclass={
         # Work around a numpy distutils bug by forcing the use of the
         # setuptools' sdist command.
         'sdist': setuptools.command.sdist.sdist,
@@ -475,28 +473,27 @@ numpy.distutils.core.setup(
         'install_data': MyInstallData,
         'gen_docs': GenDocs,
         'build_docs': BuildDocs,
-        },
-    description = DOCLINES[1],
+    },
+    description=DOCLINES[1],
     download_url=('https://www.github.com/enthought/mayavi'),
-    entry_points = {
+    entry_points={
         'gui_scripts': [
             'mayavi2 = mayavi.scripts.mayavi2:main',
             'tvtk_doc = tvtk.tools.tvtk_doc:main'
-            ],
+        ],
         'envisage.plugins': [
             'tvtk.scene = tvtk.plugins.scene.scene_plugin:ScenePlugin',
             'tvtk.scene_ui = tvtk.plugins.scene.ui.scene_ui_plugin:SceneUIPlugin',
             'tvtk.browser = tvtk.plugins.browser.browser_plugin:BrowserPlugin',
             'mayavi = mayavi.plugins.mayavi_plugin:MayaviPlugin',
             'mayavi_ui = mayavi.plugins.mayavi_ui_plugin:MayaviUIPlugin'
-            ],
-        },
-    extras_require = info['__extras_require__'],
-    include_package_data = True,
-    install_requires = info['__requires__'],
-    license = "BSD",
-    long_description = '\n'.join(DOCLINES[3:]),
-    platforms = ["Windows", "Linux", "Mac OS-X", "Unix", "Solaris"],
-    zip_safe = False,
-    **config
-)
+        ],
+    },
+    extras_require=info['__extras_require__'],
+    include_package_data=True,
+    install_requires=info['__requires__'],
+    license="BSD",
+    long_description='\n'.join(DOCLINES[3:]),
+    platforms=["Windows", "Linux", "Mac OS-X", "Unix", "Solaris"],
+    zip_safe=False,
+    **config)

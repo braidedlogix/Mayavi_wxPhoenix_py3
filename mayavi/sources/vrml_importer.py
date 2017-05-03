@@ -19,6 +19,7 @@ from apptools.persistence.state_pickler import set_state
 from mayavi.core.source import Source
 from mayavi.core.pipeline_info import PipelineInfo
 
+
 ######################################################################
 # `VRMLImporter` class.
 ######################################################################
@@ -27,12 +28,14 @@ class VRMLImporter(Source):
     __version__ = 0
 
     # The file name.
-    file_name = Str('', enter_set=True, auto_set=False,
+    file_name = Str('',
+                    enter_set=True,
+                    auto_set=False,
                     desc='the VRML file name')
 
     # The VRML importer.
-    reader = Instance(tvtk.VRMLImporter, args=(), allow_none=False,
-                      record=True)
+    reader = Instance(
+        tvtk.VRMLImporter, args=(), allow_none=False, record=True)
 
     output_info = PipelineInfo(datasets=['none'])
 
@@ -95,7 +98,7 @@ class VRMLImporter(Source):
     def get_output_object(self):
         """ Return the reader output port."""
         return self.reader.output_port
-    
+
     ######################################################################
     # Non-public interface
     ######################################################################
@@ -105,7 +108,7 @@ class VRMLImporter(Source):
         self._file_path.set(value)
         self._update_reader()
         self.render()
-        name = "VRML file (%s)"%basename(self.file_name)
+        name = "VRML file (%s)" % basename(self.file_name)
         if '[Hidden]' in self.name:
             name += ' [Hidden]'
         self.name = name
@@ -151,4 +154,3 @@ class VRMLImporter(Source):
                 self.scene.add_actors(self.actors)
                 self._actors_added = True
         super(VRMLImporter, self)._visible_changed(value)
-

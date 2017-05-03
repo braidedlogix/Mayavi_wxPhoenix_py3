@@ -12,8 +12,7 @@ import logging
 # Enthought library imports.
 from apptools.logger.api import LogFileHandler, FORMATTER
 from traits.etsconfig.api import ETSConfig
-from traits.api import (HasTraits, Instance, Int,
-    on_trait_change, Bool)
+from traits.api import (HasTraits, Instance, Int, on_trait_change, Bool)
 
 # Local imports.
 from .mayavi_workbench_application import MayaviWorkbenchApplication
@@ -22,6 +21,7 @@ from mayavi.core.customize import get_custom_plugins
 
 # GLOBALS
 logger = logging.getLogger()
+
 
 ######################################################################
 # Useful functions.
@@ -66,9 +66,10 @@ def setup_logger(logger, fname, stream=True, mode=logging.ERROR):
         s.setFormatter(FORMATTER)
         s.setLevel(mode)
         logger.addHandler(s)
-    logger.info("*"*80)
+    logger.info("*" * 80)
     logger.info("logfile is: '%s'", os.path.abspath(path))
-    logger.info("*"*80)
+    logger.info("*" * 80)
+
 
 def get_non_gui_plugin_classes():
     """Get list of basic mayavi plugin classes that do not add any views or
@@ -77,17 +78,20 @@ def get_non_gui_plugin_classes():
     from envisage.ui.workbench.workbench_plugin import WorkbenchPlugin
     from tvtk.plugins.scene.scene_plugin import ScenePlugin
     from mayavi.plugins.mayavi_plugin import MayaviPlugin
-    plugins = [CorePlugin,
-               WorkbenchPlugin,
-               MayaviPlugin,
-               ScenePlugin,
-               ]
+    plugins = [
+        CorePlugin,
+        WorkbenchPlugin,
+        MayaviPlugin,
+        ScenePlugin,
+    ]
     return plugins
+
 
 def get_non_gui_plugins():
     """Get list of basic mayavi plugins that do not add any views or
     actions."""
     return [cls() for cls in get_non_gui_plugin_classes()]
+
 
 def get_plugin_classes():
     """Get list of default plugin classes to use for Mayavi."""
@@ -105,7 +109,8 @@ def get_plugin_classes():
             from envisage.plugins.ipython_shell.view.ipython_shell_view \
                     import IPythonShellView
             use_ipython = True
-        except: pass
+        except:
+            pass
 
     if use_ipython:
         from envisage.plugins.ipython_shell.ipython_shell_plugin import \
@@ -119,17 +124,19 @@ def get_plugin_classes():
     from mayavi.plugins.mayavi_ui_plugin import MayaviUIPlugin
     plugins = get_non_gui_plugin_classes()
     plugins.extend([
-                LoggerPlugin,
-                MayaviUIPlugin,
-                SceneUIPlugin,
-                PythonShellPlugin,
-                TextEditorPlugin,
-                ])
+        LoggerPlugin,
+        MayaviUIPlugin,
+        SceneUIPlugin,
+        PythonShellPlugin,
+        TextEditorPlugin,
+    ])
     return plugins
+
 
 def get_plugins():
     """Get list of default plugins to use for Mayavi."""
     return [cls() for cls in get_plugin_classes()]
+
 
 ###########################################################################
 # `Mayavi` class.
@@ -183,9 +190,10 @@ class Mayavi(HasTraits):
 
         # Create the application
         prefs = preference_manager.preferences
-        app = MayaviWorkbenchApplication(plugins=plugins,
-                                         preferences=prefs,
-                                         start_gui_event_loop=self.start_gui_event_loop)
+        app = MayaviWorkbenchApplication(
+            plugins=plugins,
+            preferences=prefs,
+            start_gui_event_loop=self.start_gui_event_loop)
         self.application = app
 
         # Setup the logger.
@@ -251,6 +259,7 @@ def main(argv=None):
     m = Mayavi()
     m.main(argv)
     return m
+
 
 if __name__ == '__main__':
     main(sys.argv[1:])

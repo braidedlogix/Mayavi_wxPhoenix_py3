@@ -4,7 +4,6 @@
 # Copyright (c) 2006, Enthought, Inc.
 # License: BSD Style.
 
-
 # Enthought library imports.
 from traits.api import Instance
 from traitsui.api import View, Group, Item
@@ -12,6 +11,7 @@ from tvtk.api import tvtk
 
 # Local imports
 from mayavi.core.filter import Filter
+
 
 ######################################################################
 # `FilterBase` class.
@@ -28,11 +28,16 @@ class FilterBase(Filter):
 
     # The view of these filters.
 
-    view = View(Group(Item(name='filter', style='custom', resizable=True,
-                      show_label=False), springy=True),
-                scrollable=True,
-                resizable=True
-                )
+    view = View(
+        Group(
+            Item(
+                name='filter',
+                style='custom',
+                resizable=True,
+                show_label=False),
+            springy=True),
+        scrollable=True,
+        resizable=True)
 
     ######################################################################
     # `Filter` interface.

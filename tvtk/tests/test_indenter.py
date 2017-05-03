@@ -26,7 +26,8 @@ class TestIndent(unittest.TestCase):
         self.assertEqual(str(id), '    ')
         id.decr()
         self.assertEqual(str(id), '')
-        id.incr(); id.incr()
+        id.incr()
+        id.incr()
         id.reset()
         self.assertEqual(str(id), '')
 
@@ -210,7 +211,6 @@ class TestVTKDocMassager(unittest.TestCase):
         #print ret
         #print correct
         self.assertEqual(ret, correct)
-
 
     def test_get_method_doc(self):
         """Test if get_method_doc works correctly."""

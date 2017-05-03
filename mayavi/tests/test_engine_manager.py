@@ -24,7 +24,6 @@ def patch_offscreen(switch_on):
 
 
 class TestEngineManager(unittest.TestCase):
-
     @patch_backend("test")
     def test_get_engine_backend_test(self):
         self.assertIsInstance(get_engine(), NullEngine)

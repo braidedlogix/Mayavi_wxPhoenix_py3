@@ -1,6 +1,5 @@
 """ The TVTK pipeline browser plugin. """
 
-
 # Enthought library imports.
 from envisage.api import Plugin
 from traits.api import List
@@ -40,15 +39,12 @@ class BrowserPlugin(Plugin):
     def _browser_view_factory(self, window, **traits):
         """ Factory method for browser views. """
 
-        from tvtk.plugins.browser.browser_view import (
-            BrowserView
-        )
+        from tvtk.plugins.browser.browser_view import (BrowserView)
 
         browser_view = BrowserView(
-            scene_manager = self._get_scene_manager(window),
-            window        = window,
-            **traits
-        )
+            scene_manager=self._get_scene_manager(window),
+            window=window,
+            **traits)
 
         return browser_view
 
@@ -57,10 +53,9 @@ class BrowserPlugin(Plugin):
 
         # Get the scene manager (a 'per window' service, so we look it up via
         # the window!).
-        from tvtk.plugins.scene.i_scene_manager import (
-            ISceneManager
-        )
+        from tvtk.plugins.scene.i_scene_manager import (ISceneManager)
 
         return window.get_service(ISceneManager)
+
 
 #### EOF ######################################################################

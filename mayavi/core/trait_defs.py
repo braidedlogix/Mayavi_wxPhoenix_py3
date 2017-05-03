@@ -17,7 +17,7 @@
 #---------------------------------------------------------------------------
 
 from traits.api import (CArray, Int, NO_COMPARE, Property, TraitError,
-    TraitFactory, TraitType)
+                        TraitFactory, TraitType)
 from traitsui.api import EnumEditor
 from traits.traits import trait_cast
 import numbers
@@ -25,6 +25,7 @@ import numbers
 #---------------------------------------------------------------------------
 #  Utility functions:
 #---------------------------------------------------------------------------
+
 
 def super_getattr(object, name, *args):
     """Works the same way as getattr, except that name can be of the
@@ -50,6 +51,7 @@ def super_getattr(object, name, *args):
         return getattr(obj, last, *args)
     else:
         return getattr(object, name, *args)
+
 
 def super_setattr(object, name, value):
     """Works the same way as setattr, except that name can be of the
@@ -85,45 +87,49 @@ class DEnumHelper(object):
 
     ######################################################################
     # Get/Set functions for the property.
-    def get_value ( object, name ):
+    def get_value(object, name):
         return super_getattr(object, DEnumHelper._init_listeners(object, name))
+
     get_value = staticmethod(get_value)
 
-    def set_value ( object, name, value ):
-        _name = DEnumHelper._init_listeners( object, name )
-        trait = object.trait( name )
+    def set_value(object, name, value):
+        _name = DEnumHelper._init_listeners(object, name)
+        trait = object.trait(name)
         values = super_getattr(object, trait.values_name)
         if value not in values:
-            raise TraitError(object, name,"one of %s"%values, value)
+            raise TraitError(object, name, "one of %s" % values, value)
         old = super_getattr(object, _name)
-        super_setattr( object, _name, value )
+        super_setattr(object, _name, value)
         object.trait_property_changed(name, old, value)
+
     set_value = staticmethod(set_value)
 
     ######################################################################
     #  Makes a default EnumEditor for the trait:
-    def make_editor ( trait = None ):
-        return EnumEditor( name=trait.values_name )
+    def make_editor(trait=None):
+        return EnumEditor(name=trait.values_name)
+
     make_editor = staticmethod(make_editor)
 
     ######################################################################
     # Ensures that the listeners are initialized.
-    def _init_listeners ( object, name ):
+    def _init_listeners(object, name):
         _name = '_' + name
-        if not hasattr( object, _name ):
-            trait = object.trait( name )
-            DEnumHelper._add_listeners( object, name, trait.values_name)
+        if not hasattr(object, _name):
+            trait = object.trait(name)
+            DEnumHelper._add_listeners(object, name, trait.values_name)
             default = trait.default or ''
-            values = super_getattr( object, trait.values_name )
+            values = super_getattr(object, trait.values_name)
             if values:
                 if default is None or default not in values:
                     default = values[0]
-            super_setattr( object, _name, default )
+            super_setattr(object, _name, default)
 
         return _name
+
     _init_listeners = staticmethod(_init_listeners)
 
-    def _add_listeners ( object, name, values_name ):
+    def _add_listeners(object, name, values_name):
         def check_values(object, values_name, old, new):
             cur_choice = super_getattr(object, name)
             if cur_choice not in new:
@@ -141,18 +147,22 @@ class DEnumHelper(object):
                 else:
                     super_setattr(object, name, '')
 
-        object.on_trait_change( check_values,  values_name )
-        object.on_trait_change( check_values_items, values_name + '_items' )
+        object.on_trait_change(check_values, values_name)
+        object.on_trait_change(check_values_items, values_name + '_items')
+
     _add_listeners = staticmethod(_add_listeners)
 
 
 #-------------------------------------------------------------------------------
 #  Defines the DEnum property:
 #-------------------------------------------------------------------------------
-DEnum = Property(DEnumHelper.get_value, DEnumHelper.set_value,
-                 values_name = 'values',
-                 editor  = (DEnumHelper.make_editor, {'trait': None})
-                 )
+DEnum = Property(
+    DEnumHelper.get_value,
+    DEnumHelper.set_value,
+    values_name='values',
+    editor=(DEnumHelper.make_editor, {
+        'trait': None
+    }))
 
 DEnum = TraitFactory(DEnum)
 
@@ -240,6 +250,7 @@ class ShadowProperty(TraitType):
 
             def callback(value):
                 callback.value = value
+
             callback.value = -1
             object.add_trait(attr, Int)
             object.on_trait_change(callback, attr)

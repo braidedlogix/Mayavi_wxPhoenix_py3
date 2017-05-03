@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 # `Registry` class.
 ################################################################################
 class Registry(HasTraits):
-
     """
     This class is a registry for various engines, and metadata from
     sources, filters and modules
@@ -45,21 +44,18 @@ class Registry(HasTraits):
     # `Registry` interface.
     ######################################################################
     def register_engine(self, engine, name=''):
-
         """Registers a mayavi engine with an optional name.   Note that
         we allow registering an engine with the same name as another
         already registered.  """
 
         engines = self.engines
         if len(name) == 0:
-            name = '%s%d'%(engine.__class__.__name__,
-                           len(engines) + 1)
+            name = '%s%d' % (engine.__class__.__name__, len(engines) + 1)
 
         logger.debug('Engine [%s] named %s registered', engine, name)
         engines[name] = engine
 
     def unregister_engine(self, engine_or_name):
-
         """Unregisters a mayavi engine specified either as a name or an
         engine instance."""
 
@@ -78,7 +74,6 @@ class Registry(HasTraits):
         logger.debug('Engine named %s unregistered', name)
 
     def get_file_reader(self, filename):
-
         """Given a filename, find a suitable source metadata that will
         read the file.
 
@@ -137,7 +132,6 @@ class Registry(HasTraits):
                     return engine
         else:
             raise TypeError("Scene not attached to a mayavi engine.")
-
 
 
 # The global registry instance.

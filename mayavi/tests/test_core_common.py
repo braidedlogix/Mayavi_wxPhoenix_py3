@@ -44,18 +44,16 @@ class TestCoreCommon(unittest.TestCase):
         value = get_object_path(s, e)
         self.assertEqual(value, 'engine.scenes[0].children[0]')
         value = get_object_path(o.module_manager, e)
-        self.assertEqual(value,
-                        'engine.scenes[0].children[0].children[0]')
+        self.assertEqual(value, 'engine.scenes[0].children[0].children[0]')
         value = get_object_path(o, e)
-        self.assertEqual(value,
-                        'engine.scenes[0].children[0].children[0].children[0]')
+        self.assertEqual(
+            value, 'engine.scenes[0].children[0].children[0].children[0]')
         value = get_object_path(o1, e)
-        self.assertEqual(value,
-                        'engine.scenes[0].children[0].children[0].children[1]')
+        self.assertEqual(
+            value, 'engine.scenes[0].children[0].children[0].children[1]')
         # With respect to the scene.
         value = get_object_path(o, scene, 'scene')
-        self.assertEqual(value,
-                         'scene.children[0].children[0].children[0]')
+        self.assertEqual(value, 'scene.children[0].children[0].children[0]')
         # With respect to the source.
         value = get_object_path(o, s, 's')
         self.assertEqual(value, 's.children[0].children[0]')
@@ -86,15 +84,15 @@ class TestCoreCommon(unittest.TestCase):
         self.assertEqual(o1.parent, mm)
 
 
-
 class TestNoUITimer(unittest.TestCase):
     def test_simple_timer(self):
         class A(object):
             def __init__(self):
                 self.count = 0
                 self.timer = NoUITimer(10, self.step)
+
             def step(self):
-                self.count +=1
+                self.count += 1
                 if self.count > 10:
                     self.timer.Stop()
 
@@ -108,9 +106,10 @@ class TestNoUITimer(unittest.TestCase):
             def __init__(self):
                 self.count = 0
                 self.timer = NoUITimer(10, self.step)
+
             def step(self):
-                self.count +=1
-                raise(RuntimeError('Oops'))
+                self.count += 1
+                raise (RuntimeError('Oops'))
 
         a = A()
         self.assertRaises(RuntimeError, a.timer.Start)
@@ -122,10 +121,11 @@ class TestNoUITimer(unittest.TestCase):
             def __init__(self):
                 self.count = 0
                 self.timer = NoUITimer(10, self.step)
+
             def step(self):
-                self.count +=1
+                self.count += 1
                 if self.count > 10:
-                    raise(StopIteration('Stop'))
+                    raise (StopIteration('Stop'))
 
         a = A()
         a.timer.Start()

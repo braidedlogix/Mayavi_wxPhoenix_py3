@@ -16,7 +16,6 @@ import copy
 import numpy
 import sys
 
-
 # Local imports.
 from common import TestCase, is_running_with_nose
 
@@ -26,19 +25,19 @@ class TestStreamline(TestCase):
         """Trivial data -- creates an elementatry scalar field and a
         constant vector field along the 'x' axis."""
         s = numpy.arange(0.0, 10.0, 0.01)
-        s = numpy.reshape(s, (10,10,10))
+        s = numpy.reshape(s, (10, 10, 10))
         s = numpy.transpose(s)
 
         v = numpy.zeros(3000, 'd')
         v[::3] = 1.0
-        v = numpy.reshape(v, (10,10,10,3))
+        v = numpy.reshape(v, (10, 10, 10, 3))
         return s, v
-
 
     def test(self):
         if is_running_with_nose():
             import unittest
-            raise unittest.SkipTest('This test Segfaults after passing or fails.')
+            raise unittest.SkipTest(
+                'This test Segfaults after passing or fails.')
         self.main()
 
     def do(self):
@@ -68,8 +67,10 @@ class TestStreamline(TestCase):
         st = Streamline()
         script.add_module(st)
         widget = st.seed.widget
-        widget.set(radius=1.0, center=(-4.0, -4.0, -4.0),
-                   theta_resolution=4, phi_resolution=4)
+        widget.set(radius=1.0,
+                   center=(-4.0, -4.0, -4.0),
+                   theta_resolution=4,
+                   phi_resolution=4)
 
         st = Streamline(streamline_type='ribbon')
         seed = st.seed
@@ -89,7 +90,7 @@ class TestStreamline(TestCase):
         seed = st.seed
         seed.widget = seed.widget_list[3]
         script.add_module(st)
-        seed.widget.position=(-5.0, 3.75, 3.75)
+        seed.widget.position = (-5.0, 3.75, 3.75)
         st.tube_filter.radius = 0.2
 
         # Set the scene to a suitable view.
@@ -134,9 +135,9 @@ class TestStreamline(TestCase):
         bg = s.scene.background
         # Save visualization.
         f = BytesIO()
-        f.name = abspath('test.mv2') # We simulate a file.
+        f.name = abspath('test.mv2')  # We simulate a file.
         script.save_visualization(f)
-        f.seek(0) # So we can read this saved data.
+        f.seek(0)  # So we can read this saved data.
 
         # Remove existing scene.
         engine = script.engine

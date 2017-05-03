@@ -41,12 +41,15 @@ class Optional(Component):
     # This is defined outside the view so that the label may be easily
     # changed.
     enabled_item = Item(name='enabled')
-    view = View(Group(Group(enabled_item),
-                      Group(Item(name='component', style='custom',
-                                 visible_when='object.enabled'),
-                            show_labels=False)
-                      )
-                )
+    view = View(
+        Group(
+            Group(enabled_item),
+            Group(
+                Item(
+                    name='component',
+                    style='custom',
+                    visible_when='object.enabled'),
+                show_labels=False)))
 
     ######################################################################
     # `Component` interface
@@ -117,10 +120,10 @@ class Optional(Component):
 
     def _component_changed(self, old, new):
         if old is not None:
-            old.on_trait_change(self._fire_pipeline_changed,
-                                 'pipeline_changed', remove=True)
-            old.on_trait_change(self._fire_data_changed,
-                                 'data_changed', remove=True)
+            old.on_trait_change(
+                self._fire_pipeline_changed, 'pipeline_changed', remove=True)
+            old.on_trait_change(
+                self._fire_data_changed, 'data_changed', remove=True)
 
         new.on_trait_change(self._fire_pipeline_changed, 'pipeline_changed')
         new.on_trait_change(self._fire_data_changed, 'data_changed')
@@ -130,5 +133,3 @@ class Optional(Component):
 
     def _fire_data_changed(self):
         self.data_changed = True
-
-

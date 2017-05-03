@@ -1,4 +1,3 @@
-
 # Author: Prabhu Ramachandran <prabhu [at] aero . iitb . ac . in>
 # Copyright (c) 2009,  Prabhu Ramachandran
 # License: BSD Style.
@@ -9,8 +8,8 @@ from numpy import zeros, random
 from tvtk.api import tvtk
 from tvtk.common import is_old_pipeline
 
-class TestIPWMultipleScalars(TestCase):
 
+class TestIPWMultipleScalars(TestCase):
     """Tests the IPW with multiple scalars.  We have this in addition to
     the unittests since some of these errors only show up when the view
     is active."""
@@ -28,21 +27,21 @@ class TestIPWMultipleScalars(TestCase):
         # Create dataset with multiple scalars.
         arr1 = zeros(27, 'f')
         for n in range(27):
-            arr1[n] = (1+float(n))/10.0
+            arr1[n] = (1 + float(n)) / 10.0
         arr2 = (arr1 + 1).astype('d')
-        arr3 = arr1 + 2.0*(0.5 - random.random(27))
+        arr3 = arr1 + 2.0 * (0.5 - random.random(27))
         arr3 = arr3.astype('f')
 
-        p = tvtk.ImageData(dimensions=[3,3,3], spacing=[1,1,1])
+        p = tvtk.ImageData(dimensions=[3, 3, 3], spacing=[1, 1, 1])
         if is_old_pipeline():
             p.scalar_type = 'int'
 
         p.point_data.scalars = arr1
         p.point_data.scalars.name = 'first'
         j2 = p.point_data.add_array(arr2)
-        p.point_data.get_array(j2).name='second'
+        p.point_data.get_array(j2).name = 'second'
         j3 = p.point_data.add_array(arr3)
-        p.point_data.get_array(j3).name='third'
+        p.point_data.get_array(j3).name = 'third'
         if is_old_pipeline():
             p.update()
 

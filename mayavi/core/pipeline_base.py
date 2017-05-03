@@ -14,6 +14,7 @@ from mayavi.core.base import Base
 from mayavi.core.pipeline_info import PipelineInfo
 import tvtk.common as tvtk_common
 
+
 ######################################################################
 # `PipelineBase` class.
 ######################################################################
@@ -71,10 +72,13 @@ class PipelineBase(Base):
     def __get_pure_state__(self):
         d = super(PipelineBase, self).__get_pure_state__()
         # These are setup dynamically so we should not pickle them.
-        for x in ('outputs', 'actors', 'widgets', '_actors_added', ):
+        for x in (
+                'outputs',
+                'actors',
+                'widgets',
+                '_actors_added', ):
             d.pop(x, None)
         return d
-
 
     ######################################################################
     # `Base` interface
@@ -132,7 +136,7 @@ class PipelineBase(Base):
                             input.update()
         if hasattr(self, 'components'):
             for component in self.components:
-                    component.render()
+                component.render()
 
     ######################################################################
     # `PipelineBase` interface.
@@ -265,7 +269,7 @@ class PipelineBase(Base):
             for i in range(len(self.widgets)):
                 self.widgets[i].enabled = self._widget_state[i]
 
-    def _visible_changed(self,value):
+    def _visible_changed(self, value):
         if value:
             # restore the state of the widgets from the
             # backed up values.
@@ -280,7 +284,7 @@ class PipelineBase(Base):
             a.visibility = value
 
         self.render()
-        super(PipelineBase , self)._visible_changed(value)
+        super(PipelineBase, self)._visible_changed(value)
 
     def _set_widget_visibility(self, widgets):
         if not self.visible:

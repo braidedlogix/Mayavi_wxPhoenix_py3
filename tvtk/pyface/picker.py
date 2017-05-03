@@ -46,6 +46,7 @@ def get_last_input(data):
             tmp = None
     return inp
 
+
 ######################################################################
 # `PickedData` class.
 ######################################################################
@@ -53,18 +54,21 @@ class PickedData(HasTraits):
     """This class stores the picked data."""
 
     # Was there a valid picked point?
-    valid = Trait(false_bool_trait,
-                  desc='specifies the validity of the pick event')
+    valid = Trait(
+        false_bool_trait, desc='specifies the validity of the pick event')
     # Id of picked point (-1 implies none was picked)
     point_id = Long(-1, desc='the picked point ID')
     # Id of picked cell (-1 implies none was picked)
     cell_id = Long(-1, desc='the picked cell ID')
     # World pick -- this has no ID.
-    world_pick = Trait(false_bool_trait,
-                       desc='specifies if the pick is a world pick.')
+    world_pick = Trait(
+        false_bool_trait, desc='specifies if the pick is a world pick.')
     # Coordinate of picked point.
-    coordinate = Array('d', (3,), labels=['x', 'y', 'z'], cols=3,
-                       desc='the coordinate of the picked point')
+    coordinate = Array(
+        'd', (3, ),
+        labels=['x', 'y', 'z'],
+        cols=3,
+        desc='the coordinate of the picked point')
 
     # The picked data -- usually a tvtk.PointData or tvtk.CellData of
     # the object picked.  The user can use this data and extract any
@@ -100,33 +104,47 @@ class DefaultPickHandler(PickHandler):
     # Traits.
     ID = Trait(None, None, Long, desc='the picked ID')
 
-    coordinate = Trait(None, None, Array('d', (3,)),
-                       desc='the coordinate of the picked point')
+    coordinate = Trait(
+        None,
+        None,
+        Array('d', (3, )),
+        desc='the coordinate of the picked point')
 
     scalar = Trait(None, None, Float, desc='the scalar at picked point')
 
-    vector = Trait(None, None, Array('d', (3,)),
-                   desc='the vector at picked point')
+    vector = Trait(
+        None, None, Array('d', (3, )), desc='the vector at picked point')
 
-    tensor = Trait(None, None, Array('d', (3,3)),
-                   desc='the tensor at picked point')
+    tensor = Trait(
+        None, None, Array('d', (3, 3)), desc='the tensor at picked point')
 
     # History of picked data.
     history = Str
 
-    default_view = View(Item(name='ID', style='readonly'),
-                        Item(name='coordinate', style='readonly'),
-                        Item(name='scalar', style='readonly'),
-                        Item(name='vector', style='readonly'),
-                        Item(name='tensor', style='readonly'),
-                        Item(name='history', style='custom'),
-                        )
+    default_view = View(
+        Item(
+            name='ID', style='readonly'),
+        Item(
+            name='coordinate', style='readonly'),
+        Item(
+            name='scalar', style='readonly'),
+        Item(
+            name='vector', style='readonly'),
+        Item(
+            name='tensor', style='readonly'),
+        Item(
+            name='history', style='custom'), )
 
     def __init__(self, **traits):
         super(DefaultPickHandler, self).__init__(**traits)
         # This saves all the data picked earlier.
-        self.data = {'ID':[], 'coordinate':[], 'scalar':[], 'vector':[],
-                     'tensor':[]}
+        self.data = {
+            'ID': [],
+            'coordinate': [],
+            'scalar': [],
+            'vector': [],
+            'tensor': []
+        }
 
     #################################################################
     # `DefaultPickHandler` interface.
@@ -142,13 +160,13 @@ class DefaultPickHandler(PickHandler):
             self.coordinate = data.coordinate
 
             if data.data:
-                array_data = {'scalar': data.data.scalars,
-                              'vector': data.data.vectors,
-                              'tensor': data.data.tensors}
+                array_data = {
+                    'scalar': data.data.scalars,
+                    'vector': data.data.vectors,
+                    'tensor': data.data.tensors
+                }
             else:
-                array_data = {'scalar': None,
-                              'vector': None,
-                              'tensor': None}
+                array_data = {'scalar': None, 'vector': None, 'tensor': None}
             for name in array_data.keys():
                 if array_data[name]:
                     setattr(self, name, array_data[name][self.ID])
@@ -166,8 +184,7 @@ class DefaultPickHandler(PickHandler):
         for name in ['ID', 'coordinate', 'scalar', 'vector', 'tensor']:
             value = getattr(self, name)
             self.data.get(name).append(getattr(self, name))
-            self.history += '%s: %r\n'%(name, value)
-
+            self.history += '%s: %r\n' % (name, value)
 
 
 ######################################################################
@@ -175,6 +192,7 @@ class DefaultPickHandler(PickHandler):
 ######################################################################
 class CloseHandler(Handler):
     """This class cleans up after the UI for the Picker is closed."""
+
     def close(self, info, is_ok):
         """This method is invoked when the user closes the UI."""
         picker = info.object
@@ -204,10 +222,14 @@ class Picker(HasTraits):
     # options are self-explanatory.  The 'world_picker' picks a point
     # using a WorldPointPicker and additionally uses a ProbeFilter to
     # probe the data at the picked point.
-    pick_type = Trait('point', TraitRevPrefixMap({'point_picker':1,
-                                                  'cell_picker':2,
-                                                  'world_picker':3}),
-                      desc='specifies the picker type to use')
+    pick_type = Trait(
+        'point',
+        TraitRevPrefixMap({
+            'point_picker': 1,
+            'cell_picker': 2,
+            'world_picker': 3
+        }),
+        desc='specifies the picker type to use')
 
     # The pick_handler.  Set this to your own subclass if you want do
     # do something different from the default.
@@ -217,21 +239,29 @@ class Picker(HasTraits):
     tolerance = Range(0.0, 0.25, 0.025)
 
     # show the GUI on pick ?
-    show_gui = true(desc = "whether to show the picker GUI on pick")
+    show_gui = true(desc="whether to show the picker GUI on pick")
 
     # Raise the GUI on pick ?
-    auto_raise = true(desc = "whether to raise the picker GUI on pick")
+    auto_raise = true(desc="whether to raise the picker GUI on pick")
 
-    default_view = View(Group(Group(Item(name='pick_type'),
-                                    Item(name='tolerance'), show_border=True),
-                              Group(Item(name='pick_handler', style='custom'),
-                                    show_border=True, show_labels=False),
-                              Group(Item(name='show_gui'),
-                                    Item(name='auto_raise'), show_border=True),
-                              ),
-                        resizable=True,
-                        buttons=['OK'],
-                        handler=CloseHandler())
+    default_view = View(
+        Group(
+            Group(
+                Item(name='pick_type'),
+                Item(name='tolerance'),
+                show_border=True),
+            Group(
+                Item(
+                    name='pick_handler', style='custom'),
+                show_border=True,
+                show_labels=False),
+            Group(
+                Item(name='show_gui'),
+                Item(name='auto_raise'),
+                show_border=True), ),
+        resizable=True,
+        buttons=['OK'],
+        handler=CloseHandler())
 
     #################################################################
     # `object` interface.
@@ -249,7 +279,7 @@ class Picker(HasTraits):
         # Use a set of axis to show the picked point.
         self.p_source = tvtk.Axes()
         self.p_mapper = tvtk.PolyDataMapper()
-        self.p_actor = tvtk.Actor ()
+        self.p_actor = tvtk.Actor()
         self.p_source.symmetric = 1
         self.p_actor.pickable = 0
         self.p_actor.visibility = 0
@@ -266,7 +296,10 @@ class Picker(HasTraits):
 
     def __get_pure_state__(self):
         d = self.__dict__.copy()
-        for x in ['renwin', 'ui', 'pick_handler', '__sync_trait__', '__traits_listener__']:
+        for x in [
+                'renwin', 'ui', 'pick_handler', '__sync_trait__',
+                '__traits_listener__'
+        ]:
             d.pop(x, None)
         return d
 
@@ -338,11 +371,10 @@ class Picker(HasTraits):
         self.renwin.render()
         return picked_data
 
-    def pick_cell (self, x, y):
+    def pick_cell(self, x, y):
         """ Picks the nearest cell. Returns a `PickedData` instance."""
         try:
-            self.cellpicker.pick(float(x), float(y), 0.0,
-                                 self.renwin.renderer)
+            self.cellpicker.pick(float(x), float(y), 0.0, self.renwin.renderer)
         except TypeError:
             # On old versions of VTK, the signature used to be different
             self.cellpicker.pick((float(x), float(y), 0.0),
@@ -376,9 +408,10 @@ class Picker(HasTraits):
 
         # Use the cell picker to get the data that needs to be probed.
         try:
-            self.cellpicker.pick( (float(x), float(y), 0.0), self.renwin.renderer)
+            self.cellpicker.pick(
+                (float(x), float(y), 0.0), self.renwin.renderer)
         except TypeError:
-            self.cellpicker.pick( float(x), float(y), 0.0, self.renwin.renderer)
+            self.cellpicker.pick(float(x), float(y), 0.0, self.renwin.renderer)
 
         wp = self.worldpicker
         cp = self.cellpicker
@@ -427,10 +460,10 @@ class Picker(HasTraits):
 
     def _update_actor(self, coordinate, bounds):
         """Updates the actor by setting its position and scale."""
-        dx = 0.3*(bounds[1]-bounds[0])
-        dy = 0.3*(bounds[3]-bounds[2])
-        dz = 0.3*(bounds[5]-bounds[4])
-        scale = max(dx,dy,dz)
+        dx = 0.3 * (bounds[1] - bounds[0])
+        dy = 0.3 * (bounds[3] - bounds[2])
+        dz = 0.3 * (bounds[5] - bounds[4])
+        scale = max(dx, dy, dz)
         self.p_source.origin = coordinate
         self.p_source.scale_factor = scale
         self.p_actor.visibility = 1

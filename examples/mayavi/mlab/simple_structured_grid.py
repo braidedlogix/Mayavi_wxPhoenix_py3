@@ -27,7 +27,7 @@ for i in range(z.shape[2]):
     z[..., i] = base * 0.25 * i
 
 # The actual points.
-pts = empty(z.shape + (3,), dtype=float)
+pts = empty(z.shape + (3, ), dtype=float)
 pts[..., 0] = x
 pts[..., 1] = y
 pts[..., 2] = z
@@ -35,7 +35,7 @@ pts[..., 2] = z
 # Simple scalars.
 scalars = x * x + y * y + z * z
 # Some vectors
-vectors = empty(z.shape + (3,), dtype=float)
+vectors = empty(z.shape + (3, ), dtype=float)
 vectors[..., 0] = (4 - y * 2)
 vectors[..., 1] = (x * 3 - 12)
 vectors[..., 2] = sin(z * pi)

@@ -28,14 +28,16 @@ class ListItem(HasTraits):
     my_name = Str
     parent = Instance(HasTraits)
     view = View(
-               HGroup(
-                   Item('name', style='readonly', show_label=False,
-                                    resizable=False),
-                   Item('my_name', style='simple', show_label=False,
-                            editor=TextEditor(auto_set=False, enter_set=True),
-                                    springy=True),
-               )
-           )
+        HGroup(
+            Item(
+                'name', style='readonly', show_label=False, resizable=False),
+            Item(
+                'my_name',
+                style='simple',
+                show_label=False,
+                editor=TextEditor(
+                    auto_set=False, enter_set=True),
+                springy=True), ))
 
 
 ##############################################################################
@@ -72,10 +74,12 @@ class CSVLoader(HasTraits):
         try:
             kwds = Sniff(self.filename).kwds()
         except:
-            kwds = {'comments': '#',
-                    'delimiter': ',',
-                    'dtype': float,
-                    'skiprows': 0}
+            kwds = {
+                'comments': '#',
+                'delimiter': ',',
+                'dtype': float,
+                'skiprows': 0
+            }
 
         if kwds['delimiter']:
             self.delimiter = kwds['delimiter']
@@ -86,11 +90,13 @@ class CSVLoader(HasTraits):
         self.names = list(kwds['dtype']['names'])
         self.formats = list(kwds['dtype']['formats'])
 
-        self.columns = [ListItem(name='Column %i:' % (i + 1),
-                                 parent=self,
-                                 column_number=i,
-                                 my_name=val)
-                        for i, val in enumerate(self.names)]
+        self.columns = [
+            ListItem(
+                name='Column %i:' % (i + 1),
+                parent=self,
+                column_number=i,
+                my_name=val) for i, val in enumerate(self.names)
+        ]
         self.load_data()
 
     def load_data(self):
@@ -98,8 +104,7 @@ class CSVLoader(HasTraits):
         kwds['delimiter'] = self.delimiter
         kwds['comments'] = self.comments
         kwds['skiprows'] = self.skiprows
-        kwds['dtype'] = dict(names=self.names,
-                             formats=self.formats)
+        kwds['dtype'] = dict(names=self.names, formats=self.formats)
 
         try:
             self.data = loadtxt(self.filename, **kwds)
@@ -147,56 +152,53 @@ class CSVLoaderController(Controller):
 
     def default_traits_view(self):
         view = View(
-                VSplit(
-                   HGroup(
-                       Group(
-                           spring,
-                           Item('delimiter',
-                                label='Column delimiter character'),
-                           Item('comments',
-                                label='Comment character'),
-                           Item('skiprows',
-                                label='Number of lines to skip at the '
-                                'beginning of the file'),
-                           spring,
-                           Item('handler.update_preview',
-                                                show_label=False),
-                       ),
-                       Group(
-                           Item('columns',
-                               show_label=False,
-                               style='readonly',
-                               editor=ListEditor(style='custom'),
-                               springy=True,
-                           ),
-                           label="Column names",
-                           show_border=True,
-                       ),
-                   ),
-                   Group(
-                       Group(
-                        Item('data',
+            VSplit(
+                HGroup(
+                    Group(
+                        spring,
+                        Item(
+                            'delimiter', label='Column delimiter character'),
+                        Item(
+                            'comments', label='Comment character'),
+                        Item(
+                            'skiprows',
+                            label='Number of lines to skip at the '
+                            'beginning of the file'),
+                        spring,
+                        Item(
+                            'handler.update_preview', show_label=False), ),
+                    Group(
+                        Item(
+                            'columns',
                             show_label=False,
-                            editor=self.tabular_editor,
-                            ),
-                        label="Preview table",
-                        ),
-                        Group(
-                        Item('handler.file_content', style='readonly',
-                                show_label=False,
-                                springy=True),
-                        label="%s" % self.model.filename,
-                        ),
-                    layout='tab'),
-               ),
-               buttons=['OK', 'Cancel', 'Help'],
-               id='csv_load_editor',
-               resizable=True,
-               width=640,
-               height=580,
-               title='CSV import - [%s]' % self.model.filename
-           )
+                            style='readonly',
+                            editor=ListEditor(style='custom'),
+                            springy=True, ),
+                        label="Column names",
+                        show_border=True, ), ),
+                Group(
+                    Group(
+                        Item(
+                            'data',
+                            show_label=False,
+                            editor=self.tabular_editor, ),
+                        label="Preview table", ),
+                    Group(
+                        Item(
+                            'handler.file_content',
+                            style='readonly',
+                            show_label=False,
+                            springy=True),
+                        label="%s" % self.model.filename, ),
+                    layout='tab'), ),
+            buttons=['OK', 'Cancel', 'Help'],
+            id='csv_load_editor',
+            resizable=True,
+            width=640,
+            height=580,
+            title='CSV import - [%s]' % self.model.filename)
         return view
+
 
 if __name__ == '__main__':
     from pyface.api import GUI

@@ -37,7 +37,7 @@ class CSVSourceFactory(HasTraits):
         """
         """
         self.data_source_wizard = DataSourceWizardView(
-                data_sources=self.csv_loader.data_dict)
+            data_sources=self.csv_loader.data_dict)
         self.data_source_wizard.edit_traits()
 
     def __call__(self, fname):
@@ -46,9 +46,10 @@ class CSVSourceFactory(HasTraits):
         """
         self.csv_loader = CSVLoader(filename=fname)
         self.csv_loader.guess_defaults()
-        controller = CallbackCSVLoader(model=self.csv_loader,
-                        callback=self.csv_loaded_callback)
+        controller = CallbackCSVLoader(
+            model=self.csv_loader, callback=self.csv_loaded_callback)
         controller.edit_traits()
+
 
 if __name__ == '__main__':
     from pyface.api import GUI

@@ -25,8 +25,7 @@ class ClassNameTest(unittest.TestCase):
         """Called before each test is run"""
         self.preferences = set_default_preferences(Preferences())
         # The filename of the example preferences file.
-        pref_file = resource_filename('mayavi.tests',
-                                      'test_preference.ini')
+        pref_file = resource_filename('mayavi.tests', 'test_preference.ini')
         self.preferences.load(pref_file)
         self.pref = TestPreference()
         self.mirror = PreferencesMirror()
@@ -46,7 +45,7 @@ class ClassNameTest(unittest.TestCase):
         mirror = self.mirror
         # Save original state.
         saved = pref.get()
-        pref.set(bg = 'white', width=20, show=True)
+        pref.set(bg='white', width=20, show=True)
         self.assertEqual(pref.bg, mirror.bg)
         self.assertEqual(pref.width, mirror.width)
         self.assertEqual(pref.show, mirror.show)
@@ -58,7 +57,7 @@ class ClassNameTest(unittest.TestCase):
         pref = self.pref
         mirror = self.mirror
         saved = pref.get()
-        mirror.set(bg = 'white', width=20, show=True)
+        mirror.set(bg='white', width=20, show=True)
         self.assertNotEqual(pref.bg, mirror.bg)
         self.assertNotEqual(pref.width, mirror.width)
         self.assertNotEqual(pref.show, mirror.show)
@@ -71,7 +70,7 @@ class ClassNameTest(unittest.TestCase):
         pref = self.pref
         mirror = self.mirror
         saved = pref.get()
-        mirror.set(bg = 'white', width=20, show=True)
+        mirror.set(bg='white', width=20, show=True)
         mirror.save()
         self.assertEqual(pref.bg, mirror.bg)
         self.assertEqual(pref.width, mirror.width)
@@ -79,6 +78,6 @@ class ClassNameTest(unittest.TestCase):
         # Reset preferences back to defaults.
         pref.set(saved)
 
+
 if __name__ == '__main__':
     unittest.main()
-

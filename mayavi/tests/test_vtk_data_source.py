@@ -21,8 +21,8 @@ from tvtk.api import tvtk
 
 from mayavi.tests import datasets
 
-class TestVTKDataSource(unittest.TestCase):
 
+class TestVTKDataSource(unittest.TestCase):
     def setUp(self):
         """Initial setting up of test fixture, automatically called by TestCase before any other test method is invoked"""
         e = NullEngine()
@@ -30,10 +30,10 @@ class TestVTKDataSource(unittest.TestCase):
         #e = Engine()
         e.start()
         e.new_scene()
-        self.e=e
+        self.e = e
 
-        sgrid=datasets.generateStructuredGrid()
-        src = VTKDataSource(data = sgrid)
+        sgrid = datasets.generateStructuredGrid()
+        src = VTKDataSource(data=sgrid)
         e.add_source(src)
 
         # Create an outline for the data.
@@ -63,15 +63,15 @@ class TestVTKDataSource(unittest.TestCase):
         cp = ScalarCutPlane()
         e.add_module(cp)
         ip = cp.implicit_plane
-        ip.normal = 0,0,1
+        ip.normal = 0, 0, 1
         ip.origin = 0.5, 0.5, 1.0
         # Since this is running offscreen this seems necessary.
         ip.widget.origin = 0.5, 0.5, 1.0
         ip.widget.enabled = False
         self.scene = e.current_scene
-        self.cgp2=cgp2
-        self.iso=iso
-        self.cp=cp
+        self.cgp2 = cgp2
+        self.iso = iso
+        self.cp = cp
         return
 
     def tearDown(self):
@@ -85,29 +85,26 @@ class TestVTKDataSource(unittest.TestCase):
         src = scene.children[0]
         mm = src.children[0]
         cgp1 = mm.children[1]
-        self.assertEqual(cgp1.grid_plane.position,15)
+        self.assertEqual(cgp1.grid_plane.position, 15)
 
         cgp2 = mm.children[2]
-        self.assertEqual(cgp2.contour.filled_contours,True)
+        self.assertEqual(cgp2.contour.filled_contours, True)
         self.assertEqual(cgp2.grid_plane.axis, 'y')
-        self.assertEqual(cgp2.grid_plane.position,15)
+        self.assertEqual(cgp2.grid_plane.position, 15)
 
         iso = mm.children[3]
         ctr = iso.contour.contours
-        self.assertEqual(iso.compute_normals,True)
+        self.assertEqual(iso.compute_normals, True)
         self.assertEqual(ctr, [5.0])
         rng = iso.actor.mapper.input.point_data.scalars.range
-        self.assertEqual(rng[0],5.0)
-        self.assertEqual(rng[1],5.0)
-
+        self.assertEqual(rng[0], 5.0)
+        self.assertEqual(rng[1], 5.0)
 
         cp = mm.children[4]
         ip = cp.implicit_plane
-        self.assertAlmostEqual(numpy.sum(ip.normal - (0,0,1)) , 1e-16)
+        self.assertAlmostEqual(numpy.sum(ip.normal - (0, 0, 1)), 1e-16)
         self.assertAlmostEqual(numpy.sum(ip.origin - (0.5, 0.5, 1.0)), 0.0)
-        self.assertEqual(ip.widget.enabled,False)
-
-
+        self.assertEqual(ip.widget.enabled, False)
 
     def test_vtk_data_source(self):
         "Test if the test fixture works"
@@ -124,9 +121,9 @@ class TestVTKDataSource(unittest.TestCase):
 
         # Save visualization.
         f = BytesIO()
-        f.name = abspath('test.mv2') # We simulate a file.
+        f.name = abspath('test.mv2')  # We simulate a file.
         engine.save_visualization(f)
-        f.seek(0) # So we can read this saved data.
+        f.seek(0)  # So we can read this saved data.
 
         # Remove existing scene.
 
@@ -138,14 +135,13 @@ class TestVTKDataSource(unittest.TestCase):
 
         self.check()
 
-
     def test_deepcopied(self):
         """Test if the MayaVi2 visualization can be deep-copied."""
         ############################################################
         # Test if the MayaVi2 visualization can be deep-copied.
 
         # Pop the source object.
-        s =  self.scene
+        s = self.scene
         source = s.children.pop()
         # Add it back to see if that works without error.
         s.children.append(source)
@@ -169,6 +165,7 @@ class TestVTKDataSource(unittest.TestCase):
         src = self.e.scenes[0].children[0]
         new_src = VTKDataSource(data=tvtk.PolyData())
         src.add_child(new_src)
+
 
 if __name__ == '__main__':
     unittest.main()

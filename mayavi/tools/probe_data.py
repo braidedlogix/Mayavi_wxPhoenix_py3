@@ -9,6 +9,7 @@ from tvtk.api import tvtk
 from . import tools
 import tvtk.common as tvtk_common
 
+
 def probe_data(mayavi_object, x, y, z, type='scalars', location='points'):
     """ Retrieve the data from a described by Mayavi visualization object
         at points x, y, z.
@@ -44,9 +45,8 @@ def probe_data(mayavi_object, x, y, z, type='scalars', location='points'):
     shape = x.shape
     assert y.shape == z.shape == shape, \
                         'The x, y and z arguments must have the same shape'
-    probe_data = mesh = tvtk.PolyData(points=np.c_[x.ravel(),
-                                                   y.ravel(),
-                                                   z.ravel()])
+    probe_data = mesh = tvtk.PolyData(
+        points=np.c_[x.ravel(), y.ravel(), z.ravel()])
     shape = list(shape)
     probe = tvtk.ProbeFilter()
     tvtk_common.configure_input_data(probe, probe_data)
@@ -59,13 +59,12 @@ def probe_data(mayavi_object, x, y, z, type='scalars', location='points'):
         data = probe.output.cell_data
     else:
         raise ValueError("Invalid value for data location, must be "
-                         "'points' or 'cells', but '%s' was given."
-                         % location)
+                         "'points' or 'cells', but '%s' was given." % location)
 
     values = getattr(data, type)
     if values is None:
-        raise ValueError("The object given has no %s data of type %s"
-                         % (location, type))
+        raise ValueError("The object given has no %s data of type %s" %
+                         (location, type))
     values = values.to_array()
     if type == 'scalars':
         values = np.reshape(values, shape)

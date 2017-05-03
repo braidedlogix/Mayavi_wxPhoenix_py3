@@ -1,10 +1,8 @@
 """ The TVTK render window scene plugin. """
 
-
 # Enthought library imports.
 from envisage.api import Plugin, ServiceOffer
 from traits.api import List
-
 
 # This module's package.
 PKG = '.'.join(__name__.split('.')[:-1])
@@ -14,7 +12,7 @@ class ScenePlugin(Plugin):
     """ The TVTK render window scene plugin. """
 
     # Extension point Ids.
-    PREFERENCES    = 'envisage.preferences'
+    PREFERENCES = 'envisage.preferences'
     SERVICE_OFFERS = 'envisage.ui.workbench.service_offers'
 
     #### 'IPlugin' interface ##################################################
@@ -44,10 +42,10 @@ class ScenePlugin(Plugin):
         """ Trait initializer. """
 
         scene_manager_service_offer = ServiceOffer(
-            protocol = PKG + '.i_scene_manager.ISceneManager',
-            factory  = PKG + '.scene_manager.SceneManager',
-        )
+            protocol=PKG + '.i_scene_manager.ISceneManager',
+            factory=PKG + '.scene_manager.SceneManager', )
 
         return [scene_manager_service_offer]
+
 
 #### EOF ######################################################################

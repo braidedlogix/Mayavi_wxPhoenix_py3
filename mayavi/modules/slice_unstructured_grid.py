@@ -25,42 +25,47 @@ class SliceUnstructuredGrid(Module):
     __version__ = 0
 
     # The implicit plane widget.
-    implicit_plane = Instance(ImplicitPlane, allow_none=False,
-                              record=True)
+    implicit_plane = Instance(ImplicitPlane, allow_none=False, record=True)
 
     # Extract the cells to display.
-    extract_geometry = Instance(tvtk.ExtractGeometry, allow_none=False,
-                                record=True)
+    extract_geometry = Instance(
+        tvtk.ExtractGeometry, allow_none=False, record=True)
 
     # The geometry filter.
-    geom_filter = Instance(tvtk.GeometryFilter, allow_none=False,
-                           record=True)
+    geom_filter = Instance(tvtk.GeometryFilter, allow_none=False, record=True)
 
     # The actor component that represents the visualization.
     actor = Instance(Actor, allow_none=False, record=True)
 
-    input_info = PipelineInfo(datasets=['unstructured_grid'],
-                              attribute_types=['any'],
-                              attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['unstructured_grid'],
+        attribute_types=['any'],
+        attributes=['any'])
 
     ########################################
     # View related code.
 
-    view = View(Group(Item(name='implicit_plane', style='custom'),
-                      label='ImplicitPlane',
-                      show_labels=False),
-                Group(Item(name='extract_geometry', style='custom',
-                           resizable=True),
-                      label='Extract Geometry',
-                      show_labels=False),
-                Group(Item(name='geom_filter', style='custom',
-                           resizable=True),
-                      label='Geometry Filter',
-                      show_labels=False),
-                Group(Item(name='actor', style='custom'),
-                      label='Actor',
-                      show_labels=False)
-                )
+    view = View(
+        Group(
+            Item(
+                name='implicit_plane', style='custom'),
+            label='ImplicitPlane',
+            show_labels=False),
+        Group(
+            Item(
+                name='extract_geometry', style='custom', resizable=True),
+            label='Extract Geometry',
+            show_labels=False),
+        Group(
+            Item(
+                name='geom_filter', style='custom', resizable=True),
+            label='Geometry Filter',
+            show_labels=False),
+        Group(
+            Item(
+                name='actor', style='custom'),
+            label='Actor',
+            show_labels=False))
 
     ######################################################################
     # `Module` interface
@@ -79,8 +84,8 @@ class SliceUnstructuredGrid(Module):
         """
         # Create the components and set them up.
         self.implicit_plane = ImplicitPlane()
-        ex = tvtk.ExtractGeometry(extract_only_boundary_cells=1,
-                                  extract_boundary_cells=1)
+        ex = tvtk.ExtractGeometry(
+            extract_only_boundary_cells=1, extract_boundary_cells=1)
         self.extract_geometry = ex
         self.geom_filter = tvtk.GeometryFilter()
 

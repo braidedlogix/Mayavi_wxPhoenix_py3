@@ -1,6 +1,7 @@
 from mayavi import mlab
 from pyface.api import GUI
 
+
 def close():
     """Close the scene."""
     f = mlab.gcf()
@@ -11,8 +12,10 @@ def close():
     # Hack: on Linux the splash screen does not go away so we force it.
     GUI.invoke_after(500, e.window.workbench.application.gui.stop_event_loop)
 
+
 def test_mlab_envisage():
     "Test if mlab runs correctly when the backend is set to 'envisage'."
+
     @mlab.show
     def f():
         from mayavi.preferences.api import preference_manager
@@ -22,6 +25,7 @@ def test_mlab_envisage():
         GUI.invoke_after(3000, close)
 
     f()
+
 
 if __name__ == '__main__':
     test_mlab_envisage()

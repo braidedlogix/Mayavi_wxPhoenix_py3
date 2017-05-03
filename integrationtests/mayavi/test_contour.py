@@ -40,8 +40,8 @@ class TestContour(TestCase):
 
         cp = mm.children[4]
         ip = cp.implicit_plane
-        assert abs(numpy.sum(ip.normal - (0,0,1))) < 1e-16
-        assert abs(numpy.sum(ip.origin - (0,0,5))) < 1e-16
+        assert abs(numpy.sum(ip.normal - (0, 0, 1))) < 1e-16
+        assert abs(numpy.sum(ip.origin - (0, 0, 5))) < 1e-16
         assert ip.widget.enabled == False
 
     def test(self):
@@ -95,8 +95,8 @@ class TestContour(TestCase):
         cp = ScalarCutPlane()
         script.add_module(cp)
         ip = cp.implicit_plane
-        ip.normal = 0,0,1
-        ip.origin = 0,0,5
+        ip.normal = 0, 0, 1
+        ip.origin = 0, 0, 5
         ip.widget.enabled = False
 
         # Set the scene to an isometric view.
@@ -131,15 +131,14 @@ class TestContour(TestCase):
         # Now check.
         self.check()
 
-
         ############################################################
         # Test if saving a visualization and restoring it works.
 
         # Save visualization.
         f = BytesIO()
-        f.name = abspath('test.mv2') # We simulate a file.
+        f.name = abspath('test.mv2')  # We simulate a file.
         script.save_visualization(f)
-        f.seek(0) # So we can read this saved data.
+        f.seek(0)  # So we can read this saved data.
 
         # Remove existing scene.
         engine = script.engine
@@ -227,8 +226,8 @@ class TestContour(TestCase):
         cp = ScalarCutPlane()
         script.add_module(cp)
         ip = cp.implicit_plane
-        ip.normal = 0,0,1
-        ip.origin = 0,0,5
+        ip.normal = 0, 0, 1
+        ip.origin = 0, 0, 5
         ip.widget.enabled = False
 
         # Set the scene to an isometric view.
@@ -239,6 +238,7 @@ class TestContour(TestCase):
         # Remove existing scene.
         engine = script.engine
         engine.close_scene(s)
+
 
 if __name__ == "__main__":
     t = TestContour()

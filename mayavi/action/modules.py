@@ -11,6 +11,7 @@ from mayavi.core.metadata import ModuleMetadata
 from mayavi.core.pipeline_info import PipelineInfo
 from mayavi.action.filters import FilterAction, new_class
 
+
 ######################################################################
 # `ModuleAction` class.
 ######################################################################
@@ -34,19 +35,18 @@ class ModuleAction(FilterAction):
 class AddModuleManager(ModuleAction):
     """ An action that adds a ModuleManager to the tree. """
 
-    tooltip       = "Add a ModuleManager to the current source/filter"
+    tooltip = "Add a ModuleManager to the current source/filter"
 
-    description   = "Add a ModuleManager to the current source/filter"
+    description = "Add a ModuleManager to the current source/filter"
 
-    metadata = ModuleMetadata(id="AddModuleManager",
-                class_name="mayavi.core.module_manager.ModuleManager",
-                menu_name="&Add ModuleManager",
-                tooltip="Add a ModuleManager to the current source/filter",
-                description="Add a ModuleManager to the current source/filter",
-                input_info = PipelineInfo(datasets=['any'],
-                                  attribute_types=['any'],
-                                  attributes=['any'])
-                )
+    metadata = ModuleMetadata(
+        id="AddModuleManager",
+        class_name="mayavi.core.module_manager.ModuleManager",
+        menu_name="&Add ModuleManager",
+        tooltip="Add a ModuleManager to the current source/filter",
+        description="Add a ModuleManager to the current source/filter",
+        input_info=PipelineInfo(
+            datasets=['any'], attribute_types=['any'], attributes=['any']))
 
     def perform(self, event):
         """ Performs the action. """
@@ -60,8 +60,10 @@ class AddModuleManager(ModuleAction):
 ######################################################################
 # Creating the module actions automatically.
 for module in registry.modules:
-    d = {'tooltip': module.tooltip,
-         'description': module.desc,
-         'metadata': module}
-    action = new_class(module.id, (ModuleAction,), d)
+    d = {
+        'tooltip': module.tooltip,
+        'description': module.desc,
+        'metadata': module
+    }
+    action = new_class(module.id, (ModuleAction, ), d)
     globals()[module.id] = action

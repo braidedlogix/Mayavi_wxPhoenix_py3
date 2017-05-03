@@ -52,8 +52,10 @@ class DataAttributes(HasTraits):
             self.name = data.name
             data_array, data_has_nan = self._get_np_arr(data)
             if data_has_nan:
-                self.range = [float(numpy.nanmin(data_array)),
-                              float(numpy.nanmax(data_array))]
+                self.range = [
+                    float(numpy.nanmin(data_array)),
+                    float(numpy.nanmax(data_array))
+                ]
             else:
                 self.range = list(data.range)
 
@@ -66,9 +68,10 @@ class DataAttributes(HasTraits):
             self.name = data.name
             data_array, data_has_nan = self._get_np_arr(data)
             if data_has_nan:
-                d_mag = numpy.sqrt((data_array*data_array).sum(axis=1))
-                self.range = [float(numpy.nanmin(d_mag)),
-                              float(numpy.nanmax(d_mag))]
+                d_mag = numpy.sqrt((data_array * data_array).sum(axis=1))
+                self.range = [
+                    float(numpy.nanmin(d_mag)), float(numpy.nanmax(d_mag))
+                ]
             else:
                 self.range = [0.0, data.max_norm]
 
@@ -84,6 +87,7 @@ class DataAttributes(HasTraits):
 
 # Constant for a ModuleManager class and it's View.
 LUT_DATA_MODE_TYPES = ['auto', 'point data', 'cell data']
+
 
 ######################################################################
 # `ModuleManager` class.
@@ -105,10 +109,10 @@ class ModuleManager(Base):
     # one available.  If set to 'point data' it uses the input point
     # data for the LUT and if set to 'cell data' it uses the input
     # cell data.
-    lut_data_mode = Trait('auto',
-                          TraitPrefixList(LUT_DATA_MODE_TYPES),
-                          desc='specify the data type used by the lookup tables',
-                          )
+    lut_data_mode = Trait(
+        'auto',
+        TraitPrefixList(LUT_DATA_MODE_TYPES),
+        desc='specify the data type used by the lookup tables', )
 
     # The scalar lookup table manager.
     scalar_lut_manager = Instance(LUTManager, args=(), record=True)
@@ -124,7 +128,6 @@ class ModuleManager(Base):
 
     # The human-readable type for this object
     type = Str(' colors and legends')
-
 
     # Information about what this object can consume.
     input_info = PipelineInfo(datasets=['any'])
@@ -163,7 +166,6 @@ class ModuleManager(Base):
             return
         self._setup_scalar_data()
         self._setup_vector_data()
-
 
     ######################################################################
     # `Base` interface
@@ -337,15 +339,14 @@ class ModuleManager(Base):
 
         data_attr.config_lut(self.vector_lut_manager)
 
-    def _visible_changed(self,value):
+    def _visible_changed(self, value):
         for c in self.children:
             c.visible = value
         self.scalar_lut_manager.visible = value
         self.vector_lut_manager.visible = value
 
-        super(ModuleManager,self)._visible_changed(value)
+        super(ModuleManager, self)._visible_changed(value)
 
     def _menu_helper_default(self):
         from mayavi.core.traits_menu import ModuleMenuHelper
         return ModuleMenuHelper(object=self)
-

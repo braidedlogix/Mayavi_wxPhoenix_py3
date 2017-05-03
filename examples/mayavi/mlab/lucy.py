@@ -17,8 +17,7 @@ if not os.path.exists('lucy.tar.gz'):
     except ImportError:
         from urllib.request import urlopen
     print("Downloading lucy model, Please Wait (307MB)")
-    opener = urlopen(
-            'http://graphics.stanford.edu/data/3Dscanrep/lucy.tar.gz')
+    opener = urlopen('http://graphics.stanford.edu/data/3Dscanrep/lucy.tar.gz')
     open('lucy.tar.gz', 'wb').write(opener.read())
 
 # Extract the data

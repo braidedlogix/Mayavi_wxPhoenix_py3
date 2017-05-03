@@ -23,6 +23,7 @@ from mayavi.preferences.mayavi_preferences_page import \
 from mayavi.preferences.preference_manager import \
     preference_manager
 
+
 ################################################################################
 # `PreferenceManagerView` class
 ################################################################################
@@ -42,11 +43,11 @@ class PreferenceManagerView(PreferencesManager):
 
     def _pages_default(self):
         return [
-                MayaviRootPreferencesPage(
-                    preferences=preference_manager.root.preferences),
-                MayaviMlabPreferencesPage(
-                    preferences=preference_manager.mlab.preferences),
-                ]
+            MayaviRootPreferencesPage(
+                preferences=preference_manager.root.preferences),
+            MayaviMlabPreferencesPage(
+                preferences=preference_manager.mlab.preferences),
+        ]
 
     def dialog_view(self):
         """ Poor-man's subclassing of view to overload size.
@@ -57,9 +58,9 @@ class PreferenceManagerView(PreferencesManager):
         view.title = 'Mayavi preferences'
         view.icon = self.icon
         ui = self.edit_traits(
-                view=view,
-                scrollable=True,
-                id='mayavi.preferences.preference_view')
+            view=view,
+            scrollable=True,
+            id='mayavi.preferences.preference_view')
         return ui
 
     def _get_root(self):
@@ -78,5 +79,3 @@ class PreferenceManagerView(PreferencesManager):
 
 
 preference_manager_view = PreferenceManagerView()
-
-

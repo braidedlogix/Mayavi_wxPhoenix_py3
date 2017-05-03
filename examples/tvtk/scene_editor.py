@@ -25,14 +25,15 @@ class ActorViewer(HasTraits):
     _current_actor = Any
 
     ######################
-    view = View(Item(name='actor_type'),
-                Item(name='scene',
-                     editor=SceneEditor(),
-                     show_label=False,
-                     resizable=True,
-                     height=500,
-                     width=500)
-                )
+    view = View(
+        Item(name='actor_type'),
+        Item(
+            name='scene',
+            editor=SceneEditor(),
+            show_label=False,
+            resizable=True,
+            height=500,
+            width=500))
 
     def __init__(self, **traits):
         super(ActorViewer, self).__init__(**traits)

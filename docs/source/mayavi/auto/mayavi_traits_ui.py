@@ -39,30 +39,31 @@ class Mayavi(HasTraits):
     # The current selection in the engine tree view.
     current_selection = Property
 
-
     ######################
-    view = View(HSplit(VSplit(Item(name='engine_view',
-                                   style='custom',
-                                   resizable=True,
-                                   show_label=False
-                                   ),
-                              Item(name='current_selection',
-                                   editor=InstanceEditor(),
-                                   enabled_when='current_selection is not None',
-                                   style='custom',
-                                   springy=True,
-                                   show_label=False),
-                                   ),
-                               Item(name='scene',
-                                    editor=SceneEditor(),
-                                    show_label=False,
-                                    resizable=True,
-                                    height=500,
-                                    width=500),
-                        ),
+    view = View(
+        HSplit(
+            VSplit(
+                Item(
+                    name='engine_view',
+                    style='custom',
+                    resizable=True,
+                    show_label=False),
+                Item(
+                    name='current_selection',
+                    editor=InstanceEditor(),
+                    enabled_when='current_selection is not None',
+                    style='custom',
+                    springy=True,
+                    show_label=False), ),
+            Item(
+                name='scene',
+                editor=SceneEditor(),
+                show_label=False,
                 resizable=True,
-                scrollable=True
-                )
+                height=500,
+                width=500), ),
+        resizable=True,
+        scrollable=True)
 
     def __init__(self, **traits):
         HasTraits.__init__(self, **traits)

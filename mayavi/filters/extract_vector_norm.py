@@ -10,6 +10,7 @@ from tvtk.api import tvtk
 from mayavi.filters.filter_base import FilterBase
 from mayavi.core.pipeline_info import PipelineInfo
 
+
 ######################################################################
 # `ExtractVectorNorm` class.
 ######################################################################
@@ -26,13 +27,11 @@ class ExtractVectorNorm(FilterBase):
     # The actual TVTK filter that this class manages.
     filter = Instance(tvtk.VectorNorm, args=(), allow_none=False, record=True)
 
-    input_info = PipelineInfo(datasets=['any'],
-                              attribute_types=['any'],
-                              attributes=['vectors'])
+    input_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['vectors'])
 
-    output_info = PipelineInfo(datasets=['any'],
-                               attribute_types=['any'],
-                               attributes=['any'])
+    output_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])
 
     ######################################################################
     # `Filter` interface.

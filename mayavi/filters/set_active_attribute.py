@@ -14,6 +14,7 @@ from mayavi.core.filter import Filter
 from mayavi.core.trait_defs import DEnum
 from mayavi.sources.vtk_xml_file_reader import get_all_attributes
 
+
 ################################################################################
 # `SetActiveAttribute` class.
 ################################################################################
@@ -30,13 +31,11 @@ class SetActiveAttribute(Filter):
     # The version of this class.  Used for persistence.
     __version__ = 0
 
-    input_info = PipelineInfo(datasets=['any'],
-                              attribute_types=['any'],
-                              attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])
 
-    output_info = PipelineInfo(datasets=['any'],
-                               attribute_types=['any'],
-                               attributes=['any'])
+    output_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])
 
     ########################################
     # Dynamic traits: These traits are dynamic and are automatically
@@ -46,34 +45,41 @@ class SetActiveAttribute(Filter):
     # the attribute is "deactivated".  This is useful when you have
     # both point and cell attributes and want to use cell data by
     # default.
-    point_scalars_name = DEnum(values_name='_point_scalars_list',
-                               desc='scalar point data attribute to use')
+    point_scalars_name = DEnum(
+        values_name='_point_scalars_list',
+        desc='scalar point data attribute to use')
     # The active point vector name.
-    point_vectors_name = DEnum(values_name='_point_vectors_list',
-                               desc='vectors point data attribute to use')
+    point_vectors_name = DEnum(
+        values_name='_point_vectors_list',
+        desc='vectors point data attribute to use')
     # The active point tensor name.
-    point_tensors_name = DEnum(values_name='_point_tensors_list',
-                               desc='tensor point data attribute to use')
+    point_tensors_name = DEnum(
+        values_name='_point_tensors_list',
+        desc='tensor point data attribute to use')
 
     # The active cell scalar name.
-    cell_scalars_name = DEnum(values_name='_cell_scalars_list',
-                               desc='scalar cell data attribute to use')
+    cell_scalars_name = DEnum(
+        values_name='_cell_scalars_list',
+        desc='scalar cell data attribute to use')
     # The active cell vector name.
-    cell_vectors_name = DEnum(values_name='_cell_vectors_list',
-                               desc='vectors cell data attribute to use')
+    cell_vectors_name = DEnum(
+        values_name='_cell_vectors_list',
+        desc='vectors cell data attribute to use')
     # The active cell tensor name.
-    cell_tensors_name = DEnum(values_name='_cell_tensors_list',
-                               desc='tensor cell data attribute to use')
+    cell_tensors_name = DEnum(
+        values_name='_cell_tensors_list',
+        desc='tensor cell data attribute to use')
     ########################################
 
     # Our view.
-    view = View(Group(Item(name='point_scalars_name'),
-                      Item(name='point_vectors_name'),
-                      Item(name='point_tensors_name'),
-                      Item(name='cell_scalars_name'),
-                      Item(name='cell_vectors_name'),
-                      Item(name='cell_tensors_name'),
-                      ))
+    view = View(
+        Group(
+            Item(name='point_scalars_name'),
+            Item(name='point_vectors_name'),
+            Item(name='point_tensors_name'),
+            Item(name='cell_scalars_name'),
+            Item(name='cell_vectors_name'),
+            Item(name='cell_tensors_name'), ))
 
     ########################################
     # Private traits.
@@ -91,8 +97,8 @@ class SetActiveAttribute(Filter):
     # object and will ensure that the pipeline is properly taken care
     # of.  Directly setting the array in the VTK object will not do
     # this.
-    _assign_attribute = Instance(tvtk.AssignAttribute, args=(),
-                                 allow_none=False)
+    _assign_attribute = Instance(
+        tvtk.AssignAttribute, args=(), allow_none=False)
 
     # Toggles if this is the first time this object has been used.
     _first = Bool(True)
@@ -107,9 +113,8 @@ class SetActiveAttribute(Filter):
         # Pickle the 'point_scalars_name' etc. since these are
         # properties and not in __dict__.
         attr = {}
-        for name in ('point_scalars', 'point_vectors',
-                     'point_tensors', 'cell_scalars',
-                     'cell_vectors', 'cell_tensors'):
+        for name in ('point_scalars', 'point_vectors', 'point_tensors',
+                     'cell_scalars', 'cell_vectors', 'cell_tensors'):
             d.pop('_' + name + '_list', None)
             d.pop('_' + name + '_name', None)
             x = name + '_name'
@@ -147,9 +152,8 @@ class SetActiveAttribute(Filter):
         if self._first and is_old_pipeline():
             # Force all attributes to be defined and computed
             input.update()
-        pnt_attr, cell_attr = get_all_attributes(
-            self.inputs[0].get_output_dataset()
-        )
+        pnt_attr, cell_attr = get_all_attributes(self.inputs[0]
+                                                 .get_output_dataset())
 
         self._setup_data_traits(cell_attr, 'cell')
         self._setup_data_traits(pnt_attr, 'point')
@@ -164,21 +168,22 @@ class SetActiveAttribute(Filter):
         attrs = ['scalars', 'vectors', 'tensors']
         aa = self._assign_attribute
         input = self.inputs[0].get_output_dataset()
-        data = getattr(input, '%s_data'%d_type)
+        data = getattr(input, '%s_data' % d_type)
         for attr in attrs:
             values = attributes[attr]
             values.append('')
-            setattr(self, '_%s_%s_list'%(d_type, attr), values)
+            setattr(self, '_%s_%s_list' % (d_type, attr), values)
             if len(values) > 1:
-                default = getattr(self, '%s_%s_name'%(d_type, attr))
+                default = getattr(self, '%s_%s_name' % (d_type, attr))
                 if self._first and len(default) == 0:
                     default = values[0]
-                getattr(data, 'set_active_%s'%attr)(default)
-                aa.assign(default, attr.upper(),
-                          d_type.upper() +'_DATA')
+                getattr(data, 'set_active_%s' % attr)(default)
+                aa.assign(default, attr.upper(), d_type.upper() + '_DATA')
                 aa.update()
-                kw = {'%s_%s_name'%(d_type, attr): default,
-                      'trait_change_notify': False}
+                kw = {
+                    '%s_%s_name' % (d_type, attr): default,
+                    'trait_change_notify': False
+                }
                 self.set(**kw)
 
     def _set_data_name(self, data_type, attr_type, value):
@@ -189,7 +194,7 @@ class SetActiveAttribute(Filter):
         if len(value) == 0:
             # If the value is empty then we deactivate that attribute.
             d = getattr(input, attr_type + '_data')
-            method = getattr(d, 'set_active_%s'%data_type)
+            method = getattr(d, 'set_active_%s' % data_type)
             method(None)
             self.data_changed = True
             return
@@ -201,9 +206,9 @@ class SetActiveAttribute(Filter):
         elif attr_type == 'cell':
             data = input.cell_data
 
-        method = getattr(data, 'set_active_%s'%data_type)
+        method = getattr(data, 'set_active_%s' % data_type)
         method(value)
-        aa.assign(value, data_type.upper(), attr_type.upper() +'_DATA')
+        aa.assign(value, data_type.upper(), attr_type.upper() + '_DATA')
         aa.update()
         # Fire an event, so the changes propagate.
         self.data_changed = True

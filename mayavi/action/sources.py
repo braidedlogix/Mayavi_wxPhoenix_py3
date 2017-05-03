@@ -21,6 +21,7 @@ from mayavi.core.registry import registry
 
 from .filters import new_class
 
+
 ######################################################################
 # Utility functions
 ######################################################################
@@ -42,11 +43,11 @@ class OpenFile(Action):
     """ An action that opens a data file depending on the supported
     extensions.  """
 
-    tooltip       = "Open a supported data file"
+    tooltip = "Open a supported data file"
 
-    description   = "Open any supported data file"
+    description = "Open any supported data file"
 
-    path        =  Str("MenuBar/File/LoadDataMenu")
+    path = Str("MenuBar/File/LoadDataMenu")
 
     ###########################################################################
     # 'Action' interface.
@@ -64,18 +65,19 @@ class OpenFile(Action):
             if len(src.extensions) > 0:
                 if wildcard.endswith('|') or \
                    src.wildcard.startswith('|'):
-                       wildcard += src.wildcard
+                    wildcard += src.wildcard
                 else:
                     wildcard += '|' + src.wildcard
 
         parent = self.window.control
-        dialog = FileDialog(parent=parent,
-                            title='Open supported data file',
-                            action='open', wildcard=wildcard
-                            )
+        dialog = FileDialog(
+            parent=parent,
+            title='Open supported data file',
+            action='open',
+            wildcard=wildcard)
         if dialog.open() == OK:
             if not isfile(dialog.path):
-                error("File '%s' does not exist!"%dialog.path, parent)
+                error("File '%s' does not exist!" % dialog.path, parent)
                 return
             # FIXME: Ask for user input if a filetype is unknown and
             # choose appropriate reader.
@@ -107,9 +109,6 @@ class SourceAction(Action):
 # Creating the source actions automatically.
 for src in registry.sources:
     if len(src.extensions) == 0:
-        d = {'tooltip': src.tooltip,
-             'description': src.desc,
-             'metadata': src}
-        action = new_class(src.id, (SourceAction,), d)
+        d = {'tooltip': src.tooltip, 'description': src.desc, 'metadata': src}
+        action = new_class(src.id, (SourceAction, ), d)
         globals()[src.id] = action
-

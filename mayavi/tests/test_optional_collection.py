@@ -21,8 +21,8 @@ from mayavi.sources.vtk_data_source import VTKDataSource
 
 from mayavi.tests import datasets
 
-class TestOptionalCollection(unittest.TestCase):
 
+class TestOptionalCollection(unittest.TestCase):
     def setUp(self):
         """Initial setting up of test fixture, automatically called by TestCase before any other test method is invoked"""
         e = NullEngine()
@@ -30,10 +30,10 @@ class TestOptionalCollection(unittest.TestCase):
         #e = Engine()
         e.start()
         e.new_scene()
-        self.e=e
+        self.e = e
 
-        sgrid=datasets.generateStructuredGrid()
-        src = VTKDataSource(data = sgrid)
+        sgrid = datasets.generateStructuredGrid()
+        src = VTKDataSource(data=sgrid)
         e.add_source(src)
 
         c = Contour()
@@ -53,7 +53,7 @@ class TestOptionalCollection(unittest.TestCase):
         self.e.stop()
         return
 
-    def check(self,coll):
+    def check(self, coll):
         """Do the actual testing."""
         scene = self.scene
         """Check if test status is OK given the collection."""
@@ -63,21 +63,21 @@ class TestOptionalCollection(unittest.TestCase):
 
         r = coll.get_output_dataset().point_data.scalars.range
 
-        self.assertEqual(np.allclose(r, (6.09,6.09), atol=1.01e-03), True)
+        self.assertEqual(np.allclose(r, (6.09, 6.09), atol=1.01e-03), True)
         # Adding a contour should create the appropriate output in
         # the collection.
         c.contours.append(200)
-        self.assertEqual(np.allclose(r, [6.09,6.09], atol=1.01e-03), True)
+        self.assertEqual(np.allclose(r, [6.09, 6.09], atol=1.01e-03), True)
         # the collection's output should be that of the normals.
-        self.assertEqual(coll.outputs[0] is n.outputs[0],True)
+        self.assertEqual(coll.outputs[0] is n.outputs[0], True)
         # disable the optional filter and check.
         o.enabled = False
-        self.assertEqual('disabled' in o.name,True)
-        self.assertEqual(coll.outputs[0] is c.outputs[0],True)
+        self.assertEqual('disabled' in o.name, True)
+        self.assertEqual(coll.outputs[0] is c.outputs[0], True)
         # Set back everything to original state.
         c.contours.pop()
         o.enabled = True
-        self.assertEqual(np.allclose(r, (6.09,6.09), atol=1.01e-03), True)
+        self.assertEqual(np.allclose(r, (6.09, 6.09), atol=1.01e-03), True)
         self.assertEqual(coll.outputs[0] is n.outputs[0], True)
         self.assertEqual('disabled' not in o.name, True)
 
@@ -97,9 +97,9 @@ class TestOptionalCollection(unittest.TestCase):
 
         # Save visualization.
         f = BytesIO()
-        f.name = abspath('test.mv2') # We simulate a file.
+        f.name = abspath('test.mv2')  # We simulate a file.
         engine.save_visualization(f)
-        f.seek(0) # So we can read this saved data.
+        f.seek(0)  # So we can read this saved data.
 
         # Remove existing scene.
 
@@ -112,14 +112,13 @@ class TestOptionalCollection(unittest.TestCase):
 
         self.check(coll)
 
-
     def test_deepcopied(self):
         """Test if the MayaVi2 visualization can be deep-copied."""
         ############################################################
         # Test if the MayaVi2 visualization can be deep-copied.
 
         # Pop the source object.
-        s =  self.scene
+        s = self.scene
         source = s.children.pop()
         # Add it back to see if that works without error.
         s.children.append(source)
@@ -137,7 +136,6 @@ class TestOptionalCollection(unittest.TestCase):
         self.check(coll)
         #from mayavi.tools.show import show
         #show()
-
 
 
 if __name__ == '__main__':

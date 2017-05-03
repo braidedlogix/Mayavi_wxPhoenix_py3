@@ -21,6 +21,7 @@ from mayavi.core.api import Engine
 from mayavi.core.ui.api import MayaviScene, MlabSceneModel, \
             SceneEditor
 
+
 ################################################################################
 class MyApp(HasTraits):
 
@@ -57,15 +58,21 @@ class MyApp(HasTraits):
         self.scene2.mlab.test_mesh()
 
     # The layout of the view
-    view = View(Group(Item('scene1',
-                        editor=SceneEditor(scene_class=MayaviScene),
-                        width=480, height=480)),
-                Group(Item('scene2',
-                        editor=SceneEditor(scene_class=MayaviScene),
-                        width=480, height=480)),
-                resizable=True)
+    view = View(
+        Group(
+            Item(
+                'scene1',
+                editor=SceneEditor(scene_class=MayaviScene),
+                width=480,
+                height=480)),
+        Group(
+            Item(
+                'scene2',
+                editor=SceneEditor(scene_class=MayaviScene),
+                width=480,
+                height=480)),
+        resizable=True)
 
 
 if __name__ == '__main__':
     MyApp().configure_traits()
-

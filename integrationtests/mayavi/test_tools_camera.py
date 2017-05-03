@@ -15,8 +15,7 @@ from common import TestCase
 
 @contextmanager
 def check_attrs_change(test_case, obj, attrs):
-    old_attrs = {attr: array(getattr(obj, attr))
-                 for attr in attrs}
+    old_attrs = {attr: array(getattr(obj, attr)) for attr in attrs}
 
     try:
         yield
@@ -36,8 +35,7 @@ def check_attrs_change(test_case, obj, attrs):
 
 @contextmanager
 def check_attrs_do_not_change(test_case, obj, attrs):
-    old_attrs = {attr: array(getattr(obj, attr))
-                 for attr in attrs}
+    old_attrs = {attr: array(getattr(obj, attr)) for attr in attrs}
 
     try:
         yield
@@ -50,17 +48,15 @@ def check_attrs_do_not_change(test_case, obj, attrs):
             if any((new_value - old_value) > 1.e-5):
                 changed.append((attr, old_value, new_value))
 
-        msg = ("'{0}' changed: \n"
-               "old value: {1}  New value: {2}")
+        msg = ("'{0}' changed: \n" "old value: {1}  New value: {2}")
 
         if changed:
-            all_messages = "\n".join([msg.format(attr, old, new)
-                                      for attr, old, new in changed])
+            all_messages = "\n".join(
+                [msg.format(attr, old, new) for attr, old, new in changed])
             test_case.fail(all_messages)
 
 
 class TestCameraUnitTest(unittest.TestCase):
-
     def setUp(self, figure=None):
         self.engine = mlab.get_engine()
         fig = mlab.figure()
@@ -93,7 +89,6 @@ class TestCameraUnitTest(unittest.TestCase):
 
 
 class TestCamera(TestCase):
-
     def test(self):
         self.main()
 

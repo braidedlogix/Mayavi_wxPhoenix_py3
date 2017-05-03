@@ -20,6 +20,7 @@ class Comment(object):
     """ A comment block.
     """
     is_comment = True
+
     def __init__(self, start_lineno, end_lineno, text):
         # int : The first line number in the block. 1-indexed.
         self.start_lineno = start_lineno
@@ -37,13 +38,14 @@ class Comment(object):
 
     def __repr__(self):
         return '%s(%r, %r, %r)' % (self.__class__.__name__, self.start_lineno,
-            self.end_lineno, self.text)
+                                   self.end_lineno, self.text)
 
 
 class NonComment(object):
     """ A non-comment block of code.
     """
     is_comment = False
+
     def __init__(self, start_lineno, end_lineno):
         self.start_lineno = start_lineno
         self.end_lineno = end_lineno
@@ -58,12 +60,13 @@ class NonComment(object):
 
     def __repr__(self):
         return '%s(%r, %r)' % (self.__class__.__name__, self.start_lineno,
-            self.end_lineno)
+                               self.end_lineno)
 
 
 class CommentBlocker(object):
     """ Pull out contiguous comment blocks.
     """
+
     def __init__(self):
         # Start with a dummy.
         self.current_block = NonComment(0, 0)
@@ -181,6 +184,8 @@ def get_class_traits(klass):
         rhs = unparse(node.value)
 
         # Comment
-        doc = strip_comment_marker(cb.search_for_comment(node.lineno, default=''))
+        doc = strip_comment_marker(
+            cb.search_for_comment(
+                node.lineno, default=''))
 
         yield name, rhs, doc

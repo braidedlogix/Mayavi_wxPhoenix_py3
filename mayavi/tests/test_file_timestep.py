@@ -16,7 +16,7 @@ def make_mock_scene():
     """Mocks a scene suitable for testing the movie generation.
     """
     s = mock.Mock(spec=TVTKScene)
-    s.foreground = (1,0,0)
+    s.foreground = (1, 0, 0)
     s.off_screen_rendering = True
     mm = mock.MagicMock(spec=MovieMaker)
     s.movie_maker = mm
@@ -119,11 +119,13 @@ class TestFileDataSourceTimestep(unittest.TestCase):
         e.add_module(o)
 
         values = []
+
         def callback(new):
             values.append(new)
             # Shut off so only one loop is done.
             if new == 0:
                 r.loop = False
+
         r.on_trait_change(callback, 'timestep')
 
         # When

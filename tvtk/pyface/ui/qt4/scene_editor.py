@@ -18,6 +18,7 @@ from traitsui.basic_editor_factory import BasicEditorFactory
 
 from .decorated_scene import DecoratedScene
 
+
 #####################################################################
 # `_SceneEditor` class
 #####################################################################
@@ -30,7 +31,6 @@ class _SceneEditor(Editor):
 
     # Internal GUI traits.
     _scene = Any()
-
 
     #### Public 'Editor' interface #############################################
 
@@ -57,7 +57,6 @@ class _SceneEditor(Editor):
         # Everything should really be handled elsewhere in trait notifications.
         # Just pass here.
         pass
-
 
     def dispose(self):
         """ Disposes of the contents of an editor.
@@ -111,12 +110,12 @@ class _SceneEditor(Editor):
         scene widget.
         """
 
-        traits_to_sync = ['foreground', 'anti_aliasing_frames',
-                          'stereo',  'background', 'off_screen_rendering',
-                          'polygon_smoothing', 'jpeg_progressive',
-                          'point_smoothing', 'busy', 'disable_render',
-                          'magnification', 'jpeg_quality',
-                          'parallel_projection', 'line_smoothing']
+        traits_to_sync = [
+            'foreground', 'anti_aliasing_frames', 'stereo', 'background',
+            'off_screen_rendering', 'polygon_smoothing', 'jpeg_progressive',
+            'point_smoothing', 'busy', 'disable_render', 'magnification',
+            'jpeg_quality', 'parallel_projection', 'line_smoothing'
+        ]
 
         model = self.value
         scene = self._scene
@@ -128,29 +127,24 @@ class _SceneEditor(Editor):
         model.on_trait_change(
             scene.render,
             name='do_render',
-            remove=remove,
-        )
+            remove=remove, )
         model.on_trait_change(
             self._actors_changed,
             name='actor_map_items',
-            remove=remove,
-        )
+            remove=remove, )
         model.on_trait_change(
             self._actor_map_changed,
             name='actor_map',
-            remove=remove,
-        )
+            remove=remove, )
 
         model.on_trait_change(
             self._actor_list_items_changed,
             name='actor_list_items',
-            remove=remove,
-        )
+            remove=remove, )
         model.on_trait_change(
             self._actor_list_changed,
             name='actor_list',
-            remove=remove,
-        )
+            remove=remove, )
 
     def _actors_changed(self, event):
         """ Handle the event of the actors in the actor map changing.
@@ -222,7 +216,8 @@ class _SceneEditor(Editor):
         actors = []
         widgets = []
         for actor in actors_widgets:
-            if actor.is_a('vtk3DWidget') or actor.is_a('vtkInteractorObserver'):
+            if actor.is_a('vtk3DWidget') or actor.is_a(
+                    'vtkInteractorObserver'):
                 widgets.append(actor)
             else:
                 actors.append(actor)
@@ -257,5 +252,6 @@ class SceneEditor(BasicEditorFactory):
 
     # The class or factory function for creating the actual scene object.
     scene_class = Callable(DecoratedScene)
+
 
 #### EOF #######################################################################

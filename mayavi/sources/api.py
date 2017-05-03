@@ -5,7 +5,6 @@
 # Copyright (c) 2007-2015, Enthought, Inc.
 # License: BSD Style.
 
-
 from .array_source import ArraySource
 from .builtin_image import BuiltinImage
 from .builtin_surface import BuiltinSurface

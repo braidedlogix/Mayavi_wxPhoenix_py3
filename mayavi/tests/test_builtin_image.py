@@ -17,15 +17,15 @@ from mayavi.sources.builtin_image import BuiltinImage
 from mayavi.modules.surface import Surface
 from mayavi.modules.outline import Outline
 
-class TestBuiltinImageSource(unittest.TestCase):
 
+class TestBuiltinImageSource(unittest.TestCase):
     def setUp(self):
 
         e = NullEngine()
         # Uncomment to see visualization for debugging etc.
         #e = Engine()
         e.start()
-        s=e.new_scene()
+        s = e.new_scene()
 
         image_data = BuiltinImage()
         e.add_source(image_data)
@@ -36,15 +36,15 @@ class TestBuiltinImageSource(unittest.TestCase):
         surface = Surface()
         e.add_module(surface)
 
-        image_data.data_source.radius = array([ 80.,  80.,  80.])
-        image_data.data_source.center = array([ 150.,  150.,    0.])
-        image_data.data_source.whole_extent = array([ 10, 245,  10, 245,   0,   0])
+        image_data.data_source.radius = array([80., 80., 80.])
+        image_data.data_source.center = array([150., 150., 0.])
+        image_data.data_source.whole_extent = array([10, 245, 10, 245, 0, 0])
         if is_old_pipeline():
             image_data.data_source.update_whole_extent()
         else:
             image_data.data_source.set_update_extent_to_whole_extent()
 
-        self.e=e
+        self.e = e
         self.scene = e.current_scene
 
         return
@@ -56,10 +56,14 @@ class TestBuiltinImageSource(unittest.TestCase):
     def test_data_source(self):
         s = self.scene
         src = s.children[0]
-        self.assertEqual(src.source,'ellipsoid')
-        self.assertEqual(numpy.allclose(src.data_source.center,(150., 150., 0.)),True)
-        self.assertEqual(numpy.allclose(src.data_source.radius,(80., 80., 80.)),True)
-        self.assertEqual(numpy.allclose(src.data_source.whole_extent,(10, 245,  10, 245,   0,   0)),True)
+        self.assertEqual(src.source, 'ellipsoid')
+        self.assertEqual(
+            numpy.allclose(src.data_source.center, (150., 150., 0.)), True)
+        self.assertEqual(
+            numpy.allclose(src.data_source.radius, (80., 80., 80.)), True)
+        self.assertEqual(
+            numpy.allclose(src.data_source.whole_extent,
+                           (10, 245, 10, 245, 0, 0)), True)
 
     def check(self):
         s = self.scene
@@ -69,14 +73,17 @@ class TestBuiltinImageSource(unittest.TestCase):
 
         # Check with the default properties of gaussian image to verify
         # that the source has actually changed
-        self.assertEqual(src.source,'gaussian')
-        self.assertEqual(numpy.allclose(src.data_source.center,(0., 0., 0.)),True)
-        self.assertEqual(src.data_source.maximum,2.0)
-        self.assertEqual(src.data_source.standard_deviation,15)
+        self.assertEqual(src.source, 'gaussian')
+        self.assertEqual(
+            numpy.allclose(src.data_source.center, (0., 0., 0.)), True)
+        self.assertEqual(src.data_source.maximum, 2.0)
+        self.assertEqual(src.data_source.standard_deviation, 15)
 
         # Check the scalar ranges
         sc = src.outputs[0].point_data.scalars
-        self.assertEqual(numpy.allclose(sc.range, (0, 2.0), atol=1.01e-03), True)
+        self.assertEqual(
+            numpy.allclose(
+                sc.range, (0, 2.0), atol=1.01e-03), True)
 
     def test_change(self):
         s = self.scene
@@ -86,13 +93,18 @@ class TestBuiltinImageSource(unittest.TestCase):
 
         # Check with the default properties of gaussian image to verify
         # that the source has actually changed
-        self.assertEqual(src.source,'gaussian')
-        self.assertEqual(numpy.allclose(src.data_source.center,(0., 0., 0.)),True)
-        self.assertEqual(src.data_source.maximum,1.0)
-        self.assertEqual(src.data_source.standard_deviation,100)
+        self.assertEqual(src.source, 'gaussian')
+        self.assertEqual(
+            numpy.allclose(src.data_source.center, (0., 0., 0.)), True)
+        self.assertEqual(src.data_source.maximum, 1.0)
+        self.assertEqual(src.data_source.standard_deviation, 100)
 
         #Check the scalar ranges
-        self.assertEqual(numpy.allclose(src.outputs[0].point_data.scalars.range,(0.00149, 1.0),atol=1.01e-03),True)
+        self.assertEqual(
+            numpy.allclose(
+                src.outputs[0].point_data.scalars.range, (0.00149, 1.0),
+                atol=1.01e-03),
+            True)
 
         src.data_source.maximum = 2.0
         src.data_source.standard_deviation = 15
@@ -111,9 +123,9 @@ class TestBuiltinImageSource(unittest.TestCase):
 
         # Save visualization.
         f = BytesIO()
-        f.name = abspath('test.mv2') # We simulate a file.
+        f.name = abspath('test.mv2')  # We simulate a file.
         engine.save_visualization(f)
-        f.seek(0) # So we can read this saved data.
+        f.seek(0)  # So we can read this saved data.
 
         # Remove existing scene.
         engine.close_scene(scene)

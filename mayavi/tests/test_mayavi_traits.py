@@ -7,32 +7,37 @@ Tests for traits defined in mayavi.core.traits
 
 import unittest
 import numpy
-from traits.api import (HasTraits, Either, Array, Any,
-                TraitError, Float, Int)
+from traits.api import (HasTraits, Either, Array, Any, TraitError, Float, Int)
 from mayavi.core.trait_defs import (ArrayNumberOrNone, ArrayOrNone,
-    ShadowProperty)
+                                    ShadowProperty)
 
 
 class DataNotSmart(HasTraits):
     x = ShadowProperty(ArrayOrNone, smart_notify=False)
     # Test attribute.
     _test = Any
+
     def _x_changed(self, value):
         self._test = value.copy()
+
 
 class DataSmart(HasTraits):
     x = ShadowProperty(ArrayOrNone, smart_notify=True)
     # Test attribute.
     _test = Any
+
     def _x_changed(self, value):
         self._test = value.copy()
+
 
 class Simple(HasTraits):
     x = ShadowProperty(Float)
     # Test attribute.
     _test = Int(0)
+
     def _x_changed(self, value):
         self._test += 1
+
 
 class HasArrays(HasTraits):
     x = ArrayOrNone
@@ -114,7 +119,6 @@ class TestShadowProperty(unittest.TestCase):
 
 
 class TestArrayOrNone(unittest.TestCase):
-
     def test_default(self):
         a = HasArrays()
         self.assertIsNone(a.x)
@@ -134,7 +138,7 @@ class TestArrayOrNone(unittest.TestCase):
         a.y = numpy.arange(10)
         self.assertEqual(a._test_y, 1)
         a.y = 1.0
-        self.assertEqual(a.y.shape, (1,))
+        self.assertEqual(a.y.shape, (1, ))
         self.assertEqual(a._test_y, 2)
         a.y = a.y
         self.assertEqual(a._test_y, 3)
@@ -144,4 +148,3 @@ class TestArrayOrNone(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

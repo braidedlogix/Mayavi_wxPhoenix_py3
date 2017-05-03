@@ -18,8 +18,7 @@ def dedent(text):
     """
     text_lines = [line.rstrip() for line in text.split("\n")]
     if len(text_lines) > 0:
-        return text_lines[0] + "\n" + old_dedent(
-                                            "\n".join(text_lines[1:]))
+        return text_lines[0] + "\n" + old_dedent("\n".join(text_lines[1:]))
     else:
         return text
 
@@ -64,7 +63,7 @@ def format_argument(trait_name, trait_obj):
         handler = trait_obj.handler
         if handler is not None:
             if (not hasattr(handler, 'aType') or
-                        not handler.aType in (int, float)):
+                    not handler.aType in (int, float)):
                 # These types are simple enough
                 arg_desc += ' Must be %s.' % handler.info()
         default = trait_obj.default_value()[1]

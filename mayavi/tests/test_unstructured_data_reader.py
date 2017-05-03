@@ -15,10 +15,9 @@ from mayavi.tests.common import get_example_data
 
 old_pipeline = is_old_pipeline()
 
+
 class TestAVSUCDReader(DataReaderTestBase):
-
     def setup_reader(self):
-
         """"Setup the reader in here.  This is called after the engine
         has been created and started.  The engine is available as
         self.e.  This method is called by setUp().
@@ -27,7 +26,7 @@ class TestAVSUCDReader(DataReaderTestBase):
         r = UnstructuredGridReader()
         r.initialize(get_example_data('cellsnd.ascii.inp'))
         self.e.add_source(r)
-        self.bounds =(-2.0, 2.0, -2.0, 2.0, 0.0, 0.0)
+        self.bounds = (-2.0, 2.0, -2.0, 2.0, 0.0, 0.0)
 
     def test_avsucd_data_reader(self):
         "Test if the test fixture works"
@@ -47,12 +46,11 @@ class TestAVSUCDReader(DataReaderTestBase):
 
         self.check_deepcopying(self.scene, self.bounds)
 
+
 @unittest.skipIf(not old_pipeline,
-                    "ExodusReader is not supported VTK 6.0 onwards.")
+                 "ExodusReader is not supported VTK 6.0 onwards.")
 class TestExodusReader(DataReaderTestBase):
-
     def setup_reader(self):
-
         """"Setup the reader in here.  This is called after the engine
         has been created and started.  The engine is available as
         self.e.  This method is called by setUp().
@@ -61,7 +59,7 @@ class TestExodusReader(DataReaderTestBase):
         r = UnstructuredGridReader()
         r.initialize(get_example_data('edgeFaceElem.exii'))
         self.e.add_source(r)
-        self.bounds =(-3.0, 3.0, -3.0, 3.0, -3.0, 3.0)
+        self.bounds = (-3.0, 3.0, -3.0, 3.0, -3.0, 3.0)
 
     def test_exodus_data_reader(self):
         "Test if the test fixture works"
@@ -81,13 +79,12 @@ class TestExodusReader(DataReaderTestBase):
 
         self.check_deepcopying(self.scene, self.bounds)
 
+
 #TODO: Update the ExodusIIReader test for scenarios as for the other readers
 #in this module.
 @unittest.skip("ExodusIIReader support is disabled for now.")
 class TestExodusIIReader(DataReaderTestBase):
-
     def setup_reader(self):
-
         """"Setup the reader in here.  This is called after the engine
         has been created and started.  The engine is available as
         self.e.  This method is called by setUp().
@@ -105,10 +102,9 @@ class TestExodusIIReader(DataReaderTestBase):
         self.assertEqual(u_grid.point_data.number_of_tuples, 8499)
         self.assertEqual(u_grid.cell_data.number_of_tuples, 7472)
 
+
 class TestGambitReader(DataReaderTestBase):
-
     def setup_reader(self):
-
         """"Setup the reader in here.  This is called after the engine
         has been created and started.  The engine is available as
         self.e.  This method is called by setUp().
@@ -136,6 +132,7 @@ class TestGambitReader(DataReaderTestBase):
         # Test if the MayaVi2 visualization can be deep-copied.
 
         self.check_deepcopying(self.scene, self.bounds)
+
 
 if __name__ == '__main__':
     unittest.main()

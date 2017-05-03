@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """ Illustrates the Glyph3D class and some basic texturing of the
 glyph.  Notice how easy it is to create a simple PolyData object as
 the input of the Glyph using Python lists.
@@ -24,14 +23,14 @@ cs = tvtk.CubeSource(x_length=2, y_length=1.0, z_length=0.5)
 
 # Create input for the glyph -- the sources are placed at these input
 # points.
-pts = [[1,1,1],[0,0,0], [-1,-1,-1]]
-pd = tvtk.PolyData(points=pts, polys=[[0],[1],[2]])
+pts = [[1, 1, 1], [0, 0, 0], [-1, -1, -1]]
+pd = tvtk.PolyData(points=pts, polys=[[0], [1], [2]])
 # Orientation/scaling is as per the vector attribute.
-vecs = [[1,0,0], [0,1,0], [0,0,1]]
+vecs = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
 pd.point_data.vectors = vecs
 
 # Create the glyph3d and set up the pipeline.
-g = tvtk.Glyph3D(scale_mode='data_scaling_off', vector_mode = 'use_vector')
+g = tvtk.Glyph3D(scale_mode='data_scaling_off', vector_mode='use_vector')
 configure_input_data(g, pd)
 
 # Note that VTK's vtkGlyph.SetSource is special because it has two
@@ -53,7 +52,7 @@ a = tvtk.Actor(mapper=m)
 # you don't like this image, replace with your favorite -- any image
 # will do (you must use a suitable reader though).
 img = tvtk.JPEGReader(file_name='images/masonry.jpg')
-t = tvtk.Texture(interpolate = 1)
+t = tvtk.Texture(interpolate=1)
 if is_old_pipeline():
     t.input = img.output
 else:

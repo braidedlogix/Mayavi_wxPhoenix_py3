@@ -50,13 +50,11 @@ shows how disconnection works.
 # Copyright (c) 2004-2007, Enthought, Inc.
 # License: BSD Style.
 
-__all__ = ['Messenger', 'MessengerError',
-           'connect', 'disconnect', 'send']
+__all__ = ['Messenger', 'MessengerError', 'connect', 'disconnect', 'send']
 
 import types
 import sys
 import weakref
-
 
 #################################################################
 # This code makes the module reload-safe.
@@ -71,22 +69,21 @@ for name in ['messenger', 'tvtk.messenger']:
         del mod
         break
 
-
 #################################################################
 # `MessengerError` class for exceptions raised by Messenger.
 #################################################################
 
+
 class MessengerError(Exception):
     pass
-
 
 
 #################################################################
 # `Messenger` class.
 #################################################################
 
-class Messenger:
 
+class Messenger:
     """Implements a messenger class which deals with something like
     signals and slots.  Basically, an object can register a signal
     that it plans to emit.  Any other object can decide to handle that
@@ -244,14 +241,15 @@ class Messenger:
                 slots = sigs[evt]
                 for key in list(slots.keys()):
                     obj, meth = slots[key]
-                    if obj: # instance method
+                    if obj:  # instance method
                         inst = obj()
                         if inst:
-                            getattr(inst, meth)(source, event, *args, **kw_args)
+                            getattr(inst, meth)(source, event, *args, **
+                                                kw_args)
                         else:
                             # Oops, dead reference.
                             del slots[key]
-                    else: # normal function
+                    else:  # normal function
                         meth(source, event, *args, **kw_args)
 
     def is_registered(self, obj):
@@ -298,16 +296,25 @@ class Messenger:
 
 _messenger = Messenger()
 
+
 def connect(obj, event, callback):
     _messenger.connect(obj, event, callback)
+
+
 connect.__doc__ = _messenger.connect.__doc__
+
 
 def disconnect(obj, event=None, callback=None, obj_is_hash=False):
     _messenger.disconnect(obj, event, callback)
+
+
 disconnect.__doc__ = _messenger.disconnect.__doc__
+
 
 def send(obj, event, *args, **kw_args):
     _messenger.send(obj, event, *args, **kw_args)
+
+
 send.__doc__ = _messenger.send.__doc__
 
 del _saved

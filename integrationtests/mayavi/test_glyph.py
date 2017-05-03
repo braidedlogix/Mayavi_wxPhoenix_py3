@@ -22,12 +22,12 @@ class TestGlyph(TestCase):
         """Trivial data -- creates an elementatry scalar field and a
         constant vector field along the 'x' axis."""
         s = numpy.arange(0.0, 10.0, 0.01)
-        s = numpy.reshape(s, (10,10,10))
+        s = numpy.reshape(s, (10, 10, 10))
         s = numpy.transpose(s)
 
         v = numpy.zeros(3000, 'd')
         v[1::3] = 1.0
-        v = numpy.reshape(v, (10,10,10,3))
+        v = numpy.reshape(v, (10, 10, 10, 3))
         return s, v
 
     def set_view(self, s):
@@ -54,14 +54,14 @@ class TestGlyph(TestCase):
         gs = glyph.glyph_source
         assert gs.glyph_position == 'tail'
         assert gs.glyph_source == gs.glyph_list[1]
-        assert numpy.allclose(v.implicit_plane.normal,  (0., 1., 0.))
+        assert numpy.allclose(v.implicit_plane.normal, (0., 1., 0.))
 
         v = src.children[0].children[3]
         glyph = v.glyph
         gs = glyph.glyph_source
         assert gs.glyph_source == gs.glyph_list[2]
         assert gs.glyph_position == 'head'
-        assert numpy.allclose(v.implicit_plane.normal,  (0., 1., 0.))
+        assert numpy.allclose(v.implicit_plane.normal, (0., 1., 0.))
 
     def test(self):
         self.main()
@@ -146,9 +146,9 @@ class TestGlyph(TestCase):
 
         # Save visualization.
         f = BytesIO()
-        f.name = abspath('test.mv2') # We simulate a file.
+        f.name = abspath('test.mv2')  # We simulate a file.
         script.save_visualization(f)
-        f.seek(0) # So we can read this saved data.
+        f.seek(0)  # So we can read this saved data.
 
         # Remove existing scene.
         engine = script.engine

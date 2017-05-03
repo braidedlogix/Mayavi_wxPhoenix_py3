@@ -25,9 +25,11 @@ def BooleanEditor(*args, **kw):
     from traitsui.api import BooleanEditor as Editor
     return Editor(*args, **kw)
 
+
 def RGBColorEditor(*args, **kw):
     from traitsui.api import RGBColorEditor as Editor
     return Editor(*args, **kw)
+
 
 def FileEditor(*args, **kw):
     from traitsui.api import FileEditor as Editor
@@ -38,15 +40,18 @@ def FileEditor(*args, **kw):
 # The TVTK object cache.
 ######################################################################
 
+
 class TVTKObjectCache(weakref.WeakValueDictionary):
     def __init__(self, *args, **kw):
         self._observer_data = {}
         weakref.WeakValueDictionary.__init__(self, *args, **kw)
+
         def remove(wr, selfref=weakref.ref(self)):
             self = selfref()
             if self is not None:
                 self.teardown_observers(wr.key)
                 del self.data[wr.key]
+
         self._remove = remove
 
     def setup_observers(self, vtk_obj, event, method):
@@ -135,12 +140,23 @@ def get_tvtk_object_from_cache(vtk_obj):
 # Special traits used by the tvtk objects.
 ######################################################################
 
-true_bool_trait = traits.Trait('true',
-                               {'true':  1, 't': 1, 'yes': 1,
-                                'y': 1, 'on': 1, 1: 1, 'false': 0,
-                                'f': 0, 'no':  0, 'n': 0,
-                                'off': 0, 0: 0, -1:0},
-                               editor=BooleanEditor)
+true_bool_trait = traits.Trait(
+    'true', {
+        'true': 1,
+        't': 1,
+        'yes': 1,
+        'y': 1,
+        'on': 1,
+        1: 1,
+        'false': 0,
+        'f': 0,
+        'no': 0,
+        'n': 0,
+        'off': 0,
+        0: 0,
+        -1: 0
+    },
+    editor=BooleanEditor)
 
 false_bool_trait = traits.Trait('false', true_bool_trait)
 
@@ -164,6 +180,7 @@ class TraitRevPrefixMap(traits.TraitPrefixMap):
     keys map to the same value, one of the valid keys will be used.
 
     """
+
     def __init__(self, map):
         traits.TraitPrefixMap.__init__(self, map)
         self._rmap = {}
@@ -176,19 +193,19 @@ class TraitRevPrefixMap(traits.TraitPrefixMap):
                 value = self._rmap[value]
             if not value in self._map:
                 match = None
-                n     = len( value )
+                n = len(value)
                 for key in self.map.keys():
                     if value == key[:n]:
                         if match is not None:
-                           match = None
-                           break
+                            match = None
+                            break
                         match = key
                 if match is None:
-                    self.error( object, name, value )
-                self._map[ value ] = match
-            return self._map[ value ]
+                    self.error(object, name, value)
+                self._map[value] = match
+            return self._map[value]
         except:
-            self.error( object, name, value )
+            self.error(object, name, value)
 
     def info(self):
         keys = [repr(x) for x in self._rmap.keys()]
@@ -203,33 +220,37 @@ def vtk_color_trait(default, **metadata):
     if default[0] == -1.0:
         # Occurs for the vtkTextProperty's color trait.  Need to work
         # around.
-        return traits.Trait(default,
-                            traits.Tuple(Range(0.0, 1.0),
-                                         Range(0.0, 1.0),
-                                         Range(0.0, 1.0),
-                                         editor=RGBColorEditor),
-                            **metadata)
+        return traits.Trait(
+            default,
+            traits.Tuple(
+                Range(0.0, 1.0),
+                Range(0.0, 1.0),
+                Range(0.0, 1.0),
+                editor=RGBColorEditor),
+            **metadata)
     elif type(default[0]) is float:
-        return traits.Trait(traits.Tuple(Range(0.0, 1.0, default[0]),
-                                         Range(0.0, 1.0, default[1]),
-                                         Range(0.0, 1.0, default[2])),
-                            editor=RGBColorEditor,
-                            **metadata)
+        return traits.Trait(
+            traits.Tuple(
+                Range(0.0, 1.0, default[0]),
+                Range(0.0, 1.0, default[1]), Range(0.0, 1.0, default[2])),
+            editor=RGBColorEditor,
+            **metadata)
     else:
         return traits.Trait(
             traits.Tuple(
-                Range(0, 255, default[0]), Range(0, 255, default[1]),
-                Range(0, 255, default[2]), cols=3
-            ),
-            **metadata
-        )
+                Range(0, 255, default[0]),
+                Range(0, 255, default[1]),
+                Range(0, 255, default[2]),
+                cols=3),
+            **metadata)
 
 
 # Special cases for the FileName and FilePrefix
-vtk_file_name = traits.Trait(None, None, traits.Str, str,
-                             editor=FileEditor)
-vtk_file_prefix = traits.Trait(None, None, traits.Str, str,
-                               editor=(FileEditor, {'truncate_ext': True}))
+vtk_file_name = traits.Trait(None, None, traits.Str, str, editor=FileEditor)
+vtk_file_prefix = traits.Trait(
+    None, None, traits.Str, str, editor=(FileEditor, {
+        'truncate_ext': True
+    }))
 
 # The Property class traits are delegated in the Actors.
 vtk_property_delegate = traits.Delegate('property', modify=True)
@@ -361,8 +382,10 @@ class TVTKBase(traits.HasStrictTraits):
         """
         self.update_traits()
         d = self.__dict__.copy()
-        for i in ['_vtk_obj', '_in_set', 'reference_count',
-                  'global_warning_display', '__sync_trait__']:
+        for i in [
+                '_vtk_obj', '_in_set', 'reference_count',
+                'global_warning_display', '__sync_trait__'
+        ]:
             d.pop(i, None)
         return d
 
@@ -396,7 +419,7 @@ class TVTKBase(traits.HasStrictTraits):
     # `HasTraits` interface.
     #################################################################
 
-    def class_trait_view_elements ( cls ):
+    def class_trait_view_elements(cls):
         """ Returns the ViewElements object associated with the class.
 
         The returned object can be used to access all the view elements
@@ -420,22 +443,19 @@ class TVTKBase(traits.HasStrictTraits):
         viewDir = os.path.join(baseDir, 'view')
         try:
             module_name = cls.__module__.split('.')[-1]
-            view_filename = os.path.join(viewDir,
-                                         module_name + '_view.py')
+            view_filename = os.path.join(viewDir, module_name + '_view.py')
             result = {}
             exec(
-                compile(
-                    open(view_filename).read(), view_filename, 'exec'
-                ), {}, result
-            )
+                compile(open(view_filename).read(), view_filename, 'exec'),
+                {}, result)
             for name in names:
                 if name in result:
-                    view_elements.content[ name ] = result[name]
+                    view_elements.content[name] = result[name]
         except Exception:
             pass
         return view_elements
 
-    class_trait_view_elements = classmethod( class_trait_view_elements )
+    class_trait_view_elements = classmethod(class_trait_view_elements)
 
     #################################################################
     # `TVTKBase` interface.
@@ -444,8 +464,7 @@ class TVTKBase(traits.HasStrictTraits):
         """Add an observer for the ModifiedEvent so the traits are kept
         up-to-date with the wrapped VTK object and do it in a way that
         avoids reference cycles."""
-        _object_cache.setup_observers(self._vtk_obj,
-                                      'ModifiedEvent',
+        _object_cache.setup_observers(self._vtk_obj, 'ModifiedEvent',
                                       self.update_traits)
 
     def teardown_observers(self):
@@ -542,7 +561,6 @@ class TVTKBase(traits.HasStrictTraits):
         self._in_set -= 1
         if force_update or self._wrapped_mtime(vtk_obj) > mtime:
             self.update_traits()
-
 
     def _wrap_call(self, vtk_method, *args):
         """This method allows us to safely call a VTK method without

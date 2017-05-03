@@ -5,8 +5,6 @@
 # Copyright (c) 2007-2015, Enthought, Inc.
 # License: BSD Style.
 
-
-
 from .axes import Axes
 from .contour_grid_plane import ContourGridPlane
 from .custom_grid_plane import CustomGridPlane

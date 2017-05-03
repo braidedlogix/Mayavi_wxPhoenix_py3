@@ -12,16 +12,18 @@ import os
 
 from tvtk.api import tvtk, write_data
 
+
 class TestMisc(unittest.TestCase):
     def setUp(self):
 
-        datasets = [tvtk.ImageData(),
-                    tvtk.StructuredPoints(),
-                    tvtk.RectilinearGrid(),
-                    tvtk.StructuredGrid(),
-                    tvtk.PolyData(),
-                    tvtk.UnstructuredGrid(),
-                    ]
+        datasets = [
+            tvtk.ImageData(),
+            tvtk.StructuredPoints(),
+            tvtk.RectilinearGrid(),
+            tvtk.StructuredGrid(),
+            tvtk.PolyData(),
+            tvtk.UnstructuredGrid(),
+        ]
         exts = ['.vti', '.vti', '.vtr', '.vts', '.vtp', '.vtu']
         self.datasets = datasets
         self.exts = exts

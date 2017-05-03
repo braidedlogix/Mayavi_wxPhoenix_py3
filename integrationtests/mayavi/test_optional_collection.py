@@ -14,7 +14,6 @@ from common import TestCase, get_example_data
 
 
 class TestOptionalCollection(TestCase):
-
     def test(self):
         self.main()
 
@@ -54,11 +53,13 @@ class TestOptionalCollection(TestCase):
             c, o = coll.filters
             c = c.filter
             n = o.filter
-            assert coll.get_output_dataset().point_data.scalars.range == (127.5, 127.5)
+            assert coll.get_output_dataset().point_data.scalars.range == (
+                127.5, 127.5)
             # Adding a contour should create the appropriate output in
             # the collection.
             c.contours.append(200)
-            assert coll.get_output_dataset().point_data.scalars.range == (127.5, 200.0)
+            assert coll.get_output_dataset().point_data.scalars.range == (
+                127.5, 200.0)
             # the collection's output should be that of the normals.
             assert coll.get_output_dataset() is n.get_output_dataset()
             # disable the optional filter and check.
@@ -68,7 +69,8 @@ class TestOptionalCollection(TestCase):
             # Set back everything to original state.
             c.contours.pop()
             o.enabled = True
-            assert coll.get_output_dataset().point_data.scalars.range == (127.5, 127.5)
+            assert coll.get_output_dataset().point_data.scalars.range == (
+                127.5, 127.5)
             assert coll.get_output_dataset() is n.get_output_dataset()
             assert 'disabled' not in o.name
 
@@ -79,9 +81,9 @@ class TestOptionalCollection(TestCase):
 
         # Save visualization.
         f = BytesIO()
-        f.name = abspath('test.mv2') # We simulate a file.
+        f.name = abspath('test.mv2')  # We simulate a file.
         script.save_visualization(f)
-        f.seek(0) # So we can read this saved data.
+        f.seek(0)  # So we can read this saved data.
 
         # Remove existing scene.
         engine = script.engine
@@ -117,6 +119,7 @@ class TestOptionalCollection(TestCase):
         check(coll)
 
         # If we have come this far, we are golden!
+
 
 if __name__ == "__main__":
     t = TestOptionalCollection()

@@ -33,4 +33,3 @@ for name in cmap_names:
 
 out_name = os.path.join(target_dir, 'pylab_luts.pkl')
 state_pickler.dump(lut_dic, out_name)
-

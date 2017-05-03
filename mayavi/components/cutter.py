@@ -4,7 +4,6 @@
 # Copyright (c) 2005-2016, Enthought, Inc.
 # License: BSD Style.
 
-
 # Enthought library imports.
 from traits.api import Instance, Property
 from traitsui.api import View, Group, Item
@@ -12,6 +11,7 @@ from tvtk.api import tvtk
 
 # Local imports.
 from mayavi.core.component import Component
+
 
 ######################################################################
 # `Cutter` class.
@@ -30,11 +30,12 @@ class Cutter(Component):
     ########################################
     # View related traits.
 
-    view = View(Group(Item(name='cutter',
-                           style='custom',
-                           resizable=True),
-                      show_labels=False),
-                resizable=True)
+    view = View(
+        Group(
+            Item(
+                name='cutter', style='custom', resizable=True),
+            show_labels=False),
+        resizable=True)
 
     ######################################################################
     # `Component` interface

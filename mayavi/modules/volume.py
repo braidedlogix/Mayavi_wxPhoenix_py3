@@ -31,6 +31,7 @@ from mayavi.core.common import error
 from mayavi.core.trait_defs import DEnum
 from mayavi.core.lut_manager import LUTManager
 
+
 ######################################################################
 # Utility functions.
 ######################################################################
@@ -43,6 +44,7 @@ def is_volume_pro_available():
         return False
     else:
         return map.number_of_boards > 0
+
 
 def find_volume_mappers():
     res = []
@@ -61,6 +63,7 @@ def find_volume_mappers():
             res.remove(name)
     return res
 
+
 def default_OTF(x1, x2):
     """Creates a default opacity transfer function.
     """
@@ -71,9 +74,14 @@ def default_OTF(x1, x2):
     otf.add_point(maxs, 0.2)
     return otf
 
-def make_CTF(x1, x2, hue_range=(2.0/3.0, 0.0),
-             sat_range=(1.0, 1.0), val_range=(1.0, 1.0),
-             n=10, mode='sqrt'):
+
+def make_CTF(x1,
+             x2,
+             hue_range=(2.0 / 3.0, 0.0),
+             sat_range=(1.0, 1.0),
+             val_range=(1.0, 1.0),
+             n=10,
+             mode='sqrt'):
     """Creates a CTF as per given arguments.  Lets one set a hue,
     saturation and value range.  The mode can be one of 'sqrt', or
     'linear'.  The idea of this function is to create a CTF that is
@@ -93,23 +101,23 @@ def make_CTF(x1, x2, hue_range=(2.0/3.0, 0.0),
         # VTK versions < 5.2 don't seem to need this.
         pass
     if mode == 'sqrt':
-        for i in range(n+1):
+        for i in range(n + 1):
             # Generate x in [0, 1]
-            x = 0.5*(1.0  + cos((n-i)*pi/n)) # Chebyshev nodes.
-            h = hue_range[0] + dhue*x
-            s = sat_range[0] + dsat*x
-            v = val_range[0] + dval*x
+            x = 0.5 * (1.0 + cos((n - i) * pi / n))  # Chebyshev nodes.
+            h = hue_range[0] + dhue * x
+            s = sat_range[0] + dsat * x
+            v = val_range[0] + dval * x
             r, g, b, a = [sqrt(c) for c in hsva_to_rgba(h, s, v, 1.0)]
-            ctf.add_rgb_point(mins+x*ds, r, g, b)
+            ctf.add_rgb_point(mins + x * ds, r, g, b)
     elif mode == 'linear':
-        for i in range(n+1):
+        for i in range(n + 1):
             # Generate x in [0, 1]
-            x = float(i)/n # Uniform nodes.
-            h = hue_range[0] + dhue*x
-            s = sat_range[0] + dsat*x
-            v = val_range[0] + dval*x
+            x = float(i) / n  # Uniform nodes.
+            h = hue_range[0] + dhue * x
+            s = sat_range[0] + dsat * x
+            v = val_range[0] + dval * x
             r, g, b, a = hsva_to_rgba(h, s, v, 1.0)
-            ctf.add_rgb_point(mins+x*ds, r, g, b)
+            ctf.add_rgb_point(mins + x * ds, r, g, b)
     return ctf
 
 
@@ -117,15 +125,18 @@ def default_CTF(x1, x2):
     """Creates a default RGB color transfer function.  In this case we
     default to a red-blue one with the 'sqrt' mode.
     """
-    return make_CTF(x1, x2,
-                    hue_range=(2.0/3.0, 0.0),
-                    sat_range=(1.0, 1.0),
-                    val_range=(1.0, 1.0),
-                    n=10,
-                    mode='sqrt')
+    return make_CTF(
+        x1,
+        x2,
+        hue_range=(2.0 / 3.0, 0.0),
+        sat_range=(1.0, 1.0),
+        val_range=(1.0, 1.0),
+        n=10,
+        mode='sqrt')
 
 
-def load_volume_prop_from_grad(grad_file_name, volume_prop,
+def load_volume_prop_from_grad(grad_file_name,
+                               volume_prop,
                                scalar_range=(0, 255)):
     """Load a ``*.grad`` file (*grad_file_name*) and set the given volume
     property (*volume_prop*) given the *scalar_range*.
@@ -150,25 +161,25 @@ def save_volume_prop_to_grad(volume_prop, grad_file_name):
 class VolumeLUTManager(LUTManager):
     """Just has a different view than the LUTManager.
     """
-    view = View(Group(Item(name='show_scalar_bar'),
-                      Item(name='number_of_labels'),
-                      Item(name='shadow'),
-                      Item(name='use_default_name'),
-                      Item(name='data_name'),
-                      label='Scalar Bar',
-                      ),
-                Group(Item(name='_title_text_property',
-                           style='custom',
-                           resizable=True),
-                      show_labels=False,
-                      label='Title'),
-                Group(Item(name='_label_text_property',
-                           style='custom',
-                           resizable=True),
-                      show_labels=False,
-                      label='Labels'),
-                resizable=True
-                )
+    view = View(
+        Group(
+            Item(name='show_scalar_bar'),
+            Item(name='number_of_labels'),
+            Item(name='shadow'),
+            Item(name='use_default_name'),
+            Item(name='data_name'),
+            label='Scalar Bar', ),
+        Group(
+            Item(
+                name='_title_text_property', style='custom', resizable=True),
+            show_labels=False,
+            label='Title'),
+        Group(
+            Item(
+                name='_label_text_property', style='custom', resizable=True),
+            show_labels=False,
+            label='Labels'),
+        resizable=True)
 
 
 ######################################################################
@@ -185,11 +196,11 @@ class Volume(Module):
     # The version of this class.  Used for persistence.
     __version__ = 0
 
-    volume_mapper_type = DEnum(values_name='_mapper_types',
-                               desc='volume mapper to use')
+    volume_mapper_type = DEnum(
+        values_name='_mapper_types', desc='volume mapper to use')
 
-    ray_cast_function_type = DEnum(values_name='_ray_cast_functions',
-                                   desc='Ray cast function to use')
+    ray_cast_function_type = DEnum(
+        values_name='_ray_cast_functions', desc='Ray cast function to use')
 
     volume = ReadOnly
 
@@ -199,54 +210,63 @@ class Volume(Module):
 
     ray_cast_function = Property(record=True)
 
-    lut_manager = Instance(VolumeLUTManager, args=(), allow_none=False,
-                           record=True)
+    lut_manager = Instance(
+        VolumeLUTManager, args=(), allow_none=False, record=True)
 
-    input_info = PipelineInfo(datasets=['image_data',
-                                        'unstructured_grid'],
-                              attribute_types=['any'],
-                              attributes=['scalars'])
+    input_info = PipelineInfo(
+        datasets=['image_data', 'unstructured_grid'],
+        attribute_types=['any'],
+        attributes=['scalars'])
 
     ########################################
     # View related code.
 
     update_ctf = Button('Update CTF')
 
-    view = View(Group(Item(name='_volume_property', style='custom',
-                           editor=VolumePropertyEditor,
-                           resizable=True),
-                      Item(name='update_ctf'),
-                      label='CTF',
-                      show_labels=False),
-                Group(Item(name='volume_mapper_type'),
-                      Group(Item(name='_volume_mapper',
-                                 style='custom',
-                                 resizable=True),
-                            show_labels=False
-                            ),
-                      Item(name='ray_cast_function_type'),
-                      Group(Item(name='_ray_cast_function',
-                                 enabled_when='len(_ray_cast_functions) > 0',
-                                 style='custom',
-                                 resizable=True),
-                            show_labels=False),
-                      label='Mapper',
-                      ),
-                Group(Item(name='_volume_property', style='custom',
-                           resizable=True),
-                      label='Property',
-                      show_labels=False),
-                Group(Item(name='volume', style='custom',
-                           editor=InstanceEditor(),
-                           resizable=True),
-                      label='Volume',
-                      show_labels=False),
-                Group(Item(name='lut_manager', style='custom',
-                           resizable=True),
-                      label='Legend',
-                      show_labels=False),
-                resizable=True
-                )
+    view = View(
+        Group(
+            Item(
+                name='_volume_property',
+                style='custom',
+                editor=VolumePropertyEditor,
+                resizable=True),
+            Item(name='update_ctf'),
+            label='CTF',
+            show_labels=False),
+        Group(
+            Item(name='volume_mapper_type'),
+            Group(
+                Item(
+                    name='_volume_mapper', style='custom', resizable=True),
+                show_labels=False),
+            Item(name='ray_cast_function_type'),
+            Group(
+                Item(
+                    name='_ray_cast_function',
+                    enabled_when='len(_ray_cast_functions) > 0',
+                    style='custom',
+                    resizable=True),
+                show_labels=False),
+            label='Mapper', ),
+        Group(
+            Item(
+                name='_volume_property', style='custom', resizable=True),
+            label='Property',
+            show_labels=False),
+        Group(
+            Item(
+                name='volume',
+                style='custom',
+                editor=InstanceEditor(),
+                resizable=True),
+            label='Volume',
+            show_labels=False),
+        Group(
+            Item(
+                name='lut_manager', style='custom', resizable=True),
+            label='Legend',
+            show_labels=False),
+        resizable=True)
 
     ########################################
     # Private traits
@@ -254,7 +274,10 @@ class Volume(Module):
     _volume_property = Instance(tvtk.VolumeProperty)
     _ray_cast_function = Instance(tvtk.Object)
 
-    _mapper_types = List(Str, ['TextureMapper2D', 'RayCastMapper', ])
+    _mapper_types = List(Str, [
+        'TextureMapper2D',
+        'RayCastMapper',
+    ])
 
     _available_mapper_types = List(Str)
 
@@ -337,7 +360,6 @@ class Volume(Module):
         if mm is None:
             return
 
-
         dataset = mm.source.get_output_dataset()
 
         ug = hasattr(tvtk, 'UnstructuredGridVolumeMapper')
@@ -379,9 +401,10 @@ class Volume(Module):
         dataset = self.module_manager.source.get_output_dataset()
         if dataset.is_a('vtkUnstructuredGrid'):
             if hasattr(tvtk, 'UnstructuredGridVolumeMapper'):
-                check = ['UnstructuredGridVolumeZSweepMapper',
-                         'UnstructuredGridVolumeRayCastMapper',
-                         ]
+                check = [
+                    'UnstructuredGridVolumeZSweepMapper',
+                    'UnstructuredGridVolumeRayCastMapper',
+                ]
                 mapper_types = []
                 for mapper in check:
                     if mapper in self._available_mapper_types:
@@ -402,9 +425,7 @@ class Volume(Module):
                     unsigned_char or unsigned_short datatypes')
             else:
                 mapper_types = ['TextureMapper2D', 'RayCastMapper']
-                check = ['FixedPointVolumeRayCastMapper',
-                         'VolumeProMapper'
-                         ]
+                check = ['FixedPointVolumeRayCastMapper', 'VolumeProMapper']
                 for mapper in check:
                     if mapper in self._available_mapper_types:
                         mapper_types.append(mapper)
@@ -451,10 +472,12 @@ class Volume(Module):
         if value == 'RayCastMapper':
             new_vm = tvtk.VolumeRayCastMapper()
             self._volume_mapper = new_vm
-            self._ray_cast_functions = ['RayCastCompositeFunction',
-                                        'RayCastMIPFunction',
-                                        'RayCastIsosurfaceFunction']
-            new_vm.volume_ray_cast_function = tvtk.VolumeRayCastCompositeFunction()
+            self._ray_cast_functions = [
+                'RayCastCompositeFunction', 'RayCastMIPFunction',
+                'RayCastIsosurfaceFunction'
+            ]
+            new_vm.volume_ray_cast_function = tvtk.VolumeRayCastCompositeFunction(
+            )
         elif value == 'TextureMapper2D':
             new_vm = tvtk.VolumeTextureMapper2D()
             self._volume_mapper = new_vm
@@ -495,7 +518,7 @@ class Volume(Module):
             rcf.on_trait_change(self.render, remove=True)
 
         if len(new) > 0:
-            new_rcf = getattr(tvtk, 'Volume%s'%new)()
+            new_rcf = getattr(tvtk, 'Volume%s' % new)()
             new_rcf.on_trait_change(self.render)
             self._volume_mapper.volume_ray_cast_function = new_rcf
             self._ray_cast_function = new_rcf

@@ -8,6 +8,7 @@ from mayavi.components.implicit_plane import ImplicitPlane
 from mayavi.filters.collection import Collection
 from mayavi.core.pipeline_info import PipelineInfo
 
+
 ################################################################################
 # `CutPlane` class.
 ################################################################################
@@ -20,12 +21,10 @@ class CutPlane(Collection):
     # The version of this class.  Used for persistence.
     __version__ = 0
 
-    input_info = PipelineInfo(datasets=['any'],
-                              attribute_types=['any'],
-                              attributes=['any'])
-    output_info = PipelineInfo(datasets=['poly_data'],
-                               attribute_types=['any'],
-                               attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])
+    output_info = PipelineInfo(
+        datasets=['poly_data'], attribute_types=['any'], attributes=['any'])
 
     ######################################################################
     # `Filter` interface.
@@ -35,4 +34,3 @@ class CutPlane(Collection):
         ip = ImplicitPlane()
         cut = Cutter(cut_function=ip.plane)
         self.filters = [ip, cut]
-

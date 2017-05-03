@@ -20,9 +20,17 @@ from mayavi.core.trait_defs import ArrayNumberOrNone, ArrayOrNone
 from . import tools
 from .engine_manager import get_null_engine, engine_manager
 
-__all__ = ['vector_scatter', 'vector_field', 'scalar_scatter',
-    'scalar_field', 'line_source', 'array2d_source', 'grid_source',
-    'open', 'triangular_mesh_source', 'vertical_vectors_source',
+__all__ = [
+    'vector_scatter',
+    'vector_field',
+    'scalar_scatter',
+    'scalar_field',
+    'line_source',
+    'array2d_source',
+    'grid_source',
+    'open',
+    'triangular_mesh_source',
+    'vertical_vectors_source',
 ]
 
 
@@ -177,8 +185,7 @@ class MGlyphSource(MlabSource):
             v = np.atleast_1d(v)
             w = np.atleast_1d(w)
             if len(u) > 0:
-                vectors = np.c_[u.ravel(), v.ravel(),
-                                w.ravel()].ravel()
+                vectors = np.c_[u.ravel(), v.ravel(), w.ravel()].ravel()
                 vectors.shape = (-1, 3)
                 self.set(vectors=vectors, trait_change_notify=False)
 
@@ -190,8 +197,7 @@ class MGlyphSource(MlabSource):
 
         else:
             if u is not None and len(u) > 0:
-                vectors = np.c_[u.ravel(), v.ravel(),
-                                w.ravel()].ravel()
+                vectors = np.c_[u.ravel(), v.ravel(), w.ravel()].ravel()
                 vectors.shape = (-1, 3)
                 self.set(vectors=vectors, trait_change_notify=False)
 
@@ -299,9 +305,7 @@ class MVerticalGlyphSource(MGlyphSource):
     def _scalars_changed(self, s):
         self.dataset.point_data.scalars = s
         self.dataset.point_data.scalars.name = 'scalars'
-        self.set(vectors=np.c_[np.ones_like(s),
-                                  np.ones_like(s),
-                                  s])
+        self.set(vectors=np.c_[np.ones_like(s), np.ones_like(s), s])
         self.update()
 
 
@@ -355,8 +359,7 @@ class MArraySource(MlabSource):
                 #                             v[..., np.newaxis],
                 #                             w[..., np.newaxis] ],
                 #                axis=3)
-                vectors = np.c_[u.ravel(), v.ravel(),
-                                   w.ravel()].ravel()
+                vectors = np.c_[u.ravel(), v.ravel(), w.ravel()].ravel()
                 vectors.shape = (u.shape[0], u.shape[1], w.shape[2], 3)
                 self.set(vectors=vectors, trait_change_notify=False)
 
@@ -805,9 +808,8 @@ class MTriangularMeshSource(MlabSource):
         pd.set(points=points)
         pd.set(polys=triangles)
 
-        if (not 'scalars' in traits
-                    and scalars is not None
-                    and scalars.shape != x.shape):
+        if (not 'scalars' in traits and scalars is not None and
+                scalars.shape != x.shape):
             # The scalars where set probably automatically to z, by the
             # factory. We need to reset them, as the size has changed.
             scalars = z
@@ -863,6 +865,7 @@ class MTriangularMeshSource(MlabSource):
 # Argument processing
 ############################################################################
 
+
 def convert_to_arrays(args):
     """ Converts a list of iterables to a list of arrays or callables,
         if needed.
@@ -899,10 +902,8 @@ def process_regular_vectors(*args):
     else:
         raise ValueError("wrong number of arguments")
 
-    assert (x.shape == y.shape and
-            y.shape == z.shape and
-            u.shape == z.shape and
-            v.shape == u.shape and
+    assert (x.shape == y.shape and y.shape == z.shape and
+            u.shape == z.shape and v.shape == u.shape and
             w.shape == v.shape), "argument shape are not equal"
 
     return x, y, z, u, v, w
@@ -925,10 +926,8 @@ def process_regular_scalars(*args):
     else:
         raise ValueError("wrong number of arguments")
 
-    assert (x.shape == y.shape and
-            y.shape == z.shape and
-            (s is None
-               or s.shape == z.shape)), "argument shape are not equal"
+    assert (x.shape == y.shape and y.shape == z.shape and
+            (s is None or s.shape == z.shape)), "argument shape are not equal"
 
     return x, y, z, s
 
@@ -963,6 +962,7 @@ def process_regular_2d_scalars(*args, **kwargs):
 ############################################################################
 # Sources
 ############################################################################
+
 
 def vector_scatter(*args, **kwargs):
     """ Creates scattered vector data.
@@ -1043,8 +1043,9 @@ def vector_field(*args, **kwargs):
         x = y = z = np.atleast_3d(1)
         u, v, w = [np.atleast_3d(a) for a in args]
     else:
-        x, y, z, u, v, w = [np.atleast_3d(a)
-                        for a in process_regular_vectors(*args)]
+        x, y, z, u, v, w = [
+            np.atleast_3d(a) for a in process_regular_vectors(*args)
+        ]
 
     scalars = kwargs.pop('scalars', None)
     if scalars is not None:
@@ -1424,5 +1425,6 @@ def _make_functions(namespace):
             # Inject function into the namespace and __all__.
             namespace[func_name] = func
             __all__.append(func_name)
+
 
 _make_functions(locals())

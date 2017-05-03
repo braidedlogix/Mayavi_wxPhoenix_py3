@@ -15,7 +15,6 @@ from mayavi.core.pipeline_info import PipelineInfo
 # Utility functions.
 ################################################################################
 def import_symbol(symbol_path):
-
     """ Import the symbol defined by the specified symbol path.
     Copied from envisage's import manager.
     """
@@ -32,16 +31,14 @@ def import_symbol(symbol_path):
         module_name = '.'.join(components[:-1])
         symbol_name = components[-1]
 
-        module = __import__(
-            module_name, globals(), locals(), [symbol_name]
-        )
+        module = __import__(module_name, globals(), locals(), [symbol_name])
 
         symbol = getattr(module, symbol_name)
 
     return symbol
 
-def import_module(module_name):
 
+def import_module(module_name):
     """This imports the given module name.  This code is copied from
     envisage's import manager!
 
@@ -54,7 +51,6 @@ def import_module(module_name):
         module = getattr(module, component)
 
     return module
-
 
 
 ################################################################################
@@ -122,11 +118,13 @@ class Metadata(HasTraits):
 class ModuleMetadata(Metadata):
     pass
 
+
 ################################################################################
 # `FilterMetadata` class.
 ################################################################################
 class FilterMetadata(Metadata):
     pass
+
 
 ################################################################################
 # `SourceMetadata` class.

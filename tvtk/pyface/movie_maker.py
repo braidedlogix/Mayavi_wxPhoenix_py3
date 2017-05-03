@@ -24,8 +24,7 @@ class MovieMaker(HasTraits):
             Item('record'),
             Item('anti_alias'),
             Item('filename'),
-            Item('directory'),
-        )
+            Item('directory'), )
         return view
 
     def animation_start(self):
@@ -71,7 +70,7 @@ class MovieMaker(HasTraits):
         if not os.path.exists(dir):
             os.makedirs(dir)
 
-        fname = os.path.join(dir, self.filename%count)
+        fname = os.path.join(dir, self.filename % count)
         if not self.anti_alias:
             orig_aa = self.scene.anti_aliasing_frames
         self.scene.save(fname)
@@ -89,4 +88,4 @@ class MovieMaker(HasTraits):
         if existing:
             last = existing[-1]
             last_index = int(last[-3:]) + 1
-        self._subdir = 'movie%03d'%last_index
+        self._subdir = 'movie%03d' % last_index

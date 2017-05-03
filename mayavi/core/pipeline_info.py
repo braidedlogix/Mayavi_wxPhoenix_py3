@@ -10,8 +10,8 @@
 from traits.api import HasTraits, Enum, List
 
 # The list of datasets supported.
-DataSet = Enum('none', 'any', 'image_data', 'rectilinear_grid',
-               'poly_data', 'structured_grid', 'unstructured_grid')
+DataSet = Enum('none', 'any', 'image_data', 'rectilinear_grid', 'poly_data',
+               'structured_grid', 'unstructured_grid')
 
 # Attribute type.
 AttributeType = Enum('any', 'cell', 'point', 'none')
@@ -34,7 +34,7 @@ def get_tvtk_dataset_name(dataset):
             dataset = dataset.output
         if dataset.is_a('vtkStructuredPoints') or \
            dataset.is_a('vtkImageData'):
-               result = 'image_data'
+            result = 'image_data'
         elif dataset.is_a('vtkRectilinearGrid'):
             result = 'rectilinear_grid'
         elif dataset.is_a('vtkPolyData'):
@@ -54,7 +54,6 @@ def get_tvtk_dataset_name(dataset):
 # `PipelineInfo` class.
 ################################################################################
 class PipelineInfo(HasTraits):
-
     """
     This class represents the information that a particular input or
     output of an object should contain.

@@ -35,8 +35,8 @@ mayavi = None
 ###########################################################################
 # Utility functions.
 ###########################################################################
-def usage ():
-    msg="""Usage:\n\nmayavi2 [options] ... [arg1] [arg2] ...
+def usage():
+    msg = """Usage:\n\nmayavi2 [options] ... [arg1] [arg2] ...
 
 Where arg1, arg2 ... are optional file names that correspond to saved
 Mayavi2 visualizations (file.mv2) or Mayavi2 scripts (file.py) or any
@@ -209,22 +209,19 @@ def parse_cmd_line(arguments):
 
     options = "d:m:f:z:x:s:nMvo"
 
-    long_opts = ['data=',
-                 'module=', 'filter=',
-                 'visualization=', 'viz=',
-                 'exec=',
-                 'set=',
-                 'verbose',
-                 'module-mgr', 'new-scene', 'offscreen']
+    long_opts = [
+        'data=', 'module=', 'filter=', 'visualization=', 'viz=', 'exec=',
+        'set=', 'verbose', 'module-mgr', 'new-scene', 'offscreen'
+    ]
 
     try:
-        opts, args = getopt.getopt (arguments, options, long_opts)
+        opts, args = getopt.getopt(arguments, options, long_opts)
     except getopt.error as msg:
         print(msg)
         print(usage())
-        print('-'*70)
+        print('-' * 70)
         print(msg)
-        sys.exit (1)
+        sys.exit(1)
 
     return opts, args
 
@@ -267,9 +264,8 @@ def process_cmd_line(app, opts, args):
         if len(opts) == 0:
             if len(args) == 0:
                 new_scene = True
-        elif (opts[0][0] not in ('-n', '--new-scene', '-z',
-                                 '--visualization', '--viz',
-                                 '-x', '--exec')):
+        elif (opts[0][0] not in ('-n', '--new-scene', '-z', '--visualization',
+                                 '--viz', '-x', '--exec')):
             new_scene = True
         if new_scene:
             last_obj = script.new_scene()
@@ -285,16 +281,16 @@ def process_cmd_line(app, opts, args):
                 script.add_source(src)
                 last_obj = src
             else:
-                error("File/Source %s does not exist!"%a)
+                error("File/Source %s does not exist!" % a)
                 return
 
         if o in ('-m', '--module'):
             if '.' in a:
                 idx = a.rfind('.')
                 modname = a[:idx]
-                classname = a[idx+1:]
+                classname = a[idx + 1:]
             else:
-                modname = 'mayavi.modules.%s'%camel2enthought(a)
+                modname = 'mayavi.modules.%s' % camel2enthought(a)
                 classname = a
             try:
                 mod = __import__(modname, globals(), locals(), [classname])
@@ -312,7 +308,7 @@ def process_cmd_line(app, opts, args):
             if '.' in a:
                 idx = a.rfind('.')
                 modname = a[:idx]
-                classname = a[idx+1:]
+                classname = a[idx + 1:]
             else:
                 if a[:12] == 'UserDefined:':
                     modname = 'mayavi.filters.user_defined'
@@ -326,7 +322,7 @@ def process_cmd_line(app, opts, args):
                         # Don't worry about errors.
                         extra = None
                 else:
-                    modname = 'mayavi.filters.%s'%camel2enthought(a)
+                    modname = 'mayavi.filters.%s' % camel2enthought(a)
                     classname = a
                     extra = None
             try:
@@ -361,9 +357,9 @@ def process_cmd_line(app, opts, args):
             e.set(current_scene=s, current_object=s)
             last_obj = s
 
-        if o in ('-x', '--exec' ):
+        if o in ('-x', '--exec'):
             err = run_script(script, a)
-            if err: # stop processing options.
+            if err:  # stop processing options.
                 return
 
         if o in ('-s', '--set'):
@@ -378,12 +374,12 @@ def process_cmd_line(app, opts, args):
 
     # for remaining arguments simply load saved visualizations.
     for arg in args:
-        base, ext = splitext (arg)
+        base, ext = splitext(arg)
         if ext == '.mv2':
             script.load_visualization(arg)
         elif ext == '.py':
             err = run_script(script, arg)
-            if err: # stop processing arguments.
+            if err:  # stop processing arguments.
                 return
         else:
             script.open(arg)
@@ -418,6 +414,7 @@ def run_script(mayavi, script_name):
 
     return error
 
+
 # This runs the runtests script and sends any args to it.
 if ('-t' in sys.argv[1:]) or ('--test' in sys.argv[1:]):
     from mayavi.tests import runtests
@@ -433,7 +430,7 @@ if ('-h' in sys.argv[1:]) or ('--help' in sys.argv[1:]):
     sys.exit(0)
 
 if ('-V' in sys.argv[1:]) or ('--version' in sys.argv[1:]):
-    print('Mayavi %s'%__version__)
+    print('Mayavi %s' % __version__)
     sys.exit(0)
 
 for opt, arg in parse_cmd_line(sys.argv[1:])[0]:
@@ -444,7 +441,6 @@ for opt, arg in parse_cmd_line(sys.argv[1:])[0]:
 # is empty.
 opt, arg = None, None
 del opt, arg
-
 
 # The vtk module is imported by the engine, so mayavi is never going to
 # start without it. Let us capture the error early, and give a meaningful
@@ -469,7 +465,6 @@ if not 'wx' in sys.modules:
     except ImportError:
         """ wxversion not installed """
 
-
 # Importing here to avoid time-consuming import when user only wanted
 # version/help information.
 try:
@@ -490,9 +485,8 @@ If these packages appear to be installed, check that your numpy and
 configobj are installed and working. If you need numpy, 'easy_install numpy'
 will install numpy. Similarly, 'easy_install configobj' will install
 configobj.
-        ''' % (m, '_'*80)
+        ''' % (m, '_' * 80)
     raise ImportError(msg)
-
 
 
 ##########################################################################
@@ -538,8 +532,7 @@ class MayaviOffscreen(MayaviApp):
 
     def setup_logger(self):
         from traits.etsconfig.api import ETSConfig
-        path = join(ETSConfig.application_data,
-                    'mayavi_e3', 'mayavi.log')
+        path = join(ETSConfig.application_data, 'mayavi_e3', 'mayavi.log')
         path = abspath(path)
         logger = logging.getLogger()
         setup_logger(logger, path, mode=self.log_mode)
@@ -568,6 +561,7 @@ def get_mayavi_script_instance():
             return engine.window.get_service(Script)
     return
 
+
 def contains_mayavi(namespace):
     """Returns if the given namespace contains a 'mayavi' name bound to
     a mayavi script instance.
@@ -578,17 +572,20 @@ def contains_mayavi(namespace):
             return True
     return False
 
+
 def standalone(func):
     """A decorator to run a function from within mayavi.  This lets
     users write a normal Python function and have that run from within
     mayavi.  It implicitly assumes that the name 'mayavi' refers the the
     Script instance and will overwrite it if not.
     """
+
     def wrapper(*args, **kw):
         script = get_mayavi_script_instance()
         if script is None and mayavi is not None:
             script = mayavi.script
         if script is None:
+
             def caller(script):
                 """Callback that runs the function inside the mayavi
                 app."""
@@ -630,7 +627,7 @@ def main():
         from traits.etsconfig.api import ETSConfig
         # Check that we have a traits backend installed
         from traitsui.toolkit import toolkit
-        toolkit() # This forces the selection of a toolkit.
+        toolkit()  # This forces the selection of a toolkit.
         if ETSConfig.toolkit in ('null', ''):
             raise ImportError('''Could not import backend for traits
 ________________________________________________________________________________
@@ -644,16 +641,17 @@ in Traits, TraitsGUI, and the Traits backend of your choice.
 Also make sure that either wxPython or PyQT is installed.
 wxPython: http://www.wxpython.org/
 PyQT: http://www.riverbankcomputing.co.uk/software/pyqt/intro
-'''
-            )
+''')
         mayavi = MayaviApp()
     mayavi.main(sys.argv[1:])
+
 
 def close():
     """ This closes the mayavi2 application.
     """
     if mayavi is not None and not OFFSCREEN:
         mayavi.window.close()
+
 
 if __name__ == '__main__':
     main()

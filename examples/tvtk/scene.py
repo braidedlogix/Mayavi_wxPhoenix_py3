@@ -13,7 +13,6 @@
 #------------------------------------------------------------------------------
 """ An example of using a TVTK scene. """
 
-
 # Standard library imports.
 import random
 
@@ -35,6 +34,7 @@ from traits.api import Float, Str, Instance
 
 class ExitAction(Action):
     """ Exits the application. """
+
     def __init__(self, window):
         """ Creates a new action. """
         self._window = window
@@ -47,23 +47,30 @@ class ExitAction(Action):
 
 class SaveImageAction(Action):
     """Saves the rendered scene to an image."""
+
     def __init__(self, window):
         self._window = window
         self.name = "S&ave Scene"
 
     def perform(self):
         """Pops up a dialog used to save the scene to an image."""
-        extns = ['*.png', '*.jpg', '*.jpeg', '*.tiff', '*.bmp', '*.ps',
-                 '*.eps', '*.tex', '*.rib', '*.wrl', '*.oogl', '*.pdf',
-                 '*.vrml', '*.obj', '*.iv']
-        dlg = FileDialog(parent=self._window.control, action='save as',
-                wildcard='|'.join(extns), title="Save scene to image")
+        extns = [
+            '*.png', '*.jpg', '*.jpeg', '*.tiff', '*.bmp', '*.ps', '*.eps',
+            '*.tex', '*.rib', '*.wrl', '*.oogl', '*.pdf', '*.vrml', '*.obj',
+            '*.iv'
+        ]
+        dlg = FileDialog(
+            parent=self._window.control,
+            action='save as',
+            wildcard='|'.join(extns),
+            title="Save scene to image")
         if dlg.open() == OK:
             self._window.scene.save(dlg.path)
 
 
 class SaveToClipboardAction(Action):
     """ Saves rendered scene to the Clipboard. """
+
     def __init__(self, window):
         """ Creates a new action. """
         self._window = window
@@ -76,6 +83,7 @@ class SaveToClipboardAction(Action):
 
 class SpecialViewAction(Action):
     """Sets the scene to a particular view."""
+
     def __init__(self, window, name, view):
         """ Creates a new action. """
         self._window = window
@@ -125,7 +133,6 @@ class ExampleWindow(SplitApplicationWindow):
         # Create the window's menu bar.
         self._create_my_menu_bar()
 
-
     ###########################################################################
     # Protected 'SplitApplicationWindow' interface.
     ###########################################################################
@@ -168,7 +175,6 @@ class ExampleWindow(SplitApplicationWindow):
 
         return self.python_shell.control
 
-
     ###########################################################################
     # Private interface.
     ###########################################################################
@@ -181,12 +187,10 @@ class ExampleWindow(SplitApplicationWindow):
                 SaveImageAction(self),
                 Separator(),
                 ExitAction(self),
-                name = '&File',
-            ),
+                name='&File', ),
             MenuManager(
                 SaveToClipboardAction(self),
-                name = '&Edit',
-            ),
+                name='&Edit', ),
             MenuManager(
                 SpecialViewAction(self, "&Reset Zoom", 'reset_zoom'),
                 Separator(),
@@ -197,10 +201,7 @@ class ExampleWindow(SplitApplicationWindow):
                 SpecialViewAction(self, "Y negative", 'y_minus_view'),
                 SpecialViewAction(self, "&Z positive", 'z_plus_view'),
                 SpecialViewAction(self, "Z negative", 'z_minus_view'),
-                name = '&View',
-            )
-        )
-
+                name='&View', ))
 
 
 # Application entry point.
@@ -209,7 +210,7 @@ if __name__ == '__main__':
     gui = GUI()
 
     # Create and open an application window.
-    window = ExampleWindow(size=(600,600))
+    window = ExampleWindow(size=(600, 600))
     window.open()
 
     # Start the GUI event loop!

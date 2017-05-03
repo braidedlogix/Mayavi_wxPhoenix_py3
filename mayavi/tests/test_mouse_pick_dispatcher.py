@@ -14,6 +14,7 @@ from mayavi.core.mouse_pick_dispatcher import \
                 MousePickDispatcher
 from tvtk.pyface.picker import Picker
 
+
 ################################################################################
 # class `DummyScene`
 ################################################################################
@@ -51,7 +52,6 @@ class TestMousePickerDispatcher(unittest.TestCase):
         self.s = e.new_scene()
         self.s.scene = DummyScene()
 
-
     def tearDown(self):
         engine_manager.current_engine = None
         # Unregistering the engine, to avoid side-effects between tests
@@ -61,10 +61,11 @@ class TestMousePickerDispatcher(unittest.TestCase):
     def test_callback_registering(self):
         def test(picker):
             pass
+
         dispatcher = DummyMousePickDispatcher(scene=self.s)
-        initial_interactor_callbacks = frozenset([i for i in range(100)
-                                    if self.s.scene.interactor.has_observer(i)
-                                ])
+        initial_interactor_callbacks = frozenset([
+            i for i in range(100) if self.s.scene.interactor.has_observer(i)
+        ])
         dispatcher.callbacks.append((test, 'point', 'Left'))
 
         # Check that VTK observers were established
@@ -74,12 +75,10 @@ class TestMousePickerDispatcher(unittest.TestCase):
 
         # Check that we are back to no observers
         dispatcher.callbacks[:] = []
-        interactor_callbacks = frozenset([i for i in range(100)
-                                    if self.s.scene.interactor.has_observer(i)
-                                ])
-        self.assertEqual(interactor_callbacks,
-                         initial_interactor_callbacks)
-
+        interactor_callbacks = frozenset([
+            i for i in range(100) if self.s.scene.interactor.has_observer(i)
+        ])
+        self.assertEqual(interactor_callbacks, initial_interactor_callbacks)
 
 
 if __name__ == '__main__':

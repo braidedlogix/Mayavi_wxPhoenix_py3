@@ -1,7 +1,6 @@
 # Author: Prabhu Ramachandran
 # Copyright (c) 2004-2015, Enthought, Inc.
 # License: BSD Style.
-
 """This module generates the class hierarchy for any given Python
 modules.  This can be used (among other things) to generate the
 traitified VTK classes in the correct order.
@@ -76,10 +75,12 @@ class TreeNode:
         descended.
 
         """
+
         def _get_ancestors(node, ancestors):
             ancestors.extend(node.parents)
             for p in node.parents:
                 _get_ancestors(p, ancestors)
+
         ancestors = []
         _get_ancestors(self, ancestors)
         return ancestors
@@ -170,7 +171,7 @@ class ClassTree:
             try:
                 klass = self.nodes[name].klass
             except KeyError:
-                raise KeyError("Cannot find class of name %s"%name)
+                raise KeyError("Cannot find class of name %s" % name)
         return klass
 
     def add_node(self, klass):
@@ -272,4 +273,4 @@ class ClassTree:
 
         # Sort the nodes alphabetically.
         for nodes in self.tree:
-            nodes.sort(key=lambda x:x.name)
+            nodes.sort(key=lambda x: x.name)

@@ -25,8 +25,8 @@ def create_quiver3d():
 # the required size in `savefig`, this forces the re-rendering to
 # occur and catch any potential ill rendering
 
-class TestMlabSavefigUnitTest(unittest.TestCase):
 
+class TestMlabSavefigUnitTest(unittest.TestCase):
     def setUp(self):
         # Make a temporary directory for saved figures
         self.temp_dir = tempfile.mkdtemp()
@@ -59,9 +59,10 @@ class TestMlabSavefigUnitTest(unittest.TestCase):
             engine.close_scene(scene)
         engine.stop()
 
-    @unittest.skipIf(os.environ.get("TRAVIS", False),
-                     ("Offscreen rendering is not tested on Travis "
-                      "due to lack of GLX support"))
+    @unittest.skipIf(
+        os.environ.get("TRAVIS", False),
+        ("Offscreen rendering is not tested on Travis "
+         "due to lack of GLX support"))
     def test_many_savefig_offscreen(self):
         """Test if savefig works with off_screen_rendering and Engine"""
         engine = Engine()
@@ -75,12 +76,10 @@ class TestMlabSavefigUnitTest(unittest.TestCase):
             create_quiver3d()
 
             # save the figure
-            savefig(self.filename, size=(131, 217),
-                    figure=self.figure)
+            savefig(self.filename, size=(131, 217), figure=self.figure)
 
 
 class TestMlabSavefig(TestCase):
-
     def test(self):
         self.main()
 

@@ -3,7 +3,6 @@
 
 # The external API for tvtk.
 
-
 # The version of TVTK that is installed
 from tvtk.version import version, version as __version__
 

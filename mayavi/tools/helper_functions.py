@@ -32,7 +32,6 @@ import numpy
 
 
 def document_pipeline(pipeline):
-
     def the_function(*args, **kwargs):
         return pipeline(*args, **kwargs)
 
@@ -46,8 +45,9 @@ def document_pipeline(pipeline):
     the_function.__doc__ = dedent("""%s
 
     **Keyword arguments:**
-    %s""") % (dedent(doc),
-              traits_doc(pipeline.get_all_traits()),)
+    %s""") % (
+        dedent(doc),
+        traits_doc(pipeline.get_all_traits()), )
 
     return the_function
 
@@ -61,8 +61,7 @@ class Pipeline(HasTraits):
     _pipeline = List()
 
     # Traits here only for documentation purposes
-    figure = Instance('mayavi.core.scene.Scene',
-                help='Figure to populate.')
+    figure = Instance('mayavi.core.scene.Scene', help='Figure to populate.')
 
     def __call__(self, *args, **kwargs):
         """ Calls the logics of the factory, but only after disabling
@@ -162,11 +161,11 @@ class Points3d(Pipeline):
 
     _pipeline = [GlyphFactory, ]
 
-    scale_factor = Any('auto', help='The scaling applied to the glyphs. '
-                        'the size of the glyph is by default calculated '
-                        'from the inter-glyph spacing. Specify a float to '
-                        'give the maximum glyph size in drawing units'
-                        )
+    scale_factor = Any('auto',
+                       help='The scaling applied to the glyphs. '
+                       'the size of the glyph is by default calculated '
+                       'from the inter-glyph spacing. Specify a float to '
+                       'give the maximum glyph size in drawing units')
 
     def __call_internal__(self, *args, **kwargs):
         """ Override the call to be able to scale automatically the glyphs.
@@ -183,6 +182,7 @@ class Points3d(Pipeline):
             g.glyph.glyph.clamping = False
         return g
 
+
 points3d = document_pipeline(Points3d())
 
 
@@ -197,6 +197,7 @@ def test_points3d():
     s = 2 + sin(t)
 
     return points3d(x, y, z, s, colormap="copper", scale_factor=.25)
+
 
 @animate
 def test_points3d_anim(obj=None):
@@ -223,18 +224,45 @@ def test_molecule():
          [54, 62, 28], [57, 66, 12], [6, 59, 16], [1, 44, 22], [0, 49, 6]]
     hx, hy, hz = list(map(numpy.array, zip(*h)))
 
-    oxygen = points3d(ox, oy, oz, scale_factor=16, scale_mode='none',
-                                resolution=20, color=(1, 0, 0), name='Oxygen')
-    nitrogen = points3d(nx, ny, nz, scale_factor=20, scale_mode='none',
-                                resolution=20, color=(0, 0, 1),
-                                name='Nitrogen')
-    carbon = points3d(cx, cy, cz, scale_factor=20, scale_mode='none',
-                                resolution=20, color=(0, 1, 0), name='Carbon')
-    hydrogen = points3d(hx, hy, hz, scale_factor=10, scale_mode='none',
-                                resolution=20, color=(1, 1, 1),
-                                name='Hydrogen')
+    oxygen = points3d(
+        ox,
+        oy,
+        oz,
+        scale_factor=16,
+        scale_mode='none',
+        resolution=20,
+        color=(1, 0, 0),
+        name='Oxygen')
+    nitrogen = points3d(
+        nx,
+        ny,
+        nz,
+        scale_factor=20,
+        scale_mode='none',
+        resolution=20,
+        color=(0, 0, 1),
+        name='Nitrogen')
+    carbon = points3d(
+        cx,
+        cy,
+        cz,
+        scale_factor=20,
+        scale_mode='none',
+        resolution=20,
+        color=(0, 1, 0),
+        name='Carbon')
+    hydrogen = points3d(
+        hx,
+        hy,
+        hz,
+        scale_factor=10,
+        scale_mode='none',
+        resolution=20,
+        color=(1, 1, 1),
+        name='Hydrogen')
 
     return oxygen, nitrogen, carbon, hydrogen
+
 
 #############################################################################
 
@@ -276,7 +304,7 @@ quiver3d = document_pipeline(Quiver3D())
 
 def test_quiver3d():
     x, y, z = numpy.mgrid[-2:3, -2:3, -2:3]
-    r = numpy.sqrt(x ** 2 + y ** 2 + z ** 4)
+    r = numpy.sqrt(x**2 + y**2 + z**4)
     u = y * numpy.sin(r) / (r + 0.001)
     v = -x * numpy.sin(r) / (r + 0.001)
     w = numpy.zeros_like(z)
@@ -297,8 +325,16 @@ def test_quiver3d_cone():
     v = sin(y)
     w = sin(x * z)
 
-    obj = quiver3d(x, y, z, u, v, w, mode='cone', extent=(0, 1, 0, 1, 0, 1),
-                   scale_factor=0.9)
+    obj = quiver3d(
+        x,
+        y,
+        z,
+        u,
+        v,
+        w,
+        mode='cone',
+        extent=(0, 1, 0, 1, 0, 1),
+        scale_factor=0.9)
 
     return obj
 
@@ -306,8 +342,7 @@ def test_quiver3d_cone():
 def test_quiver3d_2d_data():
     dims = [32, 32]
     xmin, xmax, ymin, ymax = [-5, 5, -5, 5]
-    x, y = numpy.mgrid[xmin:xmax:dims[0] * 1j,
-                       ymin:ymax:dims[1] * 1j]
+    x, y = numpy.mgrid[xmin:xmax:dims[0] * 1j, ymin:ymax:dims[1] * 1j]
     x = x.astype('f')
     y = y.astype('f')
 
@@ -317,8 +352,16 @@ def test_quiver3d_2d_data():
     v = sin(y)
     w = numpy.zeros_like(x)
 
-    return quiver3d(x, y, w, u, v, w, colormap="Purples",
-                                scale_factor=0.5, mode="2dthick_arrow")
+    return quiver3d(
+        x,
+        y,
+        w,
+        u,
+        v,
+        w,
+        colormap="Purples",
+        scale_factor=0.5,
+        mode="2dthick_arrow")
 
 
 #############################################################################
@@ -355,7 +398,10 @@ class Flow(Pipeline):
 
     _source_function = Callable(vector_field)
 
-    _pipeline = [ExtractVectorNormFactory, StreamlineFactory, ]
+    _pipeline = [
+        ExtractVectorNormFactory,
+        StreamlineFactory,
+    ]
 
     def __call_internal__(self, *args, **kwargs):
         """ Override the call to be able to choose whether to apply an
@@ -370,15 +416,16 @@ class Flow(Pipeline):
             self.pipeline.pop(0)
         return self.build_pipeline()
 
+
 flow = document_pipeline(Flow())
 
 
 def test_flow():
     x, y, z = numpy.mgrid[-4:4:40j, -4:4:40j, 0:4:20j]
-    r = numpy.sqrt(x ** 2 + y ** 2 + z ** 2 + 0.1)
+    r = numpy.sqrt(x**2 + y**2 + z**2 + 0.1)
     u = y * numpy.sin(r) / r
     v = -x * numpy.sin(r) / r
-    w = numpy.ones_like(z)*0.05
+    w = numpy.ones_like(z) * 0.05
     obj = flow(u, v, w)
     return obj
 
@@ -386,9 +433,8 @@ def test_flow():
 def test_flow_tubes():
     dims = [32, 32, 32]
     xmin, xmax, ymin, ymax, zmin, zmax = [-5, 5, -5, 5, -5, 5]
-    x, y, z = numpy.mgrid[xmin:xmax:dims[0] * 1j,
-                          ymin:ymax:dims[1] * 1j,
-                          zmin:zmax:dims[2] * 1j]
+    x, y, z = numpy.mgrid[xmin:xmax:dims[0] * 1j, ymin:ymax:dims[1] * 1j, zmin:
+                          zmax:dims[2] * 1j]
     x = x.astype('f')
     y = y.astype('f')
     z = z.astype('f')
@@ -419,9 +465,8 @@ def test_flow_anim(obj=None):
 def test_flow_scalars():
     dims = [32, 32, 32]
     xmin, xmax, ymin, ymax, zmin, zmax = [-5, 5, -5, 5, -5, 5]
-    x, y, z = numpy.mgrid[xmin:xmax:dims[0] * 1j,
-                          ymin:ymax:dims[1] * 1j,
-                          zmin:zmax:dims[2] * 1j]
+    x, y, z = numpy.mgrid[xmin:xmax:dims[0] * 1j, ymin:ymax:dims[1] * 1j, zmin:
+                          zmax:dims[2] * 1j]
     x = x.astype('f')
     y = y.astype('f')
     z = z.astype('f')
@@ -433,8 +478,14 @@ def test_flow_scalars():
     w = sin(x * z / 8.)
     t = x * z
 
-    obj = flow(u, v, w, scalars=t, seedtype='plane',
-               linetype='tube', colormap='Spectral')
+    obj = flow(
+        u,
+        v,
+        w,
+        scalars=t,
+        seedtype='plane',
+        linetype='tube',
+        colormap='Spectral')
 
     return obj
 
@@ -550,15 +601,22 @@ class Plot3d(Pipeline):
     give the positions of the successive points of the line. s is an
     optional scalar value associated with each point."""
 
-    tube_radius = Trait(0.025, CFloat, None,
-                        adapts='filter.radius',
-                        help="""radius of the tubes used to represent the
+    tube_radius = Trait(
+        0.025,
+        CFloat,
+        None,
+        adapts='filter.radius',
+        help="""radius of the tubes used to represent the
                         lines, If None, simple lines are used.
                         """)
 
     _source_function = Callable(line_source)
 
-    _pipeline = [StripperFactory, TubeFactory, SurfaceFactory, ]
+    _pipeline = [
+        StripperFactory,
+        TubeFactory,
+        SurfaceFactory,
+    ]
 
     def __call_internal__(self, *args, **kwargs):
         """ Override the call to be able to choose whether to apply
@@ -592,6 +650,7 @@ def test_plot3d():
     l = plot3d(x, y, z, numpy.sin(mu), tube_radius=0.025, colormap='Spectral')
     return l
 
+
 @animate
 def test_plot3d_anim(obj=None):
     """Generates a pretty set of lines and animates it."""
@@ -609,11 +668,12 @@ def test_plot3d_anim(obj=None):
     # Now animate the data.
     ms = obj.mlab_source
     for i in range(10):
-        x = numpy.cos(mu) * (1 + numpy.cos(n_long * mu / n_mer +
-                                          numpy.pi * (i + 1) / 5.) * 0.5)
+        x = numpy.cos(mu) * (
+            1 + numpy.cos(n_long * mu / n_mer + numpy.pi * (i + 1) / 5.) * 0.5)
         scalars = numpy.sin(mu + numpy.pi * (i + 1) / 5)
         ms.set(x=x, scalars=scalars)
         yield
+
 
 #############################################################################
 class ImShow(Pipeline):
@@ -679,7 +739,8 @@ class Surf(Pipeline):
 
     _pipeline = [WarpScalarFactory, PolyDataNormalsFactory, SurfaceFactory]
 
-    warp_scale = Any(1, help="""scale of the z axis (warped from
+    warp_scale = Any(1,
+                     help="""scale of the z axis (warped from
                         the value of the scalar). By default this scale
                         is a float value.
 
@@ -775,6 +836,7 @@ def test_simple_surf():
     x, y = numpy.mgrid[0:3:1, 0:3:1]
     return surf(x, y, numpy.asarray(x, 'd'))
 
+
 @animate
 def test_simple_surf_anim(obj=None):
     """Test Surf with a simple collection of points and animate it."""
@@ -789,6 +851,7 @@ def test_simple_surf_anim(obj=None):
 
 def test_surf():
     """Test surf on regularly spaced co-ordinates like MayaVi."""
+
     def f(x, y):
         sin, cos = numpy.sin, numpy.cos
         return sin(x + y) + sin(2 * x - y) + cos(3 * x + 4 * y)
@@ -805,10 +868,11 @@ def test_surf_wigner():
             of photons"""
         cos = numpy.cos
         exp = numpy.exp
-        return (1 + eta * (exp(-x ** 2 - (y - alpha) ** 2)
-                + exp(-x ** 2 - (y + alpha) ** 2)
-                + 2 * purity * exp(-x ** 2 - y ** 2) *
-                        cos(2 * alpha * x)) / (2 * (1 + exp(-alpha ** 2)))) / 2
+        return (1 + eta *
+                (exp(-x**2 - (y - alpha)**2) + exp(-x**2 - (y + alpha)**2) + 2
+                 * purity * exp(-x**2 - y**2) * cos(2 * alpha * x)) /
+                (2 * (1 + exp(-alpha**2)))) / 2
+
     x, y = numpy.mgrid[-5:5:0.1, -5:5:0.1]
     return surf(x, y, cat)
 
@@ -832,18 +896,25 @@ class Mesh(Pipeline):
     `triangular_mesh` function.
     """
 
-    scale_mode = Trait('none', {'none': 'data_scaling_off',
-                                'scalar': 'scale_by_scalar',
-                                'vector': 'scale_by_vector'},
-                            help="""the scaling mode for the glyphs
+    scale_mode = Trait(
+        'none', {
+            'none': 'data_scaling_off',
+            'scalar': 'scale_by_scalar',
+            'vector': 'scale_by_vector'
+        },
+        help="""the scaling mode for the glyphs
                             ('vector', 'scalar', or 'none').""")
 
-    scale_factor = CFloat(0.05,
-                        desc="""scale factor of the glyphs used to represent
+    scale_factor = CFloat(
+        0.05,
+        desc="""scale factor of the glyphs used to represent
                         the vertices, in fancy_mesh mode. """)
 
-    tube_radius = Trait(0.025, CFloat, None,
-                        help="""radius of the tubes used to represent the
+    tube_radius = Trait(
+        0.025,
+        CFloat,
+        None,
+        help="""radius of the tubes used to represent the
                         lines, in mesh mode. If None, simple lines are used.
                         """)
 
@@ -854,14 +925,19 @@ class Mesh(Pipeline):
                  not work if you specify a solid color using the
                  `color` keyword.""")
 
-    representation = Trait('surface', 'wireframe', 'points', 'mesh',
-                    'fancymesh',
-                    desc="""the representation type used for the surface.""")
+    representation = Trait(
+        'surface',
+        'wireframe',
+        'points',
+        'mesh',
+        'fancymesh',
+        desc="""the representation type used for the surface.""")
 
     _source_function = Callable(grid_source)
 
-    _pipeline = [ExtractEdgesFactory, GlyphFactory, TubeFactory,
-                        SurfaceFactory]
+    _pipeline = [
+        ExtractEdgesFactory, GlyphFactory, TubeFactory, SurfaceFactory
+    ]
 
     def __call_internal__(self, *args, **kwargs):
         """ Override the call to be able to choose whether to apply
@@ -896,8 +972,8 @@ def test_mesh():
     cos = numpy.cos
     sin = numpy.sin
     dphi, dtheta = pi / 250.0, pi / 250.0
-    [phi, theta] = numpy.mgrid[0:pi + dphi * 1.5:dphi,
-                               0:2 * pi + dtheta * 1.5:dtheta]
+    [phi, theta] = numpy.mgrid[0:pi + dphi * 1.5:dphi, 0:2 * pi + dtheta * 1.5:
+                               dtheta]
     m0 = 4
     m1 = 3
     m2 = 2
@@ -928,6 +1004,7 @@ def test_mesh_sphere(r=1.0, npts=(100, 100), colormap='jet'):
     z = r * cos(phi)
     return mesh(x, y, z, colormap=colormap)
 
+
 @animate
 def test_mesh_sphere_anim(obj=None, r=1.0, npts=(100, 100), colormap='jet'):
     """Create a simple sphere and animate it."""
@@ -943,6 +1020,7 @@ def test_mesh_sphere_anim(obj=None, r=1.0, npts=(100, 100), colormap='jet'):
         z = (r + i * 0.25) * cos(phi)
         ms.set(z=z, scalars=z)
         yield
+
 
 def test_mesh_mask_custom_colors(r=1.0, npts=(100, 100)):
     """Create a sphere with masking and using a custom colormap.
@@ -965,7 +1043,7 @@ def test_mesh_mask_custom_colors(r=1.0, npts=(100, 100)):
     # Setup the mask array.
     mask = numpy.zeros_like(x).astype(bool)
     mask[::5] = True
-    mask[:,::5] = True
+    mask[:, ::5] = True
 
     # Create the mesh with the default colormapping.
     m = mesh(x, y, z, scalars=z, mask=mask)
@@ -974,10 +1052,10 @@ def test_mesh_mask_custom_colors(r=1.0, npts=(100, 100)):
     # range 0-255), there should be at least 2 colors in the array.  If you
     # want a constant color set the two colors to the same value.
     colors = numpy.zeros((2, 4), dtype='uint8')
-    colors[0,2] = 255
-    colors[1,1] = 255
+    colors[0, 2] = 255
+    colors[1, 1] = 255
     # Set the alpha value to fully visible.
-    colors[:,3] = 255
+    colors[:, 3] = 255
 
     # Now setup the lookup table to use these colors.
     m.module_manager.scalar_lut_manager.lut.table = colors
@@ -994,8 +1072,13 @@ def test_fancy_mesh():
     y = (1 - cos(u)) * cos(u + 2 * pi / 3) * cos(v - 2 * pi / 3.0) * 0.5
     z = -cos(u - 2 * pi / 3.)
 
-    m = mesh(x, y, z, representation='fancymesh',
-                   tube_radius=0.0075, colormap="RdYlGn")
+    m = mesh(
+        x,
+        y,
+        z,
+        representation='fancymesh',
+        tube_radius=0.0075,
+        colormap="RdYlGn")
     return m
 
 
@@ -1039,6 +1122,7 @@ contour_surf = document_pipeline(ContourSurf())
 
 def test_contour_surf():
     """Test contour_surf on regularly spaced co-ordinates like MayaVi."""
+
     def f(x, y):
         sin, cos = numpy.sin, numpy.cos
         return sin(x + y) + sin(2 * x - y) + cos(3 * x + 4 * y)
@@ -1046,6 +1130,7 @@ def test_contour_surf():
     x, y = numpy.mgrid[-7.:7.05:0.1, -5.:5.05:0.05]
     s = contour_surf(x, y, f)
     return s
+
 
 #############################################################################
 
@@ -1091,15 +1176,17 @@ class BarChart(Pipeline):
 
     _pipeline = [VectorsFactory, ]
 
-    mode = Trait('cube', bar_mode_dict,
-                    desc='The glyph used to represent the bars.')
+    mode = Trait(
+        'cube', bar_mode_dict, desc='The glyph used to represent the bars.')
 
-    lateral_scale = CFloat(0.9, desc='The lateral scale of the glyph, '
-                'in units of the distance between nearest points')
+    lateral_scale = CFloat(
+        0.9,
+        desc='The lateral scale of the glyph, '
+        'in units of the distance between nearest points')
 
     auto_scale = true(desc='whether to compute automatically the '
-                           'lateral scaling of the glyphs. This might be '
-                           'computationally expensive.')
+                      'lateral scaling of the glyphs. This might be '
+                      'computationally expensive.')
 
     def __call_internal__(self, *args, **kwargs):
         """ Override the call to be able to scale automatically the axis.
@@ -1139,6 +1226,7 @@ class BarChart(Pipeline):
 
         return g
 
+
 barchart = document_pipeline(BarChart())
 
 
@@ -1169,6 +1257,7 @@ class TriangularMesh(Mesh):
     """
 
     _source_function = Callable(triangular_mesh_source)
+
 
 triangular_mesh = document_pipeline(TriangularMesh())
 

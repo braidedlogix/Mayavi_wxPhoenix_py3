@@ -43,10 +43,15 @@ class Visualization(HasTraits):
         self.scene.mlab.test_points3d()
 
     # the layout of the dialog screated
-    view = View(Item('scene', editor=SceneEditor(scene_class=MayaviScene),
-                     height=250, width=300, show_label=False),
-                resizable=True # We need this to resize with the parent widget
-                )
+    view = View(
+        Item(
+            'scene',
+            editor=SceneEditor(scene_class=MayaviScene),
+            height=250,
+            width=300,
+            show_label=False),
+        resizable=True  # We need this to resize with the parent widget
+    )
 
 
 ################################################################################
@@ -55,7 +60,7 @@ class MayaviQWidget(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
         layout = QtGui.QVBoxLayout(self)
-        layout.setContentsMargins(0,0,0,0)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         self.visualization = Visualization()
 
@@ -66,8 +71,8 @@ class MayaviQWidget(QtGui.QWidget):
         #QtCore.pyqtRestoreInputHook()
 
         # The edit_traits call will generate the widget to embed.
-        self.ui = self.visualization.edit_traits(parent=self,
-                                                 kind='subpanel').control
+        self.ui = self.visualization.edit_traits(
+            parent=self, kind='subpanel').control
         layout.addWidget(self.ui)
         self.ui.setParent(self)
 
@@ -86,10 +91,10 @@ if __name__ == "__main__":
     label_list = []
     for i in range(3):
         for j in range(3):
-            if (i==1) and (j==1):continue
+            if (i == 1) and (j == 1): continue
             label = QtGui.QLabel(container)
-            label.setText("Your QWidget at (%d, %d)" % (i,j))
-            label.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
+            label.setText("Your QWidget at (%d, %d)" % (i, j))
+            label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
             layout.addWidget(label, i, j)
             label_list.append(label)
     mayavi_widget = MayaviQWidget(container)
@@ -102,5 +107,3 @@ if __name__ == "__main__":
 
     # Start the main event loop.
     app.exec_()
-
-

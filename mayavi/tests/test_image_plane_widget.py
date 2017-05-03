@@ -11,7 +11,6 @@ import numpy
 import unittest
 from mock import patch
 
-
 # Enthought library imports
 from mayavi.core.engine import Engine
 from mayavi.core.null_engine import NullEngine
@@ -23,21 +22,19 @@ from mayavi import mlab
 
 
 class TestImagePlaneWidget(unittest.TestCase):
-
-
     def make_data(self):
         """Creates suitable data for the test."""
         dims = numpy.array((64, 64, 64), 'i')
 
         # Create some scalars to render.
-        dx, dy, dz = 10.0/(dims - 1)
-        x = numpy.reshape(numpy.arange(-5.0, 5.0+dx*0.5, dx, 'f'),
-                          (dims[0], 1, 1))
-        y = numpy.reshape(numpy.arange(-5.0, 5.0+dy*0.5, dy, 'f'),
-                          (1, dims[1], 1))
-        z = numpy.reshape(numpy.arange(-5.0, 5.0+dz*0.5, dz, 'f'),
-                          (1, 1, dims[0]))
-        scalars = numpy.sin(x*y*z)/(x*y*z)
+        dx, dy, dz = 10.0 / (dims - 1)
+        x = numpy.reshape(
+            numpy.arange(-5.0, 5.0 + dx * 0.5, dx, 'f'), (dims[0], 1, 1))
+        y = numpy.reshape(
+            numpy.arange(-5.0, 5.0 + dy * 0.5, dy, 'f'), (1, dims[1], 1))
+        z = numpy.reshape(
+            numpy.arange(-5.0, 5.0 + dz * 0.5, dz, 'f'), (1, 1, dims[0]))
+        scalars = numpy.sin(x * y * z) / (x * y * z)
         return scalars
 
     def setUp(self):
@@ -46,9 +43,9 @@ class TestImagePlaneWidget(unittest.TestCase):
         # Uncomment to see visualization for debugging etc.
         #e = Engine()
         e.start()
-        s=e.new_scene()
-        self.e=e
-        self.s=s
+        s = e.new_scene()
+        self.e = e
+        self.s = s
 
         ############################################################
         # Create a new scene and set up the visualization.
@@ -85,16 +82,15 @@ class TestImagePlaneWidget(unittest.TestCase):
     def check(self):
         """Do the actual testing."""
 
-        s=self.scene
+        s = self.scene
         src = s.children[0]
         i1, i2, i3 = src.children[0].children[1:]
-        self.assertEqual(i1.ipw.plane_orientation,'x_axes')
-        self.assertEqual(numpy.allclose(i1.ipw.center, (0, 31.5, 31.5)),True)
-        self.assertEqual( i2.ipw.plane_orientation,'y_axes')
-        self.assertEqual(numpy.allclose(i2.ipw.center, (31.5, 0, 31.5)),True)
-        self.assertEqual(i3.ipw.plane_orientation,'z_axes')
-        self.assertEqual( numpy.allclose(i3.ipw.center, (31.5, 31.5, 0)),True)
-
+        self.assertEqual(i1.ipw.plane_orientation, 'x_axes')
+        self.assertEqual(numpy.allclose(i1.ipw.center, (0, 31.5, 31.5)), True)
+        self.assertEqual(i2.ipw.plane_orientation, 'y_axes')
+        self.assertEqual(numpy.allclose(i2.ipw.center, (31.5, 0, 31.5)), True)
+        self.assertEqual(i3.ipw.plane_orientation, 'z_axes')
+        self.assertEqual(numpy.allclose(i3.ipw.center, (31.5, 31.5, 0)), True)
 
     def test_image_plane_widget(self):
         "Test if the test fixture works"
@@ -106,9 +102,9 @@ class TestImagePlaneWidget(unittest.TestCase):
         scene = self.scene
         # Save visualization.
         f = BytesIO()
-        f.name = abspath('test.mv2') # We simulate a file.
+        f.name = abspath('test.mv2')  # We simulate a file.
         engine.save_visualization(f)
-        f.seek(0) # So we can read this saved data.
+        f.seek(0)  # So we can read this saved data.
 
         # Remove existing scene.
 
@@ -126,7 +122,7 @@ class TestImagePlaneWidget(unittest.TestCase):
         # Test if the MayaVi2 visualization can be deep-copied.
 
         # Pop the source object.
-        s =  self.scene
+        s = self.scene
         sources = s.children
         s.children = []
         # Add it back to see if that works without error.
@@ -144,7 +140,6 @@ class TestImagePlaneWidget(unittest.TestCase):
 
 
 class TestImagePlaneWidgetNewPipeline(unittest.TestCase):
-
     def setUp(self):
         self._orig_backend = mlab.options.backend
         mlab.options.backend = "test"
@@ -158,7 +153,8 @@ class TestImagePlaneWidgetNewPipeline(unittest.TestCase):
         with patch('pyface.api.error') as m:
             ipw = mlab.pipeline.image_plane_widget(idp)
         self.assertEqual(m.call_count, 0)
-        self.assertEqual(numpy.allclose(ipw.ipw.center, (0.0, 3.0, 1.5)),True)
+        self.assertEqual(numpy.allclose(ipw.ipw.center, (0.0, 3.0, 1.5)), True)
+
 
 if __name__ == '__main__':
     unittest.main()

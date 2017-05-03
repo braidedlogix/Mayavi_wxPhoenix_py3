@@ -35,7 +35,7 @@ class SphinxDocString(NumpyDocString):
     def _str_indent(self, doc, indent=4):
         out = []
         for line in doc:
-            out += [' '*indent + line]
+            out += [' ' * indent + line]
         return out
 
     def _str_signature(self):
@@ -58,8 +58,8 @@ class SphinxDocString(NumpyDocString):
             out += ['']
             for param, param_type, desc in self[name]:
                 if param_type:
-                    out += self._str_indent(['**%s** : %s' % (param.strip(),
-                                                              param_type)])
+                    out += self._str_indent(
+                        ['**%s** : %s' % (param.strip(), param_type)])
                 else:
                     out += self._str_indent([param.strip()])
                 if desc:
@@ -75,8 +75,8 @@ class SphinxDocString(NumpyDocString):
             out += ['']
             for param, param_type, desc in self[name]:
                 if param_type:
-                    out += self._str_indent(['**%s** : %s' % (param.strip(),
-                                                              param_type)])
+                    out += self._str_indent(
+                        ['**%s** : %s' % (param.strip(), param_type)])
                 else:
                     out += self._str_indent(['**%s**' % param.strip()])
                 if desc:
@@ -114,8 +114,7 @@ class SphinxDocString(NumpyDocString):
 
                 # Check if the referenced member can have a docstring or not
                 param_obj = getattr(self._obj, param, None)
-                if not (callable(param_obj)
-                        or isinstance(param_obj, property)
+                if not (callable(param_obj) or isinstance(param_obj, property)
                         or inspect.isgetsetdescriptor(param_obj)):
                     param_obj = None
 
@@ -133,8 +132,8 @@ class SphinxDocString(NumpyDocString):
 
             if others:
                 maxlen_0 = max(3, max([len(x[0]) for x in others]))
-                hdr = sixu("=")*maxlen_0 + sixu("  ") + sixu("=")*10
-                fmt = sixu('%%%ds  %%s  ') % (maxlen_0,)
+                hdr = sixu("=") * maxlen_0 + sixu("  ") + sixu("=") * 10
+                fmt = sixu('%%%ds  %%s  ') % (maxlen_0, )
                 out += ['', '', hdr]
                 for param, param_type, desc in others:
                     desc = sixu(" ").join(x.strip() for x in desc).strip()
@@ -211,8 +210,8 @@ class SphinxDocString(NumpyDocString):
     def _str_examples(self):
         examples_str = "\n".join(self['Examples'])
 
-        if (self.use_plots and 'import matplotlib' in examples_str
-                and 'plot::' not in examples_str):
+        if (self.use_plots and 'import matplotlib' in examples_str and
+                'plot::' not in examples_str):
             out = []
             out += self._str_header('Examples')
             out += ['.. plot::', '']
@@ -274,8 +273,8 @@ def get_doc_object(obj, what=None, doc=None, config={}):
         else:
             what = 'object'
     if what == 'class':
-        return SphinxClassDoc(obj, func_doc=SphinxFunctionDoc, doc=doc,
-                              config=config)
+        return SphinxClassDoc(
+            obj, func_doc=SphinxFunctionDoc, doc=doc, config=config)
     elif what in ('function', 'method'):
         return SphinxFunctionDoc(obj, doc=doc, config=config)
     else:

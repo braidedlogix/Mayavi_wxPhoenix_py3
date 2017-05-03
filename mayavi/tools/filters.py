@@ -20,9 +20,11 @@ from mayavi.core.registry import registry
 from .pipe_base import PipeFactory, make_function
 
 # This the list is dynamically populated further down below at the end.
-__all__ = ['tube', 'warp_scalar', 'threshold', 'elevation_filter',
-            'set_active_attribute', 'user_defined'
-          ]
+__all__ = [
+    'tube', 'warp_scalar', 'threshold', 'elevation_filter',
+    'set_active_attribute', 'user_defined'
+]
+
 
 def new_class(name, bases, dict_):
     try:
@@ -31,18 +33,23 @@ def new_class(name, bases, dict_):
     except ImportError:
         return type(name, bases, dict_)
 
+
 ##############################################################################
 class TubeFactory(PipeFactory):
     """Applies the Tube mayavi filter to the given VTK object."""
 
     _target = Instance(filters.Tube, ())
 
-    tube_sides = CInt(6, adapts='filter.number_of_sides',
-                        desc="""number of sides of the tubes used to
+    tube_sides = CInt(
+        6,
+        adapts='filter.number_of_sides',
+        desc="""number of sides of the tubes used to
                         represent the lines.""")
 
-    tube_radius = CFloat(0.05, adapts='filter.radius',
-                        desc="""radius of the tubes used to represent the
+    tube_radius = CFloat(
+        0.05,
+        adapts='filter.radius',
+        desc="""radius of the tubes used to represent the
                         lines.""")
 
 
@@ -55,8 +62,9 @@ class WarpScalarFactory(PipeFactory):
 
     _target = Instance(filters.WarpScalar, ())
 
-    warp_scale = CFloat(1.0, adapts="filter.scale_factor",
-                            help="scale of the warp scalar")
+    warp_scale = CFloat(
+        1.0, adapts="filter.scale_factor", help="scale of the warp scalar")
+
 
 warp_scalar = make_function(WarpScalarFactory)
 
@@ -67,8 +75,11 @@ class ThresholdFactory(PipeFactory):
 
     _target = Instance(filters.Threshold, ())
 
-    filter_type = Enum('cells', 'points', adapts='filter_type',
-                    help="If threshold is put on cells or points")
+    filter_type = Enum(
+        'cells',
+        'points',
+        adapts='filter_type',
+        help="If threshold is put on cells or points")
 
     low = Trait(None, None, CFloat, help="The lower threshold")
 
@@ -94,15 +105,20 @@ threshold = make_function(ThresholdFactory)
 class ElevationFilterFactory(PipeFactory):
     """Applies the Elevation Filter mayavi filter to the given VTK object."""
 
-    high_point = CArray(default=[0, 0, 1], shape=(3,),
-                    adapts="filter.high_point",
-                    help="The end point of the projection line")
+    high_point = CArray(
+        default=[0, 0, 1],
+        shape=(3, ),
+        adapts="filter.high_point",
+        help="The end point of the projection line")
 
-    low_point = CArray(default=[0, 0, 0], shape=(3,),
-                    adapts="filter.low_point",
-                    help="The start point of the projection line")
+    low_point = CArray(
+        default=[0, 0, 0],
+        shape=(3, ),
+        adapts="filter.low_point",
+        help="The start point of the projection line")
 
     _target = Instance(filters.ElevationFilter, ())
+
 
 elevation_filter = make_function(ElevationFilterFactory)
 
@@ -114,30 +130,28 @@ class SetActiveAttributeFactory(PipeFactory):
     """
 
     point_scalars = String(
-                    adapts="point_scalars_name",
-                    help="The name of the active point scalars")
+        adapts="point_scalars_name",
+        help="The name of the active point scalars")
 
     point_vectors = String(
-                    adapts="point_vectors_name",
-                    help="The name of the active point vectors")
+        adapts="point_vectors_name",
+        help="The name of the active point vectors")
 
     point_tensors = String(
-                    adapts="point_tensors_name",
-                    help="The name of the active point tensors")
+        adapts="point_tensors_name",
+        help="The name of the active point tensors")
 
     cell_scalars = String(
-                    adapts="cell_scalars_name",
-                    help="The name of the active cell scalars")
+        adapts="cell_scalars_name", help="The name of the active cell scalars")
 
     cell_vectors = String(
-                    adapts="cell_vectors_name",
-                    help="The name of the active cell vectors")
+        adapts="cell_vectors_name", help="The name of the active cell vectors")
 
     cell_tensors = String(
-                    adapts="cell_tensors_name",
-                    help="The name of the active cell tensors")
+        adapts="cell_tensors_name", help="The name of the active cell tensors")
 
     _target = Instance(filters.SetActiveAttribute, ())
+
 
 set_active_attribute = make_function(SetActiveAttributeFactory)
 
@@ -148,10 +162,12 @@ class UserDefinedFactory(PipeFactory):
 
     _target = Instance(filters.UserDefined, ())
 
-    filter = Instance(tvtk.Object, adapts="filter",
-                      help="the tvtk filter to adapt. This"
-                           "be either an instance of the filter, or the"
-                           "name of this filter.")
+    filter = Instance(
+        tvtk.Object,
+        adapts="filter",
+        help="the tvtk filter to adapt. This"
+        "be either an instance of the filter, or the"
+        "name of this filter.")
 
     def __init__(self, parent, **kwargs):
         if 'filter' in kwargs:
@@ -170,6 +186,7 @@ class UserDefinedFactory(PipeFactory):
                 kwargs['name'] = 'UserDefined(%s)' % \
                         kwargs['filter'].__class__.__name__
         super(UserDefinedFactory, self).__init__(parent, **kwargs)
+
 
 user_defined = make_function(UserDefinedFactory)
 
@@ -215,9 +232,8 @@ def _make_functions(namespace):
             continue
 
         # The class to wrap.
-        klass = new_class(
-            class_name, (_AutomaticFilterFactory,), {'__doc__': fil.help, }
-        )
+        klass = new_class(class_name, (_AutomaticFilterFactory, ),
+                          {'__doc__': fil.help, })
         klass._metadata = fil
 
         # The mlab helper function.
@@ -227,6 +243,7 @@ def _make_functions(namespace):
         namespace[class_name] = klass
         namespace[func_name] = func
         __all__.append(func_name)
+
 
 # Create the module related functions.
 _make_functions(locals())

@@ -12,18 +12,16 @@ from mayavi.core.pipeline_info import PipelineInfo
 BASE = 'mayavi.sources'
 
 open_3ds = SourceMetadata(
-    id            = "3DSFile",
-    class_name    = BASE + ".three_ds_importer.ThreeDSImporter",
-    tooltip       = "Import a 3D Studio file",
-    desc   = "Import a 3D Studio file",
-    help   = "Import a 3D Studio file",
-    menu_name        = "&3D Studio file",
-    extensions = ['3ds'],
-    wildcard = '3D Studio files (*.3ds)|*.3ds',
-    output_info = PipelineInfo(datasets=['none'],
-                               attribute_types=['any'],
-                               attributes=['any'])
-)
+    id="3DSFile",
+    class_name=BASE + ".three_ds_importer.ThreeDSImporter",
+    tooltip="Import a 3D Studio file",
+    desc="Import a 3D Studio file",
+    help="Import a 3D Studio file",
+    menu_name="&3D Studio file",
+    extensions=['3ds'],
+    wildcard='3D Studio files (*.3ds)|*.3ds',
+    output_info=PipelineInfo(
+        datasets=['none'], attribute_types=['any'], attributes=['any']))
 
 open_image = SourceMetadata(
     id            = "ImageFile",
@@ -53,11 +51,14 @@ open_poly_data = SourceMetadata(
     id            = "PolyDataFile",
     class_name    = BASE + ".poly_data_reader.PolyDataReader",
     menu_name     = "&PolyData file (STL/STLA/STLB/TXT/RAW/PLY/PDB/SLC/FACET\
-                     /OBJ/BYU/XYZ/CUBE)",
+                     /OBJ/BYU/XYZ/CUBE)"
+                                        ,
     tooltip       = "Import a STL/STLA/STLB/TXT/RAW/PLY/PDB/SLC/FACET/OBJ/\
-                     BYU/XYZ/CUBE Poly Data",
+                     BYU/XYZ/CUBE Poly Data"
+                                            ,
     desc   = "Import a STL/STLA/STLB/TXT/RAWPLY/PDB/SLC/FACET/OBJ/BYU/XYZ/\
-              CUBE Poly Data",
+              CUBE Poly Data"
+                             ,
     extensions = ['stl', 'stla', 'stlb', 'txt', 'raw', 'ply', 'pdb', 'slc',
                   'facet', 'xyz', 'cube', 'obj', 'g'],
     wildcard = 'STL files (*.stl)|*.stl|'\
@@ -96,48 +97,43 @@ open_ugrid_data = SourceMetadata(
                                attributes=['any'])
 )
 
-
 open_plot3d = SourceMetadata(
-    id            = "PLOT3DFile",
-    class_name    = BASE + ".plot3d_reader.PLOT3DReader",
-    menu_name     = "&PLOT3D file",
-    tooltip       = "Open a PLOT3D data data",
-    desc        = "Open a PLOT3D data data",
-    help        = "Open a PLOT3D data data",
-    extensions = ['xyz'],
-    wildcard = 'PLOT3D files (*.xyz)|*.xyz',
-    output_info = PipelineInfo(datasets=['structured_grid'],
-                               attribute_types=['any'],
-                               attributes=['any'])
-)
+    id="PLOT3DFile",
+    class_name=BASE + ".plot3d_reader.PLOT3DReader",
+    menu_name="&PLOT3D file",
+    tooltip="Open a PLOT3D data data",
+    desc="Open a PLOT3D data data",
+    help="Open a PLOT3D data data",
+    extensions=['xyz'],
+    wildcard='PLOT3D files (*.xyz)|*.xyz',
+    output_info=PipelineInfo(
+        datasets=['structured_grid'],
+        attribute_types=['any'],
+        attributes=['any']))
 
 open_vrml = SourceMetadata(
-    id            = "VRMLFile",
-    class_name    = BASE + ".vrml_importer.VRMLImporter",
-    menu_name     = "V&RML2 file",
-    tooltip = "Import a VRML2 data file",
-    desc    = "Import a VRML2 data file",
-    help    = "Import a VRML2 data file",
-    extensions = ['wrl'],
-    wildcard = 'VRML2 files (*.wrl)|*.wrl',
-    output_info = PipelineInfo(datasets=['none'],
-                               attribute_types=['any'],
-                               attributes=['any'])
-)
+    id="VRMLFile",
+    class_name=BASE + ".vrml_importer.VRMLImporter",
+    menu_name="V&RML2 file",
+    tooltip="Import a VRML2 data file",
+    desc="Import a VRML2 data file",
+    help="Import a VRML2 data file",
+    extensions=['wrl'],
+    wildcard='VRML2 files (*.wrl)|*.wrl',
+    output_info=PipelineInfo(
+        datasets=['none'], attribute_types=['any'], attributes=['any']))
 
 open_vtk = SourceMetadata(
-    id            = "VTKFile",
-    class_name    = BASE + ".vtk_file_reader.VTKFileReader",
-    menu_name     = "&VTK file",
-    tooltip = "Open a VTK data file",
-    desc    = "Open a VTK data file",
-    help    = "Open a VTK data file",
-    extensions = ['vtk'],
-    wildcard = 'VTK files (*.vtk)|*.vtk',
-    output_info = PipelineInfo(datasets=['any'],
-                               attribute_types=['any'],
-                               attributes=['any'])
-)
+    id="VTKFile",
+    class_name=BASE + ".vtk_file_reader.VTKFileReader",
+    menu_name="&VTK file",
+    tooltip="Open a VTK data file",
+    desc="Open a VTK data file",
+    help="Open a VTK data file",
+    extensions=['vtk'],
+    wildcard='VTK files (*.vtk)|*.vtk',
+    output_info=PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any']))
 
 open_vtk_xml = SourceMetadata(
     id            = "VTKXMLFile",
@@ -165,105 +161,93 @@ open_vtk_xml = SourceMetadata(
 )
 
 parametric_surface = SourceMetadata(
-    id            = "ParametricSurfaceSource",
-    class_name    = BASE + ".parametric_surface.ParametricSurface",
-    menu_name     = "&Create Parametric surface source",
-    tooltip = "Create a parametric surface source",
-    desc    = "Create a parametric surface source",
-    help    = "Create a parametric surface source",
-    extensions = [],
-    wildcard = '',
-    output_info = PipelineInfo(datasets=['poly_data'],
-                               attribute_types=['any'],
-                               attributes=['any'])
-)
+    id="ParametricSurfaceSource",
+    class_name=BASE + ".parametric_surface.ParametricSurface",
+    menu_name="&Create Parametric surface source",
+    tooltip="Create a parametric surface source",
+    desc="Create a parametric surface source",
+    help="Create a parametric surface source",
+    extensions=[],
+    wildcard='',
+    output_info=PipelineInfo(
+        datasets=['poly_data'], attribute_types=['any'], attributes=['any']))
 
 point_load = SourceMetadata(
-    id            = "PointLoadSource",
-    class_name    = BASE + ".point_load.PointLoad",
-    menu_name     = "Create Point &load source",
-    tooltip = "Simulates a point load on a cube of data (for tensors)",
-    desc    = "Simulates a point load on a cube of data (for tensors)",
-    help    = "Simulates a point load on a cube of data (for tensors)",
-    extensions = [],
-    wildcard = '',
-    output_info = PipelineInfo(datasets=['image_data'],
-                               attribute_types=['any'],
-                               attributes=['any'])
-)
+    id="PointLoadSource",
+    class_name=BASE + ".point_load.PointLoad",
+    menu_name="Create Point &load source",
+    tooltip="Simulates a point load on a cube of data (for tensors)",
+    desc="Simulates a point load on a cube of data (for tensors)",
+    help="Simulates a point load on a cube of data (for tensors)",
+    extensions=[],
+    wildcard='',
+    output_info=PipelineInfo(
+        datasets=['image_data'], attribute_types=['any'], attributes=['any']))
 
 builtin_surface = SourceMetadata(
-    id            = "BuiltinSurfaceSource",
-    class_name    = BASE + ".builtin_surface.BuiltinSurface",
-    menu_name     = "Create built-in &surface",
-    tooltip = "Create a vtk poly data source",
-    desc    = "Create a vtk poly data source",
-    help    = "Create a vtk poly data source",
-    extensions = [],
-    wildcard = '',
-    output_info = PipelineInfo(datasets=['poly_data'],
-                               attribute_types=['any'],
-                               attributes=['any'])
-)
+    id="BuiltinSurfaceSource",
+    class_name=BASE + ".builtin_surface.BuiltinSurface",
+    menu_name="Create built-in &surface",
+    tooltip="Create a vtk poly data source",
+    desc="Create a vtk poly data source",
+    help="Create a vtk poly data source",
+    extensions=[],
+    wildcard='',
+    output_info=PipelineInfo(
+        datasets=['poly_data'], attribute_types=['any'], attributes=['any']))
 
 builtin_image = SourceMetadata(
-    id            = "BuiltinImageSource",
-    class_name    = BASE + ".builtin_image.BuiltinImage",
-    menu_name     = "Create built-in &image",
-    tooltip = "Create a vtk image data source",
-    desc    = "Create a vtk image data source",
-    help    = "Create a vtk image data source",
-    extensions = [],
-    wildcard = '',
-    output_info = PipelineInfo(datasets=['image_data'],
-                               attribute_types=['any'],
-                               attributes=['any'])
-)
+    id="BuiltinImageSource",
+    class_name=BASE + ".builtin_image.BuiltinImage",
+    menu_name="Create built-in &image",
+    tooltip="Create a vtk image data source",
+    desc="Create a vtk image data source",
+    help="Create a vtk image data source",
+    extensions=[],
+    wildcard='',
+    output_info=PipelineInfo(
+        datasets=['image_data'], attribute_types=['any'], attributes=['any']))
 
 open_volume = SourceMetadata(
-    id            = "VolumeFile",
-    class_name    = BASE + ".volume_reader.VolumeReader",
-    menu_name     = "&Volume file",
-    tooltip       = "Open a Volume file",
-    desc        = "Open a Volume file",
-    help        = "Open a Volume file",
-    extensions = [],
-    wildcard = '',
-    output_info = PipelineInfo(datasets=['image_data'],
-                               attribute_types=['any'],
-                               attributes=['any'])
-)
+    id="VolumeFile",
+    class_name=BASE + ".volume_reader.VolumeReader",
+    menu_name="&Volume file",
+    tooltip="Open a Volume file",
+    desc="Open a Volume file",
+    help="Open a Volume file",
+    extensions=[],
+    wildcard='',
+    output_info=PipelineInfo(
+        datasets=['image_data'], attribute_types=['any'], attributes=['any']))
 
 open_chaco = SourceMetadata(
-    id            = "ChacoFile",
-    class_name    = BASE + ".chaco_reader.ChacoReader",
-    menu_name     = "&Chaco file",
-    tooltip       = "Open a Chaco file",
-    desc        = "Open a Chaco file",
-    help        = "Open a Chaco file",
-    extensions = [],
-    wildcard = '',
-    output_info = PipelineInfo(datasets=['unstructured_grid'],
-                               attribute_types=['any'],
-                               attributes=['any'])
-)
-
-
+    id="ChacoFile",
+    class_name=BASE + ".chaco_reader.ChacoReader",
+    menu_name="&Chaco file",
+    tooltip="Open a Chaco file",
+    desc="Open a Chaco file",
+    help="Open a Chaco file",
+    extensions=[],
+    wildcard='',
+    output_info=PipelineInfo(
+        datasets=['unstructured_grid'],
+        attribute_types=['any'],
+        attributes=['any']))
 
 # Now collect all the sources for the mayavi registry.
-sources = [open_3ds,
-           open_image,
-           open_plot3d,
-           open_vrml,
-           open_vtk,
-           open_vtk_xml,
-           parametric_surface,
-           point_load,
-           builtin_surface,
-           builtin_image,
-           open_poly_data,
-           open_ugrid_data,
-           open_volume,
-           open_chaco,
-           ]
-
+sources = [
+    open_3ds,
+    open_image,
+    open_plot3d,
+    open_vrml,
+    open_vtk,
+    open_vtk_xml,
+    parametric_surface,
+    point_load,
+    builtin_surface,
+    builtin_image,
+    open_poly_data,
+    open_ugrid_data,
+    open_volume,
+    open_chaco,
+]

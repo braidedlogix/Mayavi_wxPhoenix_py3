@@ -10,6 +10,7 @@ from os.path import splitext
 from tvtk.tvtk_access import tvtk
 from tvtk.common import configure_input_data
 
+
 ######################################################################
 # Utility functions.
 ######################################################################
@@ -31,12 +32,13 @@ def write_data(dataset, fname, **kwargs):
     assert isinstance(dataset, tvtk.DataSet), err_msg
 
     # Mapping to determine appropriate extension and writer.
-    d2r = {'vtkImageData': ('.vti', tvtk.StructuredPointsWriter),
-           'vtkRectilinearGrid': ('.vtr', tvtk.RectilinearGridWriter),
-           'vtkStructuredGrid': ('.vts', tvtk.StructuredGridWriter),
-           'vtkPolyData': ('.vtp', tvtk.PolyDataWriter),
-           'vtkUnstructuredGrid': ('.vtu', tvtk.UnstructuredGridWriter)
-           }
+    d2r = {
+        'vtkImageData': ('.vti', tvtk.StructuredPointsWriter),
+        'vtkRectilinearGrid': ('.vtr', tvtk.RectilinearGridWriter),
+        'vtkStructuredGrid': ('.vts', tvtk.StructuredGridWriter),
+        'vtkPolyData': ('.vtp', tvtk.PolyDataWriter),
+        'vtkUnstructuredGrid': ('.vtu', tvtk.UnstructuredGridWriter)
+    }
 
     for type in d2r:
         if dataset.is_a(type):
@@ -57,4 +59,3 @@ def write_data(dataset, fname, **kwargs):
     w = writer(file_name=file_name, **kwargs)
     configure_input_data(w, dataset)
     w.write()
-

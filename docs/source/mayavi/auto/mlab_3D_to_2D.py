@@ -121,10 +121,10 @@ import matplotlib
 matplotlib.use('WXAgg')
 import pylab as pl
 
-
 import numpy as np
 from mayavi import mlab
 from mayavi.core.ui.mayavi_scene import MayaviScene
+
 
 def get_world_to_view_matrix(mlab_scene):
     """returns the 4x4 matrix that is a concatenation of the modelview transform and
@@ -133,19 +133,18 @@ def get_world_to_view_matrix(mlab_scene):
     if not isinstance(mlab_scene, MayaviScene):
         raise TypeError('argument must be an instance of MayaviScene')
 
-
     # The VTK method needs the aspect ratio and near and far clipping planes
     # in order to return the proper transform. So we query the current scene
     # object to get the parameters we need.
     scene_size = tuple(mlab_scene.get_size())
     clip_range = mlab_scene.camera.clipping_range
-    aspect_ratio = float(scene_size[0])/float(scene_size[1])
+    aspect_ratio = float(scene_size[0]) / float(scene_size[1])
 
     # this actually just gets a vtk matrix object, we can't really do anything with it yet
     vtk_comb_trans_mat = mlab_scene.camera.get_composite_projection_transform_matrix(
-                                aspect_ratio, clip_range[0], clip_range[1])
+        aspect_ratio, clip_range[0], clip_range[1])
 
-     # get the vtk mat as a numpy array
+    # get the vtk mat as a numpy array
     np_comb_trans_mat = vtk_comb_trans_mat.to_array()
 
     return np_comb_trans_mat
@@ -166,10 +165,9 @@ def get_view_to_display_matrix(mlab_scene):
     # normalized view coordinates have the origin in the middle of the space
     # so we need to scale by width and height of the display window and shift
     # by half width and half height. The matrix accomplishes that.
-    view_to_disp_mat = np.array([[x/2.0,      0.,   0.,   x/2.0],
-                                 [   0.,  -y/2.0,   0.,   y/2.0],
-                                 [   0.,      0.,   1.,      0.],
-                                 [   0.,      0.,   0.,      1.]])
+    view_to_disp_mat = np.array([[x / 2.0, 0., 0., x / 2.0],
+                                 [0., -y / 2.0, 0., y / 2.0],
+                                 [0., 0., 1., 0.], [0., 0., 0., 1.]])
 
     return view_to_disp_mat
 

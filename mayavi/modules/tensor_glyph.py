@@ -16,6 +16,7 @@ from mayavi.core.module import Module
 from mayavi.components.actor import Actor
 from mayavi.components import glyph
 
+
 ######################################################################
 # `TensorGlyph` class.
 ######################################################################
@@ -29,20 +30,22 @@ class TensorGlyph(Module):
     # The actor.
     actor = Instance(Actor, allow_none=False, record=True)
 
-    input_info = PipelineInfo(datasets=['any'],
-                              attribute_types=['any'],
-                              attributes=['tensors'])
+    input_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['tensors'])
 
     # Create the UI for the traits.
-    view = View(Group(Item(name='actor', style='custom'),
-                      show_labels=False,
-                      label='Actor'),
-                Group(Item(name='glyph', style='custom',
-                           resizable=True),
-                      label='Tensor Glyph',
-                      selected=True,
-                      show_labels=False
-                      ))
+    view = View(
+        Group(
+            Item(
+                name='actor', style='custom'),
+            show_labels=False,
+            label='Actor'),
+        Group(
+            Item(
+                name='glyph', style='custom', resizable=True),
+            label='Tensor Glyph',
+            selected=True,
+            show_labels=False))
 
     ######################################################################
     # `Module` interface
@@ -61,7 +64,8 @@ class TensorGlyph(Module):
         """
         # Setup the glyphs.
         self.glyph = glyph.Glyph(glyph_type='tensor')
-        self.glyph.glyph_source.glyph_source = self.glyph.glyph_source.glyph_list[4]
+        self.glyph.glyph_source.glyph_source = self.glyph.glyph_source.glyph_list[
+            4]
         self.actor = Actor()
 
     def update_pipeline(self):
@@ -99,7 +103,6 @@ class TensorGlyph(Module):
         if actor is not None:
             actor.inputs = [new]
         self._change_components(old, new)
-
 
     def _actor_changed(self, old, new):
         new.scene = self.scene

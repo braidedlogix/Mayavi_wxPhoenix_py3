@@ -13,12 +13,7 @@ __requires__ = [
     'traitsui',
 ]
 
-__extras_require__ = {
-    'app': [
-        'envisage',
-    ],
-}
-
+__extras_require__ = {'app': ['envisage', ], }
 
 # Try forcing the use of wx 2.8 before any other import.
 import sys
@@ -34,10 +29,11 @@ if not 'wx' in sys.modules:
 
 
 def _jupyter_nbextension_paths():
-    return [dict(
-        section="notebook",
-        # the path is relative to the `mayavi` directory
-        src="tools/static",
-        # directory in the `nbextension/` namespace
-        dest="mayavi",
-    )]
+    return [
+        dict(
+            section="notebook",
+            # the path is relative to the `mayavi` directory
+            src="tools/static",
+            # directory in the `nbextension/` namespace
+            dest="mayavi", )
+    ]

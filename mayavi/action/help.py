@@ -27,14 +27,15 @@ from mayavi.preferences.api import preference_manager
 local_dir = dirname(mayavi.api.__file__)
 HTML_DIR = join(local_dir, 'html')
 if not path.exists(HTML_DIR):
-    HTML_DIR = join(dirname(dirname(local_dir)),
-                                    'build', 'docs', 'html', 'mayavi')
+    HTML_DIR = join(
+        dirname(dirname(local_dir)), 'build', 'docs', 'html', 'mayavi')
     if not path.exists(HTML_DIR):
         HTML_DIR = None
 
+
 def browser_open(url):
     if sys.platform == 'darwin':
-            os.system('open %s &' % url)
+        os.system('open %s &' % url)
     else:
         import webbrowser
         if webbrowser._iscommand('firefox') and \
@@ -66,15 +67,16 @@ def open_tvtk_docs():
     from tvtk.tools.tvtk_doc import TVTKClassChooser
     TVTKClassChooser().edit_traits()
 
+
 ######################################################################
 # `HelpIndex` class.
 ######################################################################
 class HelpIndex(Action):
     """ An action that pop up the help in a browser. """
 
-    tooltip       = "The Mayavi2 user guide"
+    tooltip = "The Mayavi2 user guide"
 
-    description   = "The Mayavi2 user guide"
+    description = "The Mayavi2 user guide"
 
     ###########################################################################
     # 'Action' interface.
@@ -91,9 +93,9 @@ class HelpIndex(Action):
 class TVTKClassBrowser(Action):
     """ An action that opens the tvtk interactive class browser. """
 
-    tooltip       = "The TVTK interactive class browser"
+    tooltip = "The TVTK interactive class browser"
 
-    description   = "The TVTK interactive class browser"
+    description = "The TVTK interactive class browser"
 
     ###########################################################################
     # 'Action' interface.
@@ -102,4 +104,3 @@ class TVTKClassBrowser(Action):
     def perform(self, event):
         """ Performs the action. """
         open_tvtk_docs()
-

@@ -131,10 +131,8 @@ def get_outline_bounds(figure=None):
 
     # Use mode='rgba' to have float values, as with fig.scene.background
     outline = screenshot(mode='rgba')
-    outline = ((outline[..., 0] != red)
-                + (outline[..., 1] != green)
-                + (outline[..., 2] != blue)
-                )
+    outline = ((outline[..., 0] != red) + (outline[..., 1] != green) +
+               (outline[..., 2] != blue))
     outline_x = outline.sum(axis=0)
     outline_y = outline.sum(axis=1)
     height, width = outline.shape
@@ -157,8 +155,13 @@ def get_outline_bounds(figure=None):
     return x_min, x_max, y_min, y_max, width, height
 
 
-def view(azimuth=None, elevation=None, distance=None, focalpoint=None,
-            roll=None, reset_roll=True, figure=None):
+def view(azimuth=None,
+         elevation=None,
+         distance=None,
+         focalpoint=None,
+         roll=None,
+         reset_roll=True,
+         figure=None):
     """ Sets/Gets the view point for the camera::
 
      view(azimuth=None, elevation=None, distance=None, focalpoint=None,
@@ -315,14 +318,14 @@ def view(azimuth=None, elevation=None, distance=None, focalpoint=None,
         # Reset the zoom, to have the full extents:
         scene.reset_zoom()
         x_min, x_max, y_min, y_max, w, h = get_outline_bounds(figure=figure)
-        x_focus, y_focus = world_to_display(cen[0], cen[1], cen[2],
-                                            figure=figure)
+        x_focus, y_focus = world_to_display(
+            cen[0], cen[1], cen[2], figure=figure)
 
-        ratio = 1.1 * max((x_focus - x_min) / x_focus,
-                        (x_max - x_focus) / (w - x_focus),
-                        (y_focus - y_min) / y_focus,
-                        (y_max - y_focus) / (h - y_focus),
-                       )
+        ratio = 1.1 * max(
+            (x_focus - x_min) / x_focus,
+            (x_max - x_focus) / (w - x_focus),
+            (y_focus - y_min) / y_focus,
+            (y_max - y_focus) / (h - y_focus), )
 
         distance = get_camera_direction(cam)[0]
         r = distance * ratio

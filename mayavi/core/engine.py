@@ -11,14 +11,15 @@ highest level.
 try:
     import vtk
 except ImportError as m:
-    m.args = ('%s\n%s\nDo you have vtk and its Python bindings installed properly?' %
-                    (m.args[0], '_'*80),)
+    m.args = (
+        '%s\n%s\nDo you have vtk and its Python bindings installed properly?' %
+        (m.args[0], '_' * 80), )
     raise
 
 # Enthought library imports.
-from traits.api import (HasStrictTraits, List, Str,
-        Property, Instance, Event, HasTraits, Callable, Dict,
-        Bool, on_trait_change, WeakRef)
+from traits.api import (HasStrictTraits, List, Str, Property, Instance, Event,
+                        HasTraits, Callable, Dict, Bool, on_trait_change,
+                        WeakRef)
 from traitsui.api import View, Item
 from apptools.persistence import state_pickler
 from apptools.scripting.api import Recorder, recordable
@@ -42,15 +43,19 @@ def _id_generator():
     window."""
     n = 1
     while True:
-        yield(n)
+        yield (n)
         n += 1
+
+
 scene_id_generator = _id_generator()
+
 
 def get_args(function):
     """ Simple inspect-like function to inspect the arguments a function
         takes.
     """
     return function.__code__.co_varnames[:function.__code__.co_argcount]
+
 
 ######################################################################
 # `Engine` class
@@ -116,13 +121,15 @@ class Engine(HasStrictTraits):
     _viewer_ref = Dict
 
     # View related traits.
-    current_selection_view = View(Item(name='_current_selection',
-                                       enabled_when='_current_selection is not None',
-                                       style='custom', springy=True,
-                                       show_label=False,),
-                                  resizable=True,
-                                  scrollable=True
-                                  )
+    current_selection_view = View(
+        Item(
+            name='_current_selection',
+            enabled_when='_current_selection is not None',
+            style='custom',
+            springy=True,
+            show_label=False, ),
+        resizable=True,
+        scrollable=True)
 
     ######################################################################
     # `object` interface
@@ -135,14 +142,15 @@ class Engine(HasStrictTraits):
 
         # To remove ref cycle with root preferences helper, the trait change
         # handler is an instance method
-        preference_manager.root.on_trait_change(self._show_helper_nodes_changed,
-                                                'show_helper_nodes')
+        preference_manager.root.on_trait_change(
+            self._show_helper_nodes_changed, 'show_helper_nodes')
 
     def __get_pure_state__(self):
         d = self.__dict__.copy()
-        for x in ['_current_scene', '_current_object',
-                  '__sync_trait__', '_viewer_ref',
-                  '__traits_listener__']:
+        for x in [
+                '_current_scene', '_current_object', '__sync_trait__',
+                '_viewer_ref', '__traits_listener__'
+        ]:
             d.pop(x, None)
         return d
 
@@ -253,7 +261,7 @@ class Engine(HasStrictTraits):
         # Save the state of VTK's global warning display.
         o = vtk.vtkObject
         w = o.GetGlobalWarningDisplay()
-        o.SetGlobalWarningDisplay(0) # Turn it off.
+        o.SetGlobalWarningDisplay(0)  # Turn it off.
         try:
             #FIXME: This is for streamline seed point widget position which
             #does not get serialized correctly
@@ -278,7 +286,7 @@ class Engine(HasStrictTraits):
         # Save the state of VTK's global warning display.
         o = vtk.vtkObject
         w = o.GetGlobalWarningDisplay()
-        o.SetGlobalWarningDisplay(0) # Turn it off.
+        o.SetGlobalWarningDisplay(0)  # Turn it off.
         try:
             # Get the state from the file.
             state = state_pickler.load_state(file_or_fname)
@@ -308,7 +316,7 @@ class Engine(HasStrictTraits):
         passed_scene = scene
         reader = registry.get_file_reader(filename)
         if reader is None:
-            msg = 'No suitable reader found for the file %s'%filename
+            msg = 'No suitable reader found for the file %s' % filename
             error(msg)
         else:
             src = None
@@ -371,7 +379,7 @@ class Engine(HasStrictTraits):
             if hasattr(scene, 'name'):
                 name = scene.name
             else:
-                name = 'Mayavi Scene %d'%next(scene_id_generator)
+                name = 'Mayavi Scene %d' % next(scene_id_generator)
 
         s = Scene(scene=scene, name=name, parent=self)
         s.start()
@@ -467,7 +475,6 @@ class Engine(HasStrictTraits):
             if hasattr(viewer, 'title'):
                 self.current_scene.sync_trait('name', viewer, 'title')
         return viewer
-
 
     @recordable
     def close_scene(self, scene):
@@ -579,9 +586,8 @@ class Engine(HasStrictTraits):
         """
         self._viewer_ref.clear()
         self.scenes = []
-        preference_manager.root.on_trait_change(self._show_helper_nodes_changed,
-                                                'show_helper_nodes',
-                                                remove=True)
+        preference_manager.root.on_trait_change(
+            self._show_helper_nodes_changed, 'show_helper_nodes', remove=True)
         registry.unregister_engine(self)
 
     def _show_helper_nodes_changed(self):

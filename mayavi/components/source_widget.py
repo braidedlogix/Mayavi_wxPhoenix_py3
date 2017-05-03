@@ -16,6 +16,7 @@ from apptools.persistence.state_pickler import set_state
 from mayavi.core.common import handle_children_state
 from mayavi.core.component import Component
 
+
 ######################################################################
 # `SourceWidget` class.
 ######################################################################
@@ -34,10 +35,11 @@ class SourceWidget(Component):
     # change and when the widget interaction is complete, 3)
     # 'non-interactive' -- poly_data is updated only explicitly at
     # users request by calling `object.update_poly_data`.
-    update_mode = Trait('interactive', TraitPrefixList(['interactive',
-                                                        'semi-interactive',
-                                                        'non-interactive']),
-                        desc='the speed at which the poly data is updated')
+    update_mode = Trait(
+        'interactive',
+        TraitPrefixList(
+            ['interactive', 'semi-interactive', 'non-interactive']),
+        desc='the speed at which the poly data is updated')
 
     # A list of predefined glyph sources that can be used.
     widget_list = List(tvtk.Object, record=False)
@@ -55,13 +57,16 @@ class SourceWidget(Component):
     ########################################
     # View related traits.
 
-    view = View(Group(Item(name='widget', style='custom', resizable=True,
-                           editor=InstanceEditor(name='widget_list')),
-                      label='Source Widget',
-                      show_labels=False,
-                      ),
+    view = View(
+        Group(
+            Item(
+                name='widget',
+                style='custom',
                 resizable=True,
-                )
+                editor=InstanceEditor(name='widget_list')),
+            label='Source Widget',
+            show_labels=False, ),
+        resizable=True, )
 
     ######################################################################
     # `Base` interface
@@ -104,10 +109,12 @@ class SourceWidget(Component):
             # set (plus it does not have an update_placement method
             # which is a bug).  So we force this by creating a similar
             # sphere source and copy its output.
-            s = tvtk.SphereSource(center=w.center, radius=w.radius,
-                                  theta_resolution=w.theta_resolution,
-                                  phi_resolution=w.phi_resolution,
-                                  lat_long_tessellation=True)
+            s = tvtk.SphereSource(
+                center=w.center,
+                radius=w.radius,
+                theta_resolution=w.theta_resolution,
+                phi_resolution=w.phi_resolution,
+                lat_long_tessellation=True)
             s.update()
             self.poly_data.shallow_copy(s.output)
         else:
@@ -132,12 +139,17 @@ class SourceWidget(Component):
         set the `actors` attribute up at this point.
         """
         # Setup the glyphs.
-        sources = [tvtk.SphereWidget(theta_resolution=8, phi_resolution=6),
-                   tvtk.LineWidget(clamp_to_bounds=False),
-                   tvtk.PlaneWidget(),
-                   tvtk.PointWidget(outline=False, x_shadows=False,
-                                    y_shadows=False, z_shadows=False),
-                   ]
+        sources = [
+            tvtk.SphereWidget(
+                theta_resolution=8, phi_resolution=6),
+            tvtk.LineWidget(clamp_to_bounds=False),
+            tvtk.PlaneWidget(),
+            tvtk.PointWidget(
+                outline=False,
+                x_shadows=False,
+                y_shadows=False,
+                z_shadows=False),
+        ]
         self.widget_list = sources
         # The 'widgets' trait is set in the '_widget_changed' handler.
         self.widget = sources[0]
@@ -164,10 +176,10 @@ class SourceWidget(Component):
         # If the dataset is effectively 2D switch to using the line
         # widget since that works best.
         b = self.inputs[0].get_output_dataset().bounds
-        l = [(b[1]-b[0]), (b[3]-b[2]), (b[5]-b[4])]
+        l = [(b[1] - b[0]), (b[3] - b[2]), (b[5] - b[4])]
         max_l = max(l)
         for i, x in enumerate(l):
-            if x/max_l < 1.0e-6:
+            if x / max_l < 1.0e-6:
                 w = self.widget = self.widget_list[1]
                 w.clamp_to_bounds = True
                 w.align = ['z_axis', 'z_axis', 'y_axis'][i]
@@ -214,9 +226,9 @@ class SourceWidget(Component):
         if recorder is not None:
             idx = self.widget_list.index(value)
             name = recorder.get_script_id(self)
-            lhs = '%s.widget'%name
-            rhs = '%s.widget_list[%d]'%(name, idx)
-            recorder.record('%s = %s'%(lhs, rhs))
+            lhs = '%s.widget' % name
+            rhs = '%s.widget_list[%d]' % (name, idx)
+            recorder.record('%s = %s' % (lhs, rhs))
 
         if len(self.inputs) > 0:
             self.configure_input(value, self.inputs[0].outputs[0])
@@ -253,8 +265,7 @@ class SourceWidget(Component):
 
     def _connect(self, obj):
         """Wires up all the event handlers."""
-        obj.add_observer('InteractionEvent',
-                         self._on_interaction_event)
+        obj.add_observer('InteractionEvent', self._on_interaction_event)
         if isinstance(obj, tvtk.PlaneWidget):
             obj.on_trait_change(self._on_alignment_set, 'normal_to_x_axis')
             obj.on_trait_change(self._on_alignment_set, 'normal_to_y_axis')
@@ -263,7 +274,7 @@ class SourceWidget(Component):
             obj.on_trait_change(self._on_alignment_set, 'align')
 
         # Setup the widgets colors.
-        fg = (1,1,1)
+        fg = (1, 1, 1)
         if self.scene is not None:
             fg = self.scene.foreground
         self._setup_widget_colors(obj, fg)
@@ -273,16 +284,18 @@ class SourceWidget(Component):
 
     def _setup_widget_colors(self, widget, color):
         trait_names = widget.trait_names()
-        props = [x for x in trait_names
-                 if 'property' in x and 'selected' not in x]
-        sel_props = [x for x in trait_names
-                     if 'property' in x and 'selected' in x]
+        props = [
+            x for x in trait_names if 'property' in x and 'selected' not in x
+        ]
+        sel_props = [
+            x for x in trait_names if 'property' in x and 'selected' in x
+        ]
         for p in props:
             setattr(getattr(widget, p), 'color', color)
             setattr(getattr(widget, p), 'line_width', 2)
         for p in sel_props:
             # Set the selected color to 'red'.
-            setattr(getattr(widget, p), 'color', (1,0,0))
+            setattr(getattr(widget, p), 'color', (1, 0, 0))
             setattr(getattr(widget, p), 'line_width', 2)
         self.render()
 

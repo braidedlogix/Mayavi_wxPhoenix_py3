@@ -25,39 +25,51 @@ class BuiltinSurface(Source):
     __version__ = 0
 
     # Flag to set the poly data type.
-    source = Enum('arrow','cone','cube','cylinder','disk','earth','line',
-                  'outline','plane','point', 'polygon','sphere',
-                  'superquadric','textured sphere', 'glyph2d',
-                  desc='which poly data source to be used')
+    source = Enum(
+        'arrow',
+        'cone',
+        'cube',
+        'cylinder',
+        'disk',
+        'earth',
+        'line',
+        'outline',
+        'plane',
+        'point',
+        'polygon',
+        'sphere',
+        'superquadric',
+        'textured sphere',
+        'glyph2d',
+        desc='which poly data source to be used')
 
     # Define the trait 'data_source' whose value must be an instance of
     # type PolyData
-    data_source = Instance(tvtk.PolyDataAlgorithm, allow_none=False,
-                                    record=True)
+    data_source = Instance(
+        tvtk.PolyDataAlgorithm, allow_none=False, record=True)
 
     # Information about what this object can produce.
-    output_info = PipelineInfo(datasets=['poly_data'],
-                               attribute_types=['any'],
-                               attributes=['any'])
+    output_info = PipelineInfo(
+        datasets=['poly_data'], attribute_types=['any'], attributes=['any'])
 
     # Create the UI for the traits.
-    view = View(Group(Item(name='source'),
-                  Item(name='data_source',
-                       style='custom',
-                       resizable=True),
-                   label='Surface Source',
-                    show_labels=False),
-             resizable=True)
-
+    view = View(
+        Group(
+            Item(name='source'),
+            Item(
+                name='data_source', style='custom', resizable=True),
+            label='Surface Source',
+            show_labels=False),
+        resizable=True)
 
     ########################################
     # Private traits.
 
     # A dictionary that maps the source names to instances of the
     # poly data sources.
-    _source_dict = Dict(Str,
-                          Instance(tvtk.PolyDataAlgorithm,
-                                   allow_none=False))
+    _source_dict = Dict(
+        Str, Instance(
+            tvtk.PolyDataAlgorithm, allow_none=False))
 
     ######################################################################
     # `object` interface
@@ -92,7 +104,6 @@ class BuiltinSurface(Source):
         """
         self.data_source = self._source_dict[self.source]
 
-
     def _data_source_changed(self, old, new):
         """This method is invoked (automatically) when the
         poly data source is changed ."""
@@ -105,20 +116,21 @@ class BuiltinSurface(Source):
 
     def __source_dict_default(self):
         """Default value for source dict."""
-        sd = {'arrow':tvtk.ArrowSource(),
-              'cone':tvtk.ConeSource(),
-              'cube':tvtk.CubeSource(),
-              'cylinder':tvtk.CylinderSource(),
-              'disk':tvtk.DiskSource(),
-              'earth':tvtk.EarthSource(),
-              'line':tvtk.LineSource(),
-              'outline':tvtk.OutlineSource(),
-              'plane':tvtk.PlaneSource(),
-              'point':tvtk.PointSource(),
-              'polygon':tvtk.RegularPolygonSource(),
-              'sphere':tvtk.SphereSource(),
-              'superquadric':tvtk.SuperquadricSource(),
-              'textured sphere':tvtk.TexturedSphereSource(),
-              'glyph2d': tvtk.GlyphSource2D()}
+        sd = {
+            'arrow': tvtk.ArrowSource(),
+            'cone': tvtk.ConeSource(),
+            'cube': tvtk.CubeSource(),
+            'cylinder': tvtk.CylinderSource(),
+            'disk': tvtk.DiskSource(),
+            'earth': tvtk.EarthSource(),
+            'line': tvtk.LineSource(),
+            'outline': tvtk.OutlineSource(),
+            'plane': tvtk.PlaneSource(),
+            'point': tvtk.PointSource(),
+            'polygon': tvtk.RegularPolygonSource(),
+            'sphere': tvtk.SphereSource(),
+            'superquadric': tvtk.SuperquadricSource(),
+            'textured sphere': tvtk.TexturedSphereSource(),
+            'glyph2d': tvtk.GlyphSource2D()
+        }
         return sd
-

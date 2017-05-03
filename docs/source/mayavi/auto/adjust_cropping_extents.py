@@ -24,7 +24,6 @@ on creating GUIs with Traits:
 # Copyright (c) 2010, Enthought, Inc.
 # License: BSD Style.
 
-
 ################################################################################
 # Create a set of points, with given density
 import numpy as np
@@ -35,6 +34,7 @@ x, y, z, s = np.random.random((4, 500))
 from traits.api import HasTraits, Range, Float, Instance, \
     on_trait_change
 from traitsui.api import View
+
 
 class ExtentDialog(HasTraits):
     """ A dialog to graphical adjust the extents of a filter.
@@ -59,17 +59,20 @@ class ExtentDialog(HasTraits):
 
     @on_trait_change('x_min,x_max,y_min,y_max,z_min,z_max')
     def update_extent(self):
-        if (self.filter is not None
-                    and self.x_min < self.x_max
-                    and self.y_min < self.y_max
-                    and self.z_min < self.z_max
-                            ):
-            self.filter.extent = (self.x_min, self.x_max,
-                                  self.y_min, self.y_max,
-                                  self.z_min, self.z_max)
+        if (self.filter is not None and self.x_min < self.x_max and
+                self.y_min < self.y_max and self.z_min < self.z_max):
+            self.filter.extent = (self.x_min, self.x_max, self.y_min,
+                                  self.y_max, self.z_min, self.z_max)
 
-    view = View('x_min', 'x_max', 'y_min', 'y_max', 'z_min', 'z_max',
-                title='Edit extent', resizable=True)
+    view = View(
+        'x_min',
+        'x_max',
+        'y_min',
+        'y_max',
+        'z_min',
+        'z_max',
+        title='Edit extent',
+        resizable=True)
 
 
 ################################################################################
@@ -82,15 +85,17 @@ pts = mlab.pipeline.scalar_scatter(x, y, z, s)
 mlab.outline(pts)
 
 # Use a geometry_filter to filter with a bounding box
-geometry_filter = mlab.pipeline.user_defined(pts,
-                                   filter='GeometryFilter')
+geometry_filter = mlab.pipeline.user_defined(pts, filter='GeometryFilter')
 geometry_filter.filter.extent_clipping = True
 # Connect our dialog to the filter
 extent_dialog = ExtentDialog(
-            data_x_min=0, data_x_max=1,
-            data_y_min=0, data_y_max=1,
-            data_z_min=0, data_z_max=1,
-            filter=geometry_filter.filter)
+    data_x_min=0,
+    data_x_max=1,
+    data_y_min=0,
+    data_y_max=1,
+    data_z_min=0,
+    data_z_max=1,
+    filter=geometry_filter.filter)
 # We need to use 'edit_traits' and not 'configure_traits()' as we do
 # not want to start the GUI event loop (the call to mlab.show())
 # at the end of the script will do it.
@@ -98,8 +103,7 @@ extent_dialog.edit_traits()
 
 # The geometry_filter leaves hanging points, we need to add a
 # CleanPolyData filter to get rid of these.
-clip = mlab.pipeline.user_defined(geometry_filter,
-                                    filter='CleanPolyData')
+clip = mlab.pipeline.user_defined(geometry_filter, filter='CleanPolyData')
 
 # Finally, visualize the remaining points with spheres using a glyph
 # module

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """ This is a simple test envisage3 application to demonstrate how one
 can use TVTK's scene and browser plugins to create a simple application.
 """
@@ -26,8 +25,8 @@ from tvtk.plugins.scene.ui.scene_ui_plugin import SceneUIPlugin
 from tvtk.plugins.browser.browser_plugin import BrowserPlugin
 from pyface.workbench.api import Perspective, PerspectiveItem
 
-
 logger = logging.getLogger()
+
 
 ###############################################################################
 # `TestPerspective` class.
@@ -50,9 +49,11 @@ class TestPerspective(Perspective):
 
     # The contents of the perspective.
     contents = [
-        PerspectiveItem(id=BROWSER_VIEW, position='left'),
-        PerspectiveItem(id=SHELL_VIEW, position='bottom')
+        PerspectiveItem(
+            id=BROWSER_VIEW, position='left'), PerspectiveItem(
+                id=SHELL_VIEW, position='bottom')
     ]
+
 
 ###############################################################################
 # `MyPlugin` class.
@@ -100,9 +101,9 @@ def setup_logger(logger, fname, stream=True, mode=logging.ERROR):
         s.setFormatter(FORMATTER)
         s.setLevel(mode)
         logger.addHandler(s)
-    logger.info("*"*80)
+    logger.info("*" * 80)
     logger.info("logfile is: '%s'", os.path.abspath(path))
-    logger.info("*"*80)
+    logger.info("*" * 80)
 
 
 def bind_object(value, app):
@@ -123,29 +124,27 @@ def main():
     """The main application is created and launched here."""
     # Setup the logger.
 
-    plugins = [CorePlugin(),
-               WorkbenchPlugin(),
-               MyPlugin(),
-               ScenePlugin(),
-               SceneUIPlugin(),
-               BrowserPlugin(),
-               PythonShellPlugin(),
-               ]
+    plugins = [
+        CorePlugin(),
+        WorkbenchPlugin(),
+        MyPlugin(),
+        ScenePlugin(),
+        SceneUIPlugin(),
+        BrowserPlugin(),
+        PythonShellPlugin(),
+    ]
     # Create an Envisage application.
     id = 'tvtk.examples.plugins.test'
-    application = WorkbenchApplication(id=id,
-                                       plugins = plugins
-                                       )
+    application = WorkbenchApplication(id=id, plugins=plugins)
     # This needs to be done here since the ETSConfig.application_home is
     # not set correctly up to this point.
     setup_logger(logger, 'test.log', mode=logging.DEBUG)
 
-    application.gui.on_trait_change(lambda value: bind_object(value, application),
-                                    'started')
+    application.gui.on_trait_change(
+        lambda value: bind_object(value, application), 'started')
     # Start the application.
     application.run()
 
 
 if __name__ == '__main__':
     main()
-

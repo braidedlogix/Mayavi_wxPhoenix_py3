@@ -17,8 +17,7 @@ if not os.path.exists('bunny.tar.gz'):
     except ImportError:
         from urllib.request import urlopen
     print("Downloading bunny model, Please Wait (3MB)")
-    opener = urlopen(
-                'http://graphics.stanford.edu/pub/3Dscanrep/bunny.tar.gz')
+    opener = urlopen('http://graphics.stanford.edu/pub/3Dscanrep/bunny.tar.gz')
     open('bunny.tar.gz', 'wb').write(opener.read())
 
 # Extract the data
@@ -32,7 +31,8 @@ bunny_tar_file.extractall('bunny_data')
 bunny_tar_file.close()
 
 # Path to the bunny ply file
-bunny_ply_file = join('bunny_data', 'bunny', 'reconstruction', 'bun_zipper.ply')
+bunny_ply_file = join('bunny_data', 'bunny', 'reconstruction',
+                      'bun_zipper.ply')
 
 # Render the bunny ply file
 mlab.pipeline.surface(mlab.pipeline.open(bunny_ply_file))

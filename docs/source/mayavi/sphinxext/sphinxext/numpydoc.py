@@ -37,14 +37,21 @@ else:
     sixu = lambda s: unicode(s, 'unicode_escape')
 
 
-def mangle_docstrings(app, what, name, obj, options, lines,
+def mangle_docstrings(app,
+                      what,
+                      name,
+                      obj,
+                      options,
+                      lines,
                       reference_offset=[0]):
 
-    cfg = {'use_plots': app.config.numpydoc_use_plots,
-           'show_class_members': app.config.numpydoc_show_class_members,
-           'show_inherited_class_members':
-           app.config.numpydoc_show_inherited_class_members,
-           'class_members_toctree': app.config.numpydoc_class_members_toctree}
+    cfg = {
+        'use_plots': app.config.numpydoc_use_plots,
+        'show_class_members': app.config.numpydoc_show_class_members,
+        'show_inherited_class_members':
+        app.config.numpydoc_show_inherited_class_members,
+        'class_members_toctree': app.config.numpydoc_class_members_toctree
+    }
 
     u_NL = sixu('\n')
     if what == 'module':
@@ -67,8 +74,10 @@ def mangle_docstrings(app, what, name, obj, options, lines,
         else:
             v = dict(full_name=obj.__name__)
         lines += [sixu(''), sixu('.. htmlonly::'), sixu('')]
-        lines += [sixu('    %s') % x for x in
-                  (app.config.numpydoc_edit_link % v).split("\n")]
+        lines += [
+            sixu('    %s') % x
+            for x in (app.config.numpydoc_edit_link % v).split("\n")
+        ]
 
     # replace reference numbers so that there are no duplicates
     references = []
@@ -87,10 +96,10 @@ def mangle_docstrings(app, what, name, obj, options, lines,
                     new_r = sixu("R%d") % (reference_offset[0] + int(r))
                 else:
                     new_r = sixu("%s%d") % (r, reference_offset[0])
-                lines[i] = lines[i].replace(sixu('[%s]_') % r,
-                                            sixu('[%s]_') % new_r)
-                lines[i] = lines[i].replace(sixu('.. [%s]') % r,
-                                            sixu('.. [%s]') % new_r)
+                lines[i] = lines[i].replace(
+                    sixu('[%s]_') % r, sixu('[%s]_') % new_r)
+                lines[i] = lines[i].replace(
+                    sixu('.. [%s]') % r, sixu('.. [%s]') % new_r)
 
     reference_offset[0] += len(references)
 
@@ -99,7 +108,7 @@ def mangle_signature(app, what, name, obj, options, sig, retann):
     # Do not try to inspect classes that don't define `__init__`
     if (inspect.isclass(obj) and
         (not hasattr(obj, '__init__') or
-            'initializes x; see ' in pydoc.getdoc(obj.__init__))):
+         'initializes x; see ' in pydoc.getdoc(obj.__init__))):
         return '', ''
 
     if not (isinstance(obj, collections.Callable) or
@@ -133,9 +142,10 @@ def setup(app, get_doc_object_=get_doc_object):
     # Extra mangling domains
     app.add_domain(NumpyPythonDomain)
     app.add_domain(NumpyCDomain)
-    
+
     metadata = {'parallel_read_safe': True}
     return metadata
+
 
 # ------------------------------------------------------------------------------
 # Docstring-mangling domains

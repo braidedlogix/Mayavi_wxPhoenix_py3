@@ -15,7 +15,6 @@ from mayavi.core.pipeline_info import PipelineInfo
 # `WarpScalar` class.
 ######################################################################
 class WarpScalar(PolyDataNormals):
-
     """Warps the input data along a particular direction (either the
     normals or a specified direction) with a scale specified by the
     local scalar value.  Useful for making carpet plots.
@@ -27,11 +26,8 @@ class WarpScalar(PolyDataNormals):
     # The actual TVTK filter that this class manages.
     filter = Instance(tvtk.WarpScalar, args=(), allow_none=False, record=True)
 
-    input_info = PipelineInfo(datasets=['any'],
-                              attribute_types=['any'],
-                              attributes=['scalars'])
+    input_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['scalars'])
 
-    output_info = PipelineInfo(datasets=['any'],
-                               attribute_types=['any'],
-                               attributes=['any'])
-
+    output_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])

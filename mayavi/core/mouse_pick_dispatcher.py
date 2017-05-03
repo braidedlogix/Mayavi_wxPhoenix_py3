@@ -13,6 +13,7 @@ from tvtk.api import tvtk
 VTK_VERSION =        tvtk.Version().vtk_major_version \
                 + .1*tvtk.Version().vtk_minor_version
 
+
 ################################################################################
 # class `MousePickDispatcher`
 ################################################################################
@@ -31,16 +32,15 @@ class MousePickDispatcher(HasTraits):
 
     # The list of callbacks, with the picker type they should be using,
     # and the mouse button that triggers them.
-    callbacks = List(Tuple(
-                        Callable,
-                        Enum('cell', 'point', 'world'),
-                        Enum('Left', 'Middle', 'Right'),
-                        ),
-                    help="The list of callbacks, with the picker type they "
-                         "should be using, and the mouse button that "
-                         "triggers them. The callback is passed "
-                         "as an argument the tvtk picker."
-                    )
+    callbacks = List(
+        Tuple(
+            Callable,
+            Enum('cell', 'point', 'world'),
+            Enum('Left', 'Middle', 'Right'), ),
+        help="The list of callbacks, with the picker type they "
+        "should be using, and the mouse button that "
+        "triggers them. The callback is passed "
+        "as an argument the tvtk picker.")
 
     #--------------------------------------------------------------------------
     # Private traits
@@ -78,7 +78,6 @@ class MousePickDispatcher(HasTraits):
         for item in trait_list_event.removed:
             self.callback_removed(item)
 
-
     def callback_added(self, item):
         """ Wire up the different VTK callbacks.
         """
@@ -93,7 +92,7 @@ class MousePickDispatcher(HasTraits):
                                                 self.on_pick)
 
         # Register the callbacks on the scene interactor
-        if VTK_VERSION>5:
+        if VTK_VERSION > 5:
             move_event = "RenderEvent"
         else:
             move_event = 'MouseMoveEvent'
@@ -106,7 +105,7 @@ class MousePickDispatcher(HasTraits):
                 self.scene.scene.interactor.add_observer(
                                     '%sButtonPressEvent' % button,
                                     self.on_button_press)
-        if VTK_VERSION>5:
+        if VTK_VERSION > 5:
             release_event = "EndInteractionEvent"
         else:
             release_event = '%sButtonReleaseEvent' % button
@@ -115,7 +114,6 @@ class MousePickDispatcher(HasTraits):
                 self.scene.scene.interactor.add_observer(
                                     release_event,
                                     self.on_button_release)
-
 
     def callback_removed(self, item):
         """ Clean up the unecessary VTK callbacks.
@@ -132,14 +130,13 @@ class MousePickDispatcher(HasTraits):
         # the corresponding observers.
         if not [b for c, t, b in self.callbacks if b == button]:
             self.scene.scene.interactor.remove_observer(
-                    self._mouse_press_callback_nbs[button])
+                self._mouse_press_callback_nbs[button])
             self.scene.scene.interactor.remove_observer(
-                    self._mouse_release_callback_nbs[button])
+                self._mouse_release_callback_nbs[button])
         if len(self.callbacks) == 0 and self._mouse_mvt_callback_nb:
             self.scene.scene.interactor.remove_observer(
-                            self._mouse_mvt_callback_nb)
+                self._mouse_mvt_callback_nb)
             self._mouse_mvt_callback_nb = 0
-
 
     def clear_callbacks(self):
         while self.callbacks:
@@ -153,11 +150,9 @@ class MousePickDispatcher(HasTraits):
         self._current_button = event[:-len('ButtonPressEvent')]
         self._mouse_no_mvt = 2
 
-
     def on_mouse_move(self, vtk_picker, event):
         if self._mouse_no_mvt:
             self._mouse_no_mvt -= 1
-
 
     def on_button_release(self, vtk_picker, event):
         """ If the mouse has not moved, pick with our pickers.
@@ -171,7 +166,6 @@ class MousePickDispatcher(HasTraits):
                     picker.pick(x, y, 0, self.scene.scene.renderer)
         self._mouse_no_mvt = 0
 
-
     def on_pick(self, vtk_picker, event):
         """ Dispatch the pick to the callback associated with the
             corresponding mouse button.
@@ -180,8 +174,7 @@ class MousePickDispatcher(HasTraits):
         for event_type, event_picker in self._active_pickers.items():
             if picker is event_picker:
                 for callback, type, button in self.callbacks:
-                    if ( type == event_type
-                                    and button == self._current_button):
+                    if (type == event_type and button == self._current_button):
                         callback(picker)
             break
 

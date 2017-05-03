@@ -15,7 +15,6 @@ from mayavi.core.pipeline_info import PipelineInfo
 # `DecimatePro` class.
 ######################################################################
 class DecimatePro(FilterBase):
-
     """ Reduces the number of triangles in a mesh using the
         tvtk.DecimatePro class. """
 
@@ -25,11 +24,8 @@ class DecimatePro(FilterBase):
     # The actual TVTK filter that this class manages.
     filter = Instance(tvtk.DecimatePro, args=(), allow_none=False, record=True)
 
-    input_info = PipelineInfo(datasets=['poly_data'],
-                              attribute_types=['any'],
-                              attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['poly_data'], attribute_types=['any'], attributes=['any'])
 
-    output_info = PipelineInfo(datasets=['poly_data'],
-                               attribute_types=['any'],
-                               attributes=['any'])
-
+    output_info = PipelineInfo(
+        datasets=['poly_data'], attribute_types=['any'], attributes=['any'])

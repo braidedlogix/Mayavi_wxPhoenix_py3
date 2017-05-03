@@ -20,7 +20,7 @@ class TestSources(unittest.TestCase):
         all_dims = set(x.shape for x in values)
 
         self.assertEqual(len(all_dims), 1)
-        self.assertIn((1,), all_dims)
+        self.assertIn((1, ), all_dims)
 
 
 if __name__ == '__main__':

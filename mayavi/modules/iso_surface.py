@@ -5,7 +5,6 @@ point data.
 # Copyright (c) 2005, Enthought, Inc.
 # License: BSD Style.
 
-
 # Enthought library imports.
 from traits.api import Instance, Bool
 
@@ -38,9 +37,8 @@ class IsoSurface(Module):
     # The actor component that represents the iso-surface.
     actor = Instance(Actor, record=True)
 
-    input_info = PipelineInfo(datasets=['any'],
-                              attribute_types=['any'],
-                              attributes=['scalars'])
+    input_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['scalars'])
 
     ########################################
     # The view of this object.
@@ -155,4 +153,3 @@ class IsoSurface(Module):
         if contour is not None:
             new.inputs = [contour]
         self._change_components(old, new)
-

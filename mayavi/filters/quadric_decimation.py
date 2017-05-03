@@ -16,20 +16,17 @@ from mayavi.core.pipeline_info import PipelineInfo
 # `QuadricDecimation` class.
 ######################################################################
 class QuadricDecimation(PolyDataFilterBase):
-
     """ Simplifies triangles of a mesh """
 
     # The version of this class.  Used for persistence.
     __version__ = 0
 
     # The actual TVTK filter that this class manages.
-    filter = Instance(tvtk.QuadricDecimation, args=(), allow_none=False, record=True)
+    filter = Instance(
+        tvtk.QuadricDecimation, args=(), allow_none=False, record=True)
 
-    input_info = PipelineInfo(datasets=['poly_data'],
-                              attribute_types=['any'],
-                              attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['poly_data'], attribute_types=['any'], attributes=['any'])
 
-    output_info = PipelineInfo(datasets=['poly_data'],
-                               attribute_types=['any'],
-                               attributes=['any'])
-
+    output_info = PipelineInfo(
+        datasets=['poly_data'], attribute_types=['any'], attributes=['any'])

@@ -18,6 +18,7 @@ def InstanceEditor(*args, **kw):
     from traitsui.editors.api import InstanceEditor as Editor
     return Editor(view_name="handler.view")
 
+
 try:
     long
 except NameError:
@@ -39,9 +40,11 @@ class XOpenGLRenderWindow(OpenGLRenderWindow):
     RenderWindow instead of the open_gl specific version.
     
     """
+
     def __init__(self, obj=None, update=True, **traits):
-        tvtk_base.TVTKBase.__init__(self, vtk.vtkXOpenGLRenderWindow, obj, update, **traits)
-    
+        tvtk_base.TVTKBase.__init__(self, vtk.vtkXOpenGLRenderWindow, obj,
+                                    update, **traits)
+
     current_cursor = traits.Int(0, enter_set=True, auto_set=False, help=\
         """
         Change the shape of the cursor
@@ -49,8 +52,7 @@ class XOpenGLRenderWindow(OpenGLRenderWindow):
     )
 
     def _current_cursor_changed(self, old_val, new_val):
-        self._do_change(self._vtk_obj.SetCurrentCursor,
-                        self.current_cursor)
+        self._do_change(self._vtk_obj.SetCurrentCursor, self.current_cursor)
 
     position = traits.Array(enter_set=True, auto_set=False, shape=(2,), dtype=int, value=(0, 0), cols=2, help=\
         """
@@ -59,8 +61,7 @@ class XOpenGLRenderWindow(OpenGLRenderWindow):
     )
 
     def _position_changed(self, old_val, new_val):
-        self._do_change(self._vtk_obj.SetPosition,
-                        self.position)
+        self._do_change(self._vtk_obj.SetPosition, self.position)
 
     size = traits.Array(enter_set=True, auto_set=False, shape=(2,), dtype=int, value=(0, 0), cols=2, help=\
         """
@@ -69,8 +70,7 @@ class XOpenGLRenderWindow(OpenGLRenderWindow):
     )
 
     def _size_changed(self, old_val, new_val):
-        self._do_change(self._vtk_obj.SetSize,
-                        self.size)
+        self._do_change(self._vtk_obj.SetSize, self.size)
 
     window_name = traits.String('Visualization Toolkit - OpenGL', enter_set=True, auto_set=False, help=\
         """
@@ -79,8 +79,7 @@ class XOpenGLRenderWindow(OpenGLRenderWindow):
     )
 
     def _window_name_changed(self, old_val, new_val):
-        self._do_change(self._vtk_obj.SetWindowName,
-                        self.window_name)
+        self._do_change(self._vtk_obj.SetWindowName, self.window_name)
 
     def _get_desired_depth(self):
         return self._vtk_obj.GetDesiredDepth()
@@ -98,7 +97,6 @@ class XOpenGLRenderWindow(OpenGLRenderWindow):
         """
         ret = self._vtk_obj.PrefFullScreen()
         return ret
-        
 
     def window_initialize(self):
         """
@@ -108,7 +106,7 @@ class XOpenGLRenderWindow(OpenGLRenderWindow):
         """
         ret = self._vtk_obj.WindowInitialize()
         return ret
-        
+
 
     _updateable_traits_ = \
     (('borders', 'GetBorders'), ('full_screen', 'GetFullScreen'),
@@ -139,10 +137,10 @@ class XOpenGLRenderWindow(OpenGLRenderWindow):
     'GetUseConstantFDOffsets'), ('dpi', 'GetDPI'), ('tile_scale',
     'GetTileScale'), ('tile_viewport', 'GetTileViewport'),
     ('reference_count', 'GetReferenceCount'))
-    
+
     _allow_update_failure_ = \
     ()
-    
+
     _full_traitnames_list_ = \
     (['borders', 'debug', 'double_buffer', 'erase', 'full_screen',
     'global_warning_display', 'is_picking', 'line_smoothing', 'mapped',
@@ -156,10 +154,12 @@ class XOpenGLRenderWindow(OpenGLRenderWindow):
     'in_abort_check', 'multi_samples', 'number_of_layers', 'position',
     'size', 'sub_frames', 'tile_scale', 'tile_viewport',
     'use_constant_fd_offsets', 'use_off_screen_buffers', 'window_name'])
-    
+
     def trait_view(self, name=None, view_element=None):
-        if view_element is not None or name not in (None, '', 'traits_view', 'full_traits_view', 'view'):
-            return super(XOpenGLRenderWindow, self).trait_view(name, view_element)
+        if view_element is not None or name not in (
+                None, '', 'traits_view', 'full_traits_view', 'view'):
+            return super(XOpenGLRenderWindow, self).trait_view(name,
+                                                               view_element)
         if name == 'full_traits_view':
             full_traits_view = \
             View((Item("handler._full_traits_list",show_label=False)),
@@ -187,11 +187,9 @@ class XOpenGLRenderWindow(OpenGLRenderWindow):
             return view
         elif name in (None, 'traits_view'):
             traits_view = \
-            View((HGroup(spring, "handler.view_type", show_border=True), 
+            View((HGroup(spring, "handler.view_type", show_border=True),
             Item("handler.info.object", editor = InstanceEditor(view_name="handler.view"), style = "custom", show_label=False)),
             title='Edit XOpenGLRenderWindow properties', scrollable=True, resizable=True,
             handler=TVTKBaseHandler,
             buttons=['OK', 'Cancel'])
             return traits_view
-            
-

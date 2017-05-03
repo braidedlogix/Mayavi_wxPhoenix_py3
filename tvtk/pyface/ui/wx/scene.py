@@ -19,7 +19,6 @@ the class docs for more details.
 # Copyright (c) 2004-2016, Enthought, Inc.
 # License: BSD Style.
 
-
 import sys
 import os
 import tempfile
@@ -52,6 +51,7 @@ class FullScreen(object):
     than 5.1 where there was a bug with reparenting a window.
 
     """
+
     def __init__(self, scene):
         self.scene = scene
         self.old_rw = scene.render_window
@@ -63,25 +63,25 @@ class FullScreen(object):
 
         # Creates renderwindow tha should be used ONLY for
         # visualization in full screen
-        full_rw = tvtk.RenderWindow(stereo_capable_window=True,
-                                    full_screen=True
-                                    )
+        full_rw = tvtk.RenderWindow(
+            stereo_capable_window=True, full_screen=True)
         # add the current visualization
         full_rw.add_renderer(self.ren)
 
         # Under OS X there is no support for creating a full screen
         # window so we set the size of the window here.
-        if sys.platform  == 'darwin':
+        if sys.platform == 'darwin':
             full_rw.size = tuple(wx.GetDisplaySize())
 
         # provides a simple interactor
         style = tvtk.InteractorStyleTrackballCamera()
-        self.iren = tvtk.RenderWindowInteractor(render_window=full_rw,
-                                                interactor_style=style)
+        self.iren = tvtk.RenderWindowInteractor(
+            render_window=full_rw, interactor_style=style)
 
         # Gets parameters for stereo visualization
         if self.old_rw.stereo_render:
-            full_rw.set(stereo_type=self.old_rw.stereo_type, stereo_render=True)
+            full_rw.set(stereo_type=self.old_rw.stereo_type,
+                        stereo_render=True)
 
         # Starts the interactor
         self.iren.initialize()
@@ -106,6 +106,7 @@ class PopupScene(object):
     screen view with *complete* interactivity (including widget
     interaction).
     """
+
     def __init__(self, scene):
         self.orig_parent = None
         self.orig_size = None
@@ -132,7 +133,7 @@ class PopupScene(object):
         orig_disable_render = scene.disable_render
         scene.disable_render = True
         orig_render = vc.Render
-        vc.Render = lambda : None
+        vc.Render = lambda: None
         rw = vc.GetRenderWindow()
         if sys.platform != 'darwin' and wx.Platform != '__WXMSW__':
             rw.SetNextWindowInfo(str(widget.GetHandle()))
@@ -229,44 +230,44 @@ class Scene(TVTKScene, Widget):
     ########################################
 
     # Render_window's view.
-    _stereo_view = Group(Item(name='stereo_render'),
-                         Item(name='stereo_type'),
-                         show_border=True,
-                         label='Stereo rendering',
-                         )
+    _stereo_view = Group(
+        Item(name='stereo_render'),
+        Item(name='stereo_type'),
+        show_border=True,
+        label='Stereo rendering', )
 
     # The default view of this object.
-    default_view = View(Group(
-                            Group(Item(name='background'),
-                                  Item(name='foreground'),
-                                  Item(name='parallel_projection'),
-                                  Item(name='disable_render'),
-                                  Item(name='off_screen_rendering'),
-                                  Item(name='jpeg_quality'),
-                                  Item(name='jpeg_progressive'),
-                                  Item(name='magnification'),
-                                  Item(name='anti_aliasing_frames'),
-                                  Item(name='full_screen',
-                                       show_label=False),
-                                  ),
-                            Group(Item(name='render_window',
-                                       style='custom',
-                                       visible_when='object.stereo',
-                                       editor=InstanceEditor(view=View(_stereo_view)),
-                                       show_label=False),
-                                  ),
-                            label='Scene'),
-                         Group( Item(name='light_manager',
-                                style='custom', show_label=False),
-                                label='Lights'),
-                         Group(
-                             Item(
-                                 name='movie_maker',
-                                 style='custom', show_label=False
-                             ),
-                             label='Movie'),
-                         buttons=['OK', 'Cancel']
-                        )
+    default_view = View(
+        Group(
+            Group(
+                Item(name='background'),
+                Item(name='foreground'),
+                Item(name='parallel_projection'),
+                Item(name='disable_render'),
+                Item(name='off_screen_rendering'),
+                Item(name='jpeg_quality'),
+                Item(name='jpeg_progressive'),
+                Item(name='magnification'),
+                Item(name='anti_aliasing_frames'),
+                Item(
+                    name='full_screen', show_label=False), ),
+            Group(
+                Item(
+                    name='render_window',
+                    style='custom',
+                    visible_when='object.stereo',
+                    editor=InstanceEditor(view=View(_stereo_view)),
+                    show_label=False), ),
+            label='Scene'),
+        Group(
+            Item(
+                name='light_manager', style='custom', show_label=False),
+            label='Lights'),
+        Group(
+            Item(
+                name='movie_maker', style='custom', show_label=False),
+            label='Movie'),
+        buttons=['OK', 'Cancel'])
 
     ########################################
     # Private traits.
@@ -286,7 +287,6 @@ class Scene(TVTKScene, Widget):
 
         # Setup the default picker.
         self.picker = picker.Picker(self)
-
 
     def __get_pure_state__(self):
         """Allows us to pickle the scene."""
@@ -496,7 +496,6 @@ class Scene(TVTKScene, Widget):
         self._vtk_control.OnKeyUp(event)
         event.Skip()
 
-
     def OnPaint(self, event):
         """This method is overridden temporarily in order to create
         the light manager.  This is necessary because it makes sense
@@ -527,7 +526,8 @@ class Scene(TVTKScene, Widget):
         messenger.connect(vtk_rw, 'EndEvent', self._end_event_callback)
 
         # Reset the event handler to the default since our job is done.
-        self._vtk_control.Bind(wx.EVT_PAINT, None) # Remove the default handler.
+        self._vtk_control.Bind(wx.EVT_PAINT,
+                               None)  # Remove the default handler.
         self._vtk_control.Bind(wx.EVT_PAINT, self._vtk_control.OnPaint)
 
     def OnSize(self, event):
@@ -563,28 +563,26 @@ class Scene(TVTKScene, Widget):
         """ Create the toolkit-specific control that represents the widget. """
 
         # Create the VTK widget.
-        self._vtk_control = window = wxVTKRenderWindowInteractor(parent, -1,
-                                                                 stereo=self.stereo)
+        self._vtk_control = window = wxVTKRenderWindowInteractor(
+            parent, -1, stereo=self.stereo)
 
         # Override these handlers.
-        window.Bind(wx.EVT_CHAR, None) # Remove the default handler.
+        window.Bind(wx.EVT_CHAR, None)  # Remove the default handler.
         window.Bind(wx.EVT_CHAR, self.OnKeyDown)
-        window.Bind(wx.EVT_KEY_UP, None) # Remove the default handler.
+        window.Bind(wx.EVT_KEY_UP, None)  # Remove the default handler.
         window.Bind(wx.EVT_KEY_UP, self.OnKeyUp)
-        window.Bind(wx.EVT_PAINT, None) # Remove the default handler.
+        window.Bind(wx.EVT_PAINT, None)  # Remove the default handler.
         window.Bind(wx.EVT_PAINT, self.OnPaint)
-        window.Bind(wx.EVT_SIZE, None) # Remove the default handler.
+        window.Bind(wx.EVT_SIZE, None)  # Remove the default handler.
         window.Bind(wx.EVT_SIZE, self.OnSize)
         # Override the button down and up handlers as well to note the
         # interaction.  This is to toggle the busy status nicely.
-        for evt in (wx.EVT_LEFT_DOWN, wx.EVT_RIGHT_DOWN,
-                    wx.EVT_MIDDLE_DOWN):
-            window.Bind( evt, None)
-            window.Bind( evt, self.OnButtonDown)
-        for evt in (wx.EVT_LEFT_UP, wx.EVT_RIGHT_UP,
-                    wx.EVT_MIDDLE_UP):
-            window.Bind( evt, None)
-            window.Bind( evt, self.OnButtonUp)
+        for evt in (wx.EVT_LEFT_DOWN, wx.EVT_RIGHT_DOWN, wx.EVT_MIDDLE_DOWN):
+            window.Bind(evt, None)
+            window.Bind(evt, self.OnButtonDown)
+        for evt in (wx.EVT_LEFT_UP, wx.EVT_RIGHT_UP, wx.EVT_MIDDLE_UP):
+            window.Bind(evt, None)
+            window.Bind(evt, self.OnButtonUp)
 
         # Enable the widget.
         window.Enable(1)
@@ -648,7 +646,7 @@ class Scene(TVTKScene, Widget):
             w = wx.GetTopLevelParent(window)
             # Force a resize
             sz = w.GetSize()
-            w.SetSize((sz[0]-1, sz[1]-1))
+            w.SetSize((sz[0] - 1, sz[1] - 1))
             w.SetSize(sz)
             window._idle_count -= 1
             if window._idle_count < 1:
@@ -716,7 +714,7 @@ class Scene(TVTKScene, Widget):
                 f.fullscreen()
             else:
                 f = FullScreen(self)
-                f.run() # This will block.
+                f.run()  # This will block.
                 self._fullscreen = None
 
     def _disable_fullscreen(self):

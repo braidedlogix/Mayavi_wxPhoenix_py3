@@ -19,7 +19,6 @@ the class docs for more details.
 # Copyright (c) 2004-2007, Enthought, Inc.
 # License: BSD Style.
 
-
 # Import the toolkit specific version.
 from tvtk.pyface.toolkit import toolkit_object
 Scene = toolkit_object('scene:Scene')

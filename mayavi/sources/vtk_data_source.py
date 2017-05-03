@@ -23,8 +23,7 @@ from tvtk.common import is_old_pipeline, configure_input_data
 from mayavi.core.source import Source
 from mayavi.core.common import handle_children_state
 from mayavi.core.trait_defs import DEnum
-from mayavi.core.pipeline_info import (PipelineInfo,
-        get_tvtk_dataset_name)
+from mayavi.core.pipeline_info import (PipelineInfo, get_tvtk_dataset_name)
 from .utils import has_attributes
 from .vtk_xml_file_reader import get_all_attributes
 
@@ -47,7 +46,8 @@ def write_dataset_to_string(data):
         # by writing to a file and then reading that output.
         w.write_to_output_string = 0
         fh, fname = tempfile.mkstemp('.vtk')
-        os.close(fh); os.remove(fname)
+        os.close(fh)
+        os.remove(fname)
         w.file_name = fname
         w.write()
         # Read the data and delete the file.
@@ -63,7 +63,6 @@ def write_dataset_to_string(data):
 # `VTKDataSource` class
 ######################################################################
 class VTKDataSource(Source):
-
     """This source manages a VTK dataset given to it.  When this
     source is pickled or persisted, it saves the data given to it in
     the form of a gzipped string.
@@ -81,45 +80,51 @@ class VTKDataSource(Source):
     data = Instance(tvtk.DataSet, allow_none=False)
 
     # Information about what this object can produce.
-    output_info = PipelineInfo(datasets=['any'],
-                               attribute_types=['any'],
-                               attributes=['any'])
+    output_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])
 
     ########################################
     # Dynamic traits: These traits are dynamic and are updated on the
     # _update_data method.
 
     # The active point scalar name.
-    point_scalars_name = DEnum(values_name='_point_scalars_list',
-                               desc='scalar point data attribute to use')
+    point_scalars_name = DEnum(
+        values_name='_point_scalars_list',
+        desc='scalar point data attribute to use')
     # The active point vector name.
-    point_vectors_name = DEnum(values_name='_point_vectors_list',
-                               desc='vectors point data attribute to use')
+    point_vectors_name = DEnum(
+        values_name='_point_vectors_list',
+        desc='vectors point data attribute to use')
     # The active point tensor name.
-    point_tensors_name = DEnum(values_name='_point_tensors_list',
-                               desc='tensor point data attribute to use')
+    point_tensors_name = DEnum(
+        values_name='_point_tensors_list',
+        desc='tensor point data attribute to use')
 
     # The active cell scalar name.
-    cell_scalars_name = DEnum(values_name='_cell_scalars_list',
-                               desc='scalar cell data attribute to use')
+    cell_scalars_name = DEnum(
+        values_name='_cell_scalars_list',
+        desc='scalar cell data attribute to use')
     # The active cell vector name.
-    cell_vectors_name = DEnum(values_name='_cell_vectors_list',
-                               desc='vectors cell data attribute to use')
+    cell_vectors_name = DEnum(
+        values_name='_cell_vectors_list',
+        desc='vectors cell data attribute to use')
     # The active cell tensor name.
-    cell_tensors_name = DEnum(values_name='_cell_tensors_list',
-                               desc='tensor cell data attribute to use')
+    cell_tensors_name = DEnum(
+        values_name='_cell_tensors_list',
+        desc='tensor cell data attribute to use')
 
     ########################################
     # Our view.
 
-    view = View(Group(Item(name='point_scalars_name'),
-                      Item(name='point_vectors_name'),
-                      Item(name='point_tensors_name'),
-                      Item(name='cell_scalars_name'),
-                      Item(name='cell_vectors_name'),
-                      Item(name='cell_tensors_name'),
-                      Item(name='data'),
-                      ))
+    view = View(
+        Group(
+            Item(name='point_scalars_name'),
+            Item(name='point_vectors_name'),
+            Item(name='point_tensors_name'),
+            Item(name='cell_scalars_name'),
+            Item(name='cell_vectors_name'),
+            Item(name='cell_tensors_name'),
+            Item(name='data'), ))
 
     ########################################
     # Private traits.
@@ -137,8 +142,8 @@ class VTKDataSource(Source):
     # object and will ensure that the pipeline is properly taken care
     # of.  Directly setting the array in the VTK object will not do
     # this.
-    _assign_attribute = Instance(tvtk.AssignAttribute, args=(),
-                                 allow_none=False)
+    _assign_attribute = Instance(
+        tvtk.AssignAttribute, args=(), allow_none=False)
 
     # Toggles if this is the first time this object has been used.
     _first = Bool(True)
@@ -153,9 +158,8 @@ class VTKDataSource(Source):
         d = super(VTKDataSource, self).__get_pure_state__()
         for name in ('_assign_attribute', '_first', '_observer'):
             d.pop(name, None)
-        for name in ('point_scalars', 'point_vectors',
-                     'point_tensors', 'cell_scalars',
-                     'cell_vectors', 'cell_tensors'):
+        for name in ('point_scalars', 'point_vectors', 'point_tensors',
+                     'cell_scalars', 'cell_vectors', 'cell_tensors'):
             d.pop('_' + name + '_list', None)
             d.pop('_' + name + '_name', None)
         data = self.data
@@ -175,8 +179,7 @@ class VTKDataSource(Source):
                 d = gunzip_string(z).decode('ascii')
             else:
                 d = gunzip_string(z)
-            r = tvtk.DataSetReader(read_from_input_string=1,
-                                   input_string=d)
+            r = tvtk.DataSetReader(read_from_input_string=1, input_string=d)
             warn = r.global_warning_display
             r.global_warning_display = 0
             r.update()
@@ -240,11 +243,9 @@ class VTKDataSource(Source):
         # tvtk.messenger module documentation for details.
         if old is not None:
             old.remove_observer(self._observer_id)
-        self._observer_id = new.add_observer('ModifiedEvent',
-                                             messenger.send)
+        self._observer_id = new.add_observer('ModifiedEvent', messenger.send)
         new_vtk = tvtk.to_vtk(new)
-        messenger.connect(new_vtk, 'ModifiedEvent',
-                          self._fire_data_changed)
+        messenger.connect(new_vtk, 'ModifiedEvent', self._fire_data_changed)
 
         # Change our name so that our label on the tree is updated.
         self.name = self._get_name()
@@ -261,7 +262,7 @@ class VTKDataSource(Source):
         if len(value) == 0:
             # If the value is empty then we deactivate that attribute.
             d = getattr(dataset, attr_type + '_data')
-            method = getattr(d, 'set_active_%s'%data_type)
+            method = getattr(d, 'set_active_%s' % data_type)
             method(None)
             self.data_changed = True
             return
@@ -272,9 +273,9 @@ class VTKDataSource(Source):
             data = dataset.point_data
         elif attr_type == 'cell':
             data = dataset.cell_data
-        method = getattr(data, 'set_active_%s'%data_type)
+        method = getattr(data, 'set_active_%s' % data_type)
         method(value)
-        aa.assign(value, data_type.upper(), attr_type.upper() +'_DATA')
+        aa.assign(value, data_type.upper(), attr_type.upper() + '_DATA')
         if data_type == 'scalars' and dataset.is_a('vtkImageData'):
             # Set the scalar_type for image data, if not you can either
             # get garbage rendered or worse.
@@ -328,21 +329,22 @@ class VTKDataSource(Source):
             """
             attrs = ['scalars', 'vectors', 'tensors']
             aa = obj._assign_attribute
-            data = getattr(obj.data, '%s_data'%d_type)
+            data = getattr(obj.data, '%s_data' % d_type)
             for attr in attrs:
                 values = sorted(attributes[attr])
                 values.append('')
-                setattr(obj, '_%s_%s_list'%(d_type, attr), values)
+                setattr(obj, '_%s_%s_list' % (d_type, attr), values)
                 if len(values) > 1:
-                    default = getattr(obj, '%s_%s_name'%(d_type, attr))
+                    default = getattr(obj, '%s_%s_name' % (d_type, attr))
                     if obj._first and len(default) == 0:
                         default = values[0]
-                    getattr(data, 'set_active_%s'%attr)(default)
-                    aa.assign(default, attr.upper(),
-                              d_type.upper() +'_DATA')
+                    getattr(data, 'set_active_%s' % attr)(default)
+                    aa.assign(default, attr.upper(), d_type.upper() + '_DATA')
                     aa.update()
-                    kw = {'%s_%s_name'%(d_type, attr): default,
-                          'trait_change_notify': False}
+                    kw = {
+                        '%s_%s_name' % (d_type, attr): default,
+                        'trait_change_notify': False
+                    }
                     obj.set(**kw)
 
         _setup_data_traits(self, pnt_attr, 'point')
@@ -358,7 +360,7 @@ class VTKDataSource(Source):
         ret = "VTK Data (uninitialized)"
         if self.data is not None:
             typ = self.data.__class__.__name__
-            ret = "VTK Data (%s)"%typ
+            ret = "VTK Data (%s)" % typ
         if '[Hidden]' in self.name:
             ret += ' [Hidden]'
         return ret

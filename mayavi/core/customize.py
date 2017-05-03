@@ -44,7 +44,6 @@ try:
 except ImportError:
     pass
 
-
 # Now do any local user level customizations.
 #
 # The following code obtains any customizations and that are imported
@@ -73,6 +72,7 @@ if exists(user_module):
 #  Now handle any contributions that the user has chosen via the
 #  preferences.
 
+
 def _import_contrib(pkg):
     mod = None
     try:
@@ -80,22 +80,26 @@ def _import_contrib(pkg):
         if len(components) > 1:
             mod_name = '.'.join(components[:-1])
             sym_name = components[-1]
-            mod = __import__(mod_name, globals(), locals(), [sym_name], level=0)
+            mod = __import__(
+                mod_name, globals(), locals(), [sym_name], level=0)
             mod = getattr(mod, sym_name)
         else:
             mod_name = components[0]
-            mod = __import__(mod_name, globals(), locals(), [mod_name], level=0)
+            mod = __import__(
+                mod_name, globals(), locals(), [mod_name], level=0)
     except Exception:
-        print("*"*80)
+        print("*" * 80)
         traceback.print_exc(file=sys.stdout)
-        print("*"*80)
+        print("*" * 80)
     return mod
+
 
 def add_contributions():
     """Import any contributions that the user has selected via
     preferences."""
     for pkg in preference_manager.root.contrib_packages:
         _import_contrib(pkg + '.user_mayavi')
+
 
 def get_contrib_plugins():
     """Get plugins requested by different contributions."""
@@ -106,8 +110,10 @@ def get_contrib_plugins():
             plugins.extend(mod.get_plugins())
     return plugins
 
+
 # Import the contributions.
 add_contributions()
+
 
 def get_custom_plugins():
     """Convenience function that returns all customization plugins as a

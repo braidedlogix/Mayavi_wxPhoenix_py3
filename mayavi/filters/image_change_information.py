@@ -19,7 +19,6 @@ from mayavi.core.pipeline_info import PipelineInfo
 # `ImageChangeInformation` class.
 ######################################################################
 class ImageChangeInformation(FilterBase):
-
     """
     A filter that lets you change the spacing and origin of an input
     ImageData dataset.
@@ -29,14 +28,11 @@ class ImageChangeInformation(FilterBase):
     __version__ = 0
 
     # The actual TVTK filter that this class manages.
-    filter = Instance(tvtk.ImageChangeInformation, args=(),
-                      allow_none=False, record=True)
+    filter = Instance(
+        tvtk.ImageChangeInformation, args=(), allow_none=False, record=True)
 
-    input_info = PipelineInfo(datasets=['image_data'],
-                              attribute_types=['any'],
-                              attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['image_data'], attribute_types=['any'], attributes=['any'])
 
-    output_info = PipelineInfo(datasets=['image_data'],
-                               attribute_types=['any'],
-                               attributes=['any'])
-
+    output_info = PipelineInfo(
+        datasets=['image_data'], attribute_types=['any'], attributes=['any'])

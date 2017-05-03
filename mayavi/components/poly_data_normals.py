@@ -22,19 +22,21 @@ class PolyDataNormals(Component):
     __version__ = 0
 
     # The filter that generates the normals.
-    filter = Instance(tvtk.PolyDataNormals, args=(),
-                      kw={'feature_angle': 45.0}, record=True)
+    filter = Instance(
+        tvtk.PolyDataNormals, args=(), kw={'feature_angle': 45.0}, record=True)
 
     ########################################
     # The component's view
 
     _filter_group = Group(Item(name='feature_angle'))
 
-    view = View(Group(Item(name='filter', style='custom',
-                           editor=InstanceEditor(view=View(_filter_group))),
-                      show_labels=False
-                      )
-                )
+    view = View(
+        Group(
+            Item(
+                name='filter',
+                style='custom',
+                editor=InstanceEditor(view=View(_filter_group))),
+            show_labels=False))
 
     ######################################################################
     # `Component` interface

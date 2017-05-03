@@ -8,9 +8,8 @@ to the tree.
 # License: BSD Style.
 
 # Enthought library imports.
-from traits.api import (HasTraits, Str, Property, Any, Button,
-                                  List, Instance, provides,
-                                  ToolbarButton)
+from traits.api import (HasTraits, Str, Property, Any, Button, List, Instance,
+                        provides, ToolbarButton)
 from traitsui.api import View, Item, Group,\
         TextEditor, TreeEditor, TreeNode, ListEditor, ITreeNode
 from pyface.api import ImageResource
@@ -18,6 +17,7 @@ from pyface.resource.api import resource_path
 
 # Local imports.
 from .registry import registry
+
 
 ###############################################################################
 # AdderNode class
@@ -34,7 +34,7 @@ class AdderNode(TreeNode):
     tooltip = Str('Add an item')
 
     # The parent object that should be manipulated for adding children.
-    object =  Any
+    object = Any
 
     # Duck-typing is necessary since Mayavi assumes nodes always have scenes.
     scene = Property
@@ -46,7 +46,7 @@ class AdderNode(TreeNode):
         """ View shown by double-clicking on the node.  Same as in Base().
         """
         view = self.trait_view()
-        view.buttons = [ ]
+        view.buttons = []
         view.title = self.label
         view.icon = ImageResource('add.ico')
         view.resizable = True
@@ -93,6 +93,7 @@ class AdderNode(TreeNode):
     def when_column_labels_change(self, listener, remove):
         return
 
+
 ###############################################################################
 # SceneAdderNode class
 ###############################################################################
@@ -107,13 +108,14 @@ class SceneAdderNode(AdderNode):
     icon_name = Str('add_scene.png')
 
     # Button for the View.
-    add_scene = Button('Add a new scene',
-                      image=ImageResource('add_scene.png'))
+    add_scene = Button('Add a new scene', image=ImageResource('add_scene.png'))
 
     # Trait view to show in the Mayavi current object panel.
-    view = View(Group(Item('add_scene', show_label=False, style='custom'),
-                      label='Add a scene'))
-
+    view = View(
+        Group(
+            Item(
+                'add_scene', show_label=False, style='custom'),
+            label='Add a scene'))
 
     def _add_scene_fired(self):
         """ Trait handler for when the add_scene button is clicked.
@@ -132,8 +134,8 @@ class DocumentedItem(HasTraits):
     name = Str
 
     # Button to trigger the action
-    add = ToolbarButton('Add', orientation='horizontal',
-                    image=ImageResource('add.ico'))
+    add = ToolbarButton(
+        'Add', orientation='horizontal', image=ImageResource('add.ico'))
 
     # Object the action will apply on
     object = Any
@@ -141,13 +143,16 @@ class DocumentedItem(HasTraits):
     # Two lines documentation for the action
     documentation = Str
 
-    view = View('_',
-                Item('add', style='custom', show_label=False),
-                Item('documentation', style='readonly',
-                    editor=TextEditor(multi_line=True),
-                    resizable=True,
-                    show_label=False),
-                )
+    view = View(
+        '_',
+        Item(
+            'add', style='custom', show_label=False),
+        Item(
+            'documentation',
+            style='readonly',
+            editor=TextEditor(multi_line=True),
+            resizable=True,
+            show_label=False), )
 
     def _add_fired(self):
         """ Trait handler for when the add_source button is clicked in
@@ -157,8 +162,7 @@ class DocumentedItem(HasTraits):
         action()
 
 
-def documented_item_factory(name='', documentation='',
-                id='', object=None):
+def documented_item_factory(name='', documentation='', id='', object=None):
     """ Factory for creating a DocumentedItem with the right button
         label.
     """
@@ -166,14 +170,13 @@ def documented_item_factory(name='', documentation='',
     documentation = documentation.replace('  ', '')
 
     class MyDocumentedItem(DocumentedItem):
-        add = ToolbarButton('%s' % name, orientation='horizontal',
-                        image=ImageResource('add.ico'))
+        add = ToolbarButton(
+            '%s' % name,
+            orientation='horizontal',
+            image=ImageResource('add.ico'))
 
     return MyDocumentedItem(
-                        name=name,
-                        documentation=documentation,
-                        id=id,
-                        object=object)
+        name=name, documentation=documentation, id=id, object=object)
 
 
 ###############################################################################
@@ -203,41 +206,43 @@ class ListAdderNode(AdderNode):
         return self
 
     def default_traits_view(self):
-        nodes = [TreeNode(node_for=[AdderNode],
-                          label='name',
-                          copy=False,
-                          delete=False,
-                          rename=False,
-                          children='items_list',
-                          ),
-                 TreeNode(node_for=[DocumentedItem],
-                          label='name',
-                          copy=False,
-                          delete=False,
-                          rename=False,
-                          icon_item=self.icon_name,
-                          ),
-                 ]
+        nodes = [
+            TreeNode(
+                node_for=[AdderNode],
+                label='name',
+                copy=False,
+                delete=False,
+                rename=False,
+                children='items_list', ),
+            TreeNode(
+                node_for=[DocumentedItem],
+                label='name',
+                copy=False,
+                delete=False,
+                rename=False,
+                icon_item=self.icon_name, ),
+        ]
 
-        tree_editor = TreeEditor(editable=False,
-                                 hide_root=True,
-                                 orientation='vertical',
-                                 selected='object.selected_item',
-                                 nodes=nodes,
-                                 on_dclick='object._on_tree_dclick',
-                                 )
+        tree_editor = TreeEditor(
+            editable=False,
+            hide_root=True,
+            orientation='vertical',
+            selected='object.selected_item',
+            nodes=nodes,
+            on_dclick='object._on_tree_dclick', )
 
-        view = View(Item('self',
-                            show_label=False,
-                            editor=tree_editor,
-                            resizable=True,
-                            springy=True,
-                            height=0.5),
-                    Item('selected_item', style='custom', show_label=False,
-                            height=0.5),
-                    resizable=True)
+        view = View(
+            Item(
+                'self',
+                show_label=False,
+                editor=tree_editor,
+                resizable=True,
+                springy=True,
+                height=0.5),
+            Item(
+                'selected_item', style='custom', show_label=False, height=0.5),
+            resizable=True)
         return view
-
 
     def _object_changed(self, value):
         """ Trait handler for when the self.object trait changes.
@@ -249,16 +254,14 @@ class ListAdderNode(AdderNode):
             for src in self.items_list_source:
                 if not self._is_action_suitable(value, src):
                     continue
-                name = src.menu_name.replace('&','')
+                name = src.menu_name.replace('&', '')
                 result.append(
-                        documented_item_factory(
-                                name=name,
-                                documentation=src.help,
-                                id=src.id,
-                                object=value)
-                        )
+                    documented_item_factory(
+                        name=name,
+                        documentation=src.help,
+                        id=src.id,
+                        object=value))
         self.items_list = result
-
 
     def _is_action_suitable(self, object, src):
         """ Check that the action described by src can be applied on the
@@ -285,13 +288,15 @@ class SourceAdderNode(ListAdderNode):
     """
 
     # Button for adding a data file, with automatic format checking.
-    open_file = ToolbarButton('Load data from file',
-                                orientation='horizontal',
-                                image=ImageResource('file.png'))
+    open_file = ToolbarButton(
+        'Load data from file',
+        orientation='horizontal',
+        image=ImageResource('file.png'))
 
     # A reference to the registry, to generate this list.
-    items_list_source = [source for source in registry.sources
-                         if len(source.extensions) == 0]
+    items_list_source = [
+        source for source in registry.sources if len(source.extensions) == 0
+    ]
 
     # The string to display on the icon in the TreeEditor.
     label = 'Add Data Source'
@@ -301,12 +306,19 @@ class SourceAdderNode(ListAdderNode):
 
     # Trait view to show in the Mayavi current object panel.
     def default_traits_view(self):
-        return View(Group(Group(Item('open_file', style='custom'),
-                      show_labels=False, show_border=False),
-                      Item('items_list', style='readonly',
-                            editor=ListEditor(style='custom')),
-                      show_labels=False,
-                      label='Add a data source'))
+        return View(
+            Group(
+                Group(
+                    Item(
+                        'open_file', style='custom'),
+                    show_labels=False,
+                    show_border=False),
+                Item(
+                    'items_list',
+                    style='readonly',
+                    editor=ListEditor(style='custom')),
+                show_labels=False,
+                label='Add a data source'))
 
     def _open_file_fired(self):
         """ Trait handler for when the open_file button is clicked.
@@ -379,19 +391,24 @@ class ModuleFilterAdderNode(AdderNode):
 
     # Trait view to show in the Mayavi current object panel.
     view = View(
-                Group(Item('modules', style='custom', springy=True,
-                            resizable=True,
-                            height=1.,
-                            ),
-                    show_labels=False,
-                    label='Visualization modules'),
-                Group(Item('filters', style='custom', springy=True,
-                            resizable=True,
-                            height=1.,
-                            ),
-                    show_labels=False,
-                    label='Processing filters'),
-                )
+        Group(
+            Item(
+                'modules',
+                style='custom',
+                springy=True,
+                resizable=True,
+                height=1., ),
+            show_labels=False,
+            label='Visualization modules'),
+        Group(
+            Item(
+                'filters',
+                style='custom',
+                springy=True,
+                resizable=True,
+                height=1., ),
+            show_labels=False,
+            label='Processing filters'), )
 
 
 ### EOF #######################################################################

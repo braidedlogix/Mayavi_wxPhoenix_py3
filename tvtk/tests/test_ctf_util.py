@@ -11,17 +11,17 @@ def make_volume_prop(mins=255, maxs=355):
     """Make a volume property for the testing."""
     table = tvtk.VolumeProperty()
     ctf = ColorTransferFunction()
-    ds = (maxs-mins)/4.0
+    ds = (maxs - mins) / 4.0
     try:
         ctf.range = (mins, maxs)
     except Exception:
         # VTK versions < 5.2 don't seem to need this.
         pass
-    ctf.add_rgb_point(mins,      0.00, 0.0, 1.00)
-    ctf.add_rgb_point(mins+ds,   0.25, 0.5, 0.75)
-    ctf.add_rgb_point(mins+2*ds, 0.50, 1.0, 0.50)
-    ctf.add_rgb_point(mins+3*ds, 0.75, 0.5, 0.25)
-    ctf.add_rgb_point(maxs,      1.00, 0.0, 0.00)
+    ctf.add_rgb_point(mins, 0.00, 0.0, 1.00)
+    ctf.add_rgb_point(mins + ds, 0.25, 0.5, 0.75)
+    ctf.add_rgb_point(mins + 2 * ds, 0.50, 1.0, 0.50)
+    ctf.add_rgb_point(mins + 3 * ds, 0.75, 0.5, 0.25)
+    ctf.add_rgb_point(maxs, 1.00, 0.0, 0.00)
     otf = PiecewiseFunction()
     otf.add_point(mins, 0.0)
     otf.add_point(maxs, 0.2)
@@ -71,4 +71,3 @@ class TestCTFUtil(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

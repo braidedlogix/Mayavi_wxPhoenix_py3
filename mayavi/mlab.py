@@ -10,7 +10,6 @@ application with a compatible UI (Qt or wxPython).
 # Copyright (c) 2007-2016, Enthought, Inc.
 # License: BSD Style.
 
-
 # Try forcing the use of wx 2.8 before any other import.
 import sys
 if not 'wx' in sys.modules:
@@ -22,7 +21,6 @@ if not 'wx' in sys.modules:
     except ImportError:
         """ wxversion not installed """
 
-
 # Mayavi imports
 from mayavi.tools.camera import view, roll, yaw, pitch, move
 from mayavi.tools.figure import figure, clf, gcf, savefig, \
@@ -32,12 +30,15 @@ from mayavi.tools.engine_manager import get_engine, show_pipeline, \
 from mayavi.tools.show import show
 from mayavi.tools.animator import animate
 
+
 def show_engine():
     """ This function is deprecated, please use show_pipeline.
     """
     import warnings
-    warnings.warn('The show_engine function is deprecated, please use'
-                    'show_pipeline', stacklevel=2)
+    warnings.warn(
+        'The show_engine function is deprecated, please use'
+        'show_pipeline',
+        stacklevel=2)
     return show_pipeline()
 
 from .tools.helper_functions import contour3d, test_contour3d, \
@@ -72,28 +73,34 @@ if __name__ == "__main__":
 
     n_mer, n_long = 6, 11
     pi = numpy.pi
-    dphi = pi/1000.0
-    phi = numpy.arange(0.0, 2*pi + 0.5*dphi, dphi, 'd')
-    mu = phi*n_mer
-    x = numpy.cos(mu)*(1+numpy.cos(n_long*mu/n_mer)*0.5)
-    y = numpy.sin(mu)*(1+numpy.cos(n_long*mu/n_mer)*0.5)
-    z = numpy.sin(n_long*mu/n_mer)*0.5
+    dphi = pi / 1000.0
+    phi = numpy.arange(0.0, 2 * pi + 0.5 * dphi, dphi, 'd')
+    mu = phi * n_mer
+    x = numpy.cos(mu) * (1 + numpy.cos(n_long * mu / n_mer) * 0.5)
+    y = numpy.sin(mu) * (1 + numpy.cos(n_long * mu / n_mer) * 0.5)
+    z = numpy.sin(n_long * mu / n_mer) * 0.5
 
     pl = plot3d(x, y, z, numpy.sin(mu), tube_radius=0.05, colormap='Spectral')
 
     colorbar(orientation='vertical')
 
-    t = numpy.linspace(0, 4*numpy.pi, 100)
+    t = numpy.linspace(0, 4 * numpy.pi, 100)
     cos = numpy.cos
     sin = numpy.sin
 
-    x = sin(2*t)
+    x = sin(2 * t)
     y = cos(t)
-    z = sin(2*t)
+    z = sin(2 * t)
     s = sin(t)
 
-    pts = points3d(x, y, z, s, colormap="YlGnBu", scale_factor=0.1,
-            extent=(-0.3,0.3, -0.3, 0.3, -0.2,0.2))
+    pts = points3d(
+        x,
+        y,
+        z,
+        s,
+        colormap="YlGnBu",
+        scale_factor=0.1,
+        extent=(-0.3, 0.3, -0.3, 0.3, -0.2, 0.2))
 
     axes(xlabel='X', ylabel='Y', zlabel='Z')
     outline(pl)

@@ -31,8 +31,12 @@ from sphinxext import comment_eater
 
 
 class SphinxTraitsDoc(SphinxClassDoc):
-
-    def __init__(self, cls, modulename='', func_doc=SphinxFunctionDoc, doc=None, config={}):
+    def __init__(self,
+                 cls,
+                 modulename='',
+                 func_doc=SphinxFunctionDoc,
+                 doc=None,
+                 config={}):
 
         self.load_config(config)
 
@@ -42,7 +46,7 @@ class SphinxTraitsDoc(SphinxClassDoc):
         self._cls = cls
 
         self.show_inherited_members = config.get(
-                    'show_inherited_class_members', True)
+            'show_inherited_class_members', True)
 
         if modulename and not modulename.endswith('.'):
             modulename += '.'
@@ -76,7 +80,7 @@ class SphinxTraitsDoc(SphinxClassDoc):
             'Example': '',
             'Examples': '',
             'index': {}
-            }
+        }
 
         self._parse()
 
@@ -92,8 +96,8 @@ class SphinxTraitsDoc(SphinxClassDoc):
         out += self._str_index() + ['']
         out += self._str_summary()
         out += self._str_extended_summary()
-        for param_list in ('Parameters', 'Traits', 'Methods',
-                           'Returns', 'Yields', 'Raises'):
+        for param_list in ('Parameters', 'Traits', 'Methods', 'Returns',
+                           'Yields', 'Raises'):
             out += self._str_param_list(param_list)
 
         out += self._str_see_also("obj")
@@ -101,7 +105,7 @@ class SphinxTraitsDoc(SphinxClassDoc):
         out += self._str_references()
         out += self._str_section('Example')
         out += self._str_section('Examples')
-        out = self._str_indent(out,indent)
+        out = self._str_indent(out, indent)
         return '\n'.join(out)
 
 
@@ -137,13 +141,14 @@ def get_doc_object(obj, what=None, doc=None, config={}):
         # this function may be run the second time with a
         # prepared docstring `doc` and `obj=None`
         # In that case the prepared `doc` is used
-        newdoc = SphinxTraitsDoc(obj, "", func_doc=SphinxFunctionDoc,
-                                 doc=doc, config=config)
+        newdoc = SphinxTraitsDoc(
+            obj, "", func_doc=SphinxFunctionDoc, doc=doc, config=config)
         if obj and looks_like_issubclass(obj, "HasTraits"):
             for name, trait, comment in comment_eater.get_class_traits(obj):
                 # Exclude private traits.
                 if not name.startswith('_'):
-                    newdoc['Traits'].append((name, trait, comment.splitlines()))
+                    newdoc['Traits'].append(
+                        (name, trait, comment.splitlines()))
         return newdoc
     elif what in ('function', 'method'):
         return SphinxFunctionDoc(obj, doc=doc, config=config)
@@ -156,4 +161,3 @@ def get_doc_object(obj, what=None, doc=None, config={}):
 def setup(app):
     # init numpydoc
     numpydoc.setup(app, get_doc_object)
-

@@ -18,7 +18,7 @@ if not os.path.exists('dragon.tar.gz'):
         from urllib.request import urlopen
     print("Downloading dragon model, Please Wait (11MB)")
     opener = urlopen(
-            'http://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz')
+        'http://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz')
     open('dragon.tar.gz', 'wb').write(opener.read())
 
 # Extract the data

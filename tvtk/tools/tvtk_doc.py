@@ -29,6 +29,7 @@ from traitsui.api import View, Group, Item, EnumEditor,\
 from tvtk.api import tvtk
 from tvtk.common import get_tvtk_name
 
+
 ################################################################################
 # Utility functions.
 ################################################################################
@@ -47,7 +48,7 @@ def get_tvtk_class_names():
     # Shut of VTK warnings for the time being.
     o = vtk.vtkObject
     w = o.GetGlobalWarningDisplay()
-    o.SetGlobalWarningDisplay(0) # Turn it off.
+    o.SetGlobalWarningDisplay(0)  # Turn it off.
 
     all = []
     src = []
@@ -87,6 +88,7 @@ def get_tvtk_class_names():
 
     return result
 
+
 def get_func_doc(func, fname):
     """Returns function documentation."""
     if inspect.isfunction(func):
@@ -103,6 +105,7 @@ def get_func_doc(func, fname):
         doc += '\n\n' + d + '\n\n'
     return doc
 
+
 def get_tvtk_class_doc(obj):
     """Return's the objects documentation."""
     doc = obj.__doc__ + '\nTraits:\n-------------------\n\n'
@@ -111,7 +114,7 @@ def get_tvtk_class_doc(obj):
     for key, trait in obj.traits().items():
         if key.startswith('_') or key.endswith('_') or key in ignore:
             continue
-        doc += '\n%s: %s'%(key, trait.help)
+        doc += '\n%s: %s' % (key, trait.help)
 
     doc += '\nMethods:\n----------------------\n\n'
     traits = obj.trait_names()
@@ -126,14 +129,15 @@ def get_tvtk_class_doc(obj):
 
     return doc
 
+
 # GLOBALS
 TVTK_CLASSES, TVTK_SOURCES, TVTK_FILTERS, TVTK_SINKS = get_tvtk_class_names()
+
 
 ################################################################################
 # `DocSearch` class.
 ################################################################################
 class DocSearch(object):
-
     """A simple class that provides a method to search through class
     documentation.  This code is taken from mayavi-1.x's ivtk.VtkHelp
 
@@ -155,7 +159,7 @@ class DocSearch(object):
         self.vtk_classes = [x for x in dir(vtk) if x.startswith('vtk')]
         n = len(self.vtk_classes)
         # Store the class docs in the list given below.
-        self.vtk_c_doc = ['']*n
+        self.vtk_c_doc = [''] * n
 
         # setup the data.
         for i in range(n):
@@ -231,7 +235,8 @@ class DocSearch(object):
 
         return [get_tvtk_name(x) for x in ret]
 
-_search_help_doc =  """
+
+_search_help_doc = """
                         Help on Searching
            ---------------------------------------
 
@@ -294,34 +299,35 @@ class TVTKClassChooser(HasTraits):
     ########################################
     # View related traits.
 
-    view = View(Group(Item(name='class_name',
-                           editor=EnumEditor(name='available')),
-                      Item(name='class_name',
-                           has_focus=True
-                           ),
-                      Item(name='search',
-                           editor=TextEditor(enter_set=True,
-                                             auto_set=False)
-                           ),
-                      Item(name='clear_search',
-                           show_label=False),
-                      Item('_'),
-                      Item(name='completions',
-                           editor=ListEditor(columns=3),
-                           style='readonly'
-                           ),
-                      Item(name='doc',
-                           resizable=True,
-                           label='Documentation',
-                           style='custom')
-                      ),
-                id='tvtk_doc',
+    view = View(
+        Group(
+            Item(
+                name='class_name', editor=EnumEditor(name='available')),
+            Item(
+                name='class_name', has_focus=True),
+            Item(
+                name='search',
+                editor=TextEditor(
+                    enter_set=True, auto_set=False)),
+            Item(
+                name='clear_search', show_label=False),
+            Item('_'),
+            Item(
+                name='completions',
+                editor=ListEditor(columns=3),
+                style='readonly'),
+            Item(
+                name='doc',
                 resizable=True,
-                width=800,
-                height=600,
-                title='TVTK class chooser',
-                buttons = ["OK", "Cancel"]
-                )
+                label='Documentation',
+                style='custom')),
+        id='tvtk_doc',
+        resizable=True,
+        width=800,
+        height=600,
+        title='TVTK class chooser',
+        buttons=["OK", "Cancel"])
+
     ######################################################################
     # `object` interface.
     ######################################################################
@@ -382,11 +388,13 @@ class TVTKClassChooser(HasTraits):
 class TVTKSourceChooser(TVTKClassChooser):
     available = List(TVTK_SOURCES)
 
+
 ################################################################################
 # `TVTKFilterChooser` class.
 ################################################################################
 class TVTKFilterChooser(TVTKClassChooser):
     available = List(TVTK_FILTERS)
+
 
 ################################################################################
 # `TVTKSinkChooser` class.
@@ -401,6 +409,7 @@ def main():
     """
     s = TVTKClassChooser()
     s.configure_traits()
+
 
 if __name__ == '__main__':
     main()

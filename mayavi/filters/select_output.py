@@ -25,19 +25,18 @@ class SelectOutput(Filter):
     """
 
     # The output index in the input to choose from.
-    output_index = Range(value=0,
-                         enter_set=True,
-                         auto_set=False,
-                         low='_min_index',
-                         high='_max_index')
+    output_index = Range(
+        value=0,
+        enter_set=True,
+        auto_set=False,
+        low='_min_index',
+        high='_max_index')
 
-    input_info = PipelineInfo(datasets=['any'],
-                              attribute_types=['any'],
-                              attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])
 
-    output_info = PipelineInfo(datasets=['any'],
-                               attribute_types=['any'],
-                               attributes=['any'])
+    output_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])
 
     # The minimum output index of our input.
     _min_index = Int(0, desc='the minimum output index')
@@ -47,9 +46,10 @@ class SelectOutput(Filter):
     ########################################
     # Traits View.
 
-    view = View(Group(Item('output_index',
-                           enabled_when='_max_index > 0')),
-                resizable=True)
+    view = View(
+        Group(Item(
+            'output_index', enabled_when='_max_index > 0')),
+        resizable=True)
 
     ######################################################################
     # `object` interface.
@@ -94,4 +94,3 @@ class SelectOutput(Filter):
             if s is not None:
                 s.renderer.reset_camera_clipping_range()
                 s.render()
-

@@ -30,7 +30,6 @@ import numpy
 from .array_ext import set_id_type_array
 from .common import is_old_pipeline
 
-
 # Useful constants for VTK arrays.
 VTK_ID_TYPE_SIZE = vtk.vtkIdTypeArray().GetDataTypeSize()
 if VTK_ID_TYPE_SIZE == 4:
@@ -51,6 +50,7 @@ BASE_REFERENCE_COUNT = vtk.vtkObject().GetReferenceCount()
 if sys.version_info[0] > 2:
     unicode = str
 
+
 def getbuffer(array):
     return getattr(numpy, 'getbuffer', memoryview)(array)
 
@@ -59,7 +59,6 @@ def getbuffer(array):
 # The array cache.
 ######################################################################
 class ArrayCache(object):
-
     """Caches references to numpy arrays that are not copied but views
     of which are converted to VTK arrays.  The caching prevents the user
     from deleting or resizing the numpy array after it has been sent
@@ -141,29 +140,30 @@ else:
 del _dummy
 
 
-
 ######################################################################
 # Array conversion functions.
 ######################################################################
 def get_vtk_array_type(numeric_array_type):
     """Returns a VTK typecode given a numpy array."""
     # This is a Mapping from numpy array types to VTK array types.
-    _arr_vtk = {numpy.dtype(numpy.character):vtkConstants.VTK_UNSIGNED_CHAR,
-                numpy.dtype(numpy.uint8):vtkConstants.VTK_UNSIGNED_CHAR,
-                numpy.dtype(numpy.uint16):vtkConstants.VTK_UNSIGNED_SHORT,
-                numpy.dtype(numpy.int8):vtkConstants.VTK_CHAR,
-                numpy.dtype(numpy.int16):vtkConstants.VTK_SHORT,
-                numpy.dtype(numpy.int32):vtkConstants.VTK_INT,
-                numpy.dtype(numpy.uint32):vtkConstants.VTK_UNSIGNED_INT,
-                numpy.dtype(numpy.float32):vtkConstants.VTK_FLOAT,
-                numpy.dtype(numpy.float64):vtkConstants.VTK_DOUBLE,
-                numpy.dtype(numpy.complex64):vtkConstants.VTK_FLOAT,
-                numpy.dtype(numpy.complex128):vtkConstants.VTK_DOUBLE,
-                }
-    _extra = {numpy.dtype(ID_TYPE_CODE):vtkConstants.VTK_ID_TYPE,
-              numpy.dtype(ULONG_TYPE_CODE):vtkConstants.VTK_UNSIGNED_LONG,
-              numpy.dtype(LONG_TYPE_CODE):vtkConstants.VTK_LONG,
-             }
+    _arr_vtk = {
+        numpy.dtype(numpy.character): vtkConstants.VTK_UNSIGNED_CHAR,
+        numpy.dtype(numpy.uint8): vtkConstants.VTK_UNSIGNED_CHAR,
+        numpy.dtype(numpy.uint16): vtkConstants.VTK_UNSIGNED_SHORT,
+        numpy.dtype(numpy.int8): vtkConstants.VTK_CHAR,
+        numpy.dtype(numpy.int16): vtkConstants.VTK_SHORT,
+        numpy.dtype(numpy.int32): vtkConstants.VTK_INT,
+        numpy.dtype(numpy.uint32): vtkConstants.VTK_UNSIGNED_INT,
+        numpy.dtype(numpy.float32): vtkConstants.VTK_FLOAT,
+        numpy.dtype(numpy.float64): vtkConstants.VTK_DOUBLE,
+        numpy.dtype(numpy.complex64): vtkConstants.VTK_FLOAT,
+        numpy.dtype(numpy.complex128): vtkConstants.VTK_DOUBLE,
+    }
+    _extra = {
+        numpy.dtype(ID_TYPE_CODE): vtkConstants.VTK_ID_TYPE,
+        numpy.dtype(ULONG_TYPE_CODE): vtkConstants.VTK_UNSIGNED_LONG,
+        numpy.dtype(LONG_TYPE_CODE): vtkConstants.VTK_LONG,
+    }
     for t in _extra:
         if t not in _arr_vtk:
             _arr_vtk[t] = _extra[t]
@@ -176,20 +176,23 @@ def get_vtk_array_type(numeric_array_type):
                 return _arr_vtk[key]
     raise TypeError("Couldn't translate array's type to VTK")
 
+
 def get_vtk_to_numeric_typemap():
     """Returns the VTK array type to numpy array type mapping."""
-    _vtk_arr = {vtkConstants.VTK_BIT:numpy.bool,
-                vtkConstants.VTK_CHAR:numpy.int8,
-                vtkConstants.VTK_UNSIGNED_CHAR:numpy.uint8,
-                vtkConstants.VTK_SHORT:numpy.int16,
-                vtkConstants.VTK_UNSIGNED_SHORT:numpy.uint16,
-                vtkConstants.VTK_INT:numpy.int32,
-                vtkConstants.VTK_UNSIGNED_INT:numpy.uint32,
-                vtkConstants.VTK_LONG:LONG_TYPE_CODE,
-                vtkConstants.VTK_UNSIGNED_LONG:ULONG_TYPE_CODE,
-                vtkConstants.VTK_ID_TYPE:ID_TYPE_CODE,
-                vtkConstants.VTK_FLOAT:numpy.float32,
-                vtkConstants.VTK_DOUBLE:numpy.float64}
+    _vtk_arr = {
+        vtkConstants.VTK_BIT: numpy.bool,
+        vtkConstants.VTK_CHAR: numpy.int8,
+        vtkConstants.VTK_UNSIGNED_CHAR: numpy.uint8,
+        vtkConstants.VTK_SHORT: numpy.int16,
+        vtkConstants.VTK_UNSIGNED_SHORT: numpy.uint16,
+        vtkConstants.VTK_INT: numpy.int32,
+        vtkConstants.VTK_UNSIGNED_INT: numpy.uint32,
+        vtkConstants.VTK_LONG: LONG_TYPE_CODE,
+        vtkConstants.VTK_UNSIGNED_LONG: ULONG_TYPE_CODE,
+        vtkConstants.VTK_ID_TYPE: ID_TYPE_CODE,
+        vtkConstants.VTK_FLOAT: numpy.float32,
+        vtkConstants.VTK_DOUBLE: numpy.float64
+    }
     return _vtk_arr
 
 
@@ -200,18 +203,20 @@ def get_numeric_array_type(vtk_array_type):
 
 def get_sizeof_vtk_array(vtk_array_type):
     """Returns the size of a VTK array type."""
-    _size_dict = {vtkConstants.VTK_BIT : 1,
-                  vtkConstants.VTK_CHAR : 1,
-                  vtkConstants.VTK_UNSIGNED_CHAR : 1,
-                  vtkConstants.VTK_SHORT : 2,
-                  vtkConstants.VTK_UNSIGNED_SHORT : 2,
-                  vtkConstants.VTK_INT : 4,
-                  vtkConstants.VTK_UNSIGNED_INT : 4,
-                  vtkConstants.VTK_LONG : VTK_LONG_TYPE_SIZE,
-                  vtkConstants.VTK_UNSIGNED_LONG : VTK_LONG_TYPE_SIZE,
-                  vtkConstants.VTK_ID_TYPE : VTK_ID_TYPE_SIZE,
-                  vtkConstants.VTK_FLOAT : 4,
-                  vtkConstants.VTK_DOUBLE : 8 }
+    _size_dict = {
+        vtkConstants.VTK_BIT: 1,
+        vtkConstants.VTK_CHAR: 1,
+        vtkConstants.VTK_UNSIGNED_CHAR: 1,
+        vtkConstants.VTK_SHORT: 2,
+        vtkConstants.VTK_UNSIGNED_SHORT: 2,
+        vtkConstants.VTK_INT: 4,
+        vtkConstants.VTK_UNSIGNED_INT: 4,
+        vtkConstants.VTK_LONG: VTK_LONG_TYPE_SIZE,
+        vtkConstants.VTK_UNSIGNED_LONG: VTK_LONG_TYPE_SIZE,
+        vtkConstants.VTK_ID_TYPE: VTK_ID_TYPE_SIZE,
+        vtkConstants.VTK_FLOAT: 4,
+        vtkConstants.VTK_DOUBLE: 8
+    }
     return _size_dict[vtk_array_type]
 
 
@@ -422,7 +427,7 @@ def vtk2array(vtk_array):
         exp.SetInputData(img_data)
 
     # Create an array of the right size and export the image into it.
-    im_arr = numpy.empty((shape[0]*shape[1],), r_dtype)
+    im_arr = numpy.empty((shape[0] * shape[1], ), r_dtype)
     exp.Export(im_arr)
 
     # Now reshape it.
@@ -514,6 +519,7 @@ def array2vtkCellArray(num_array, vtk_array=None):
         vtk_arr = vtk.vtkIdTypeArray()
         array2vtk(id_typ_arr, vtk_arr)
         cells.SetCells(n_cells, vtk_arr)
+
     ########################################
 
     msg = "Invalid argument.  Valid types are a Python list of lists,"\
@@ -522,7 +528,7 @@ def array2vtkCellArray(num_array, vtk_array=None):
     if issubclass(type(num_array), (list, tuple)):
         assert len(num_array[0]) > 0, "Input array must be 2D."
         tp = type(num_array[0])
-        if issubclass(tp, list): # Pure Python list.
+        if issubclass(tp, list):  # Pure Python list.
             _slow_array2cells(num_array, cells)
             return cells
         elif issubclass(tp, numpy.ndarray):  # List of arrays.
@@ -532,17 +538,17 @@ def array2vtkCellArray(num_array, vtk_array=None):
             for arr in num_array:
                 assert len(arr.shape) == 2, "Each array must be 2D"
                 shp = arr.shape
-                tot_size += shp[0]*(shp[1] + 1)
+                tot_size += shp[0] * (shp[1] + 1)
                 n_cells += shp[0]
             # Create an empty array.
-            id_typ_arr = numpy.empty((tot_size,), ID_TYPE_CODE)
+            id_typ_arr = numpy.empty((tot_size, ), ID_TYPE_CODE)
             # Now populate it with the ids.
             count = 0
             for arr in num_array:
                 tmp_arr = _get_tmp_array(arr)
                 shp = arr.shape
-                sz = shp[0]*(shp[1] + 1)
-                set_id_type_array(tmp_arr, id_typ_arr[count:count+sz])
+                sz = shp[0] * (shp[1] + 1)
+                set_id_type_array(tmp_arr, id_typ_arr[count:count + sz])
                 count += sz
             # Now set them cells.
             _set_cells(cells, n_cells, id_typ_arr)
@@ -553,7 +559,7 @@ def array2vtkCellArray(num_array, vtk_array=None):
         assert len(num_array.shape) == 2, "Input array must be 2D."
         tmp_arr = _get_tmp_array(num_array)
         shp = tmp_arr.shape
-        id_typ_arr = numpy.empty((shp[0]*(shp[1] + 1),), ID_TYPE_CODE)
+        id_typ_arr = numpy.empty((shp[0] * (shp[1] + 1), ), ID_TYPE_CODE)
         set_id_type_array(tmp_arr, id_typ_arr)
         _set_cells(cells, shp[0], id_typ_arr)
         return cells
@@ -582,7 +588,7 @@ def array2vtkPoints(num_array, vtk_points=None):
 
     """
     if vtk_points:
-        points  = vtk_points
+        points = vtk_points
     else:
         points = vtk.vtkPoints()
 
@@ -628,6 +634,7 @@ def array2vtkIdList(num_array, vtk_idlist=None):
 # Array argument handling functions.
 ######################################################################
 
+
 def is_array(arr):
     """Returns True if the passed `arr` is a numpy array or a List."""
     if issubclass(type(arr), (numpy.ndarray, list)):
@@ -648,16 +655,18 @@ def convert_array(arr, vtk_typ=None):
 
     """
     if vtk_typ:
-        conv = {'vtkCellArray': array2vtkCellArray,
-                'vtkPoints': array2vtkPoints,
-                'vtkIdList': array2vtkIdList}
+        conv = {
+            'vtkCellArray': array2vtkCellArray,
+            'vtkPoints': array2vtkPoints,
+            'vtkIdList': array2vtkIdList
+        }
         if vtk_typ in conv.keys():
             vtk_arr = getattr(vtk, vtk_typ)()
             return conv[vtk_typ](arr, vtk_arr)
         elif vtk_typ.find('Array') > -1:
             try:
                 vtk_arr = getattr(vtk, vtk_typ)()
-            except TypeError: # vtk_typ == 'vtkDataArray'
+            except TypeError:  # vtk_typ == 'vtkDataArray'
                 return array2vtk(arr)
             else:
                 return array2vtk(arr, vtk_arr)

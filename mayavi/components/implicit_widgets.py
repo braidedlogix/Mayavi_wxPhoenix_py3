@@ -8,13 +8,13 @@ to be used by various modules.
 
 import pickle
 
-from traits.api import (Instance, Trait, Bool, TraitMap, Enum, Dict,
-                                  Str, Int)
+from traits.api import (Instance, Trait, Bool, TraitMap, Enum, Dict, Str, Int)
 from traitsui.api import View, Group, Item
 from tvtk.api import tvtk
 from apptools.persistence.state_pickler import set_state
 
 from mayavi.core.component import Component
+
 
 ######################################################################
 # `ImplicitWidgets` class.
@@ -25,16 +25,23 @@ class ImplicitWidgets(Component):
     __version__ = 0
 
     # The widget type to use.
-    widget_mode = Enum('Box', 'Sphere', 'Plane','ImplicitPlane',
-                       desc='the implicit widget to use')
+    widget_mode = Enum(
+        'Box',
+        'Sphere',
+        'Plane',
+        'ImplicitPlane',
+        desc='the implicit widget to use')
 
     # The actual poly data source widget.
     widget = Instance(tvtk.ThreeDWidget, record=True)
 
-    update_mode = Trait('semi-interactive',
-                        TraitMap({'interactive':'InteractionEvent',
-                                  'semi-interactive': 'EndInteractionEvent'}),
-                        desc='speed at which the data should be updated')
+    update_mode = Trait(
+        'semi-interactive',
+        TraitMap({
+            'interactive': 'InteractionEvent',
+            'semi-interactive': 'EndInteractionEvent'
+        }),
+        desc='speed at which the data should be updated')
 
     implicit_function = Instance(tvtk.ImplicitFunction, allow_none=False)
 
@@ -46,21 +53,25 @@ class ImplicitWidgets(Component):
     _observer_id = Int(-1)
 
     # The actual widgets.
-    _widget_dict = Dict(Str, Instance(tvtk.ThreeDWidget,
-                        allow_none=False))
+    _widget_dict = Dict(Str, Instance(tvtk.ThreeDWidget, allow_none=False))
 
     # The actual implicit functions.
-    _implicit_function_dict = Dict(Str, Instance(tvtk.ImplicitFunction,
-                                   allow_none=False))
+    _implicit_function_dict = Dict(
+        Str, Instance(
+            tvtk.ImplicitFunction, allow_none=False))
 
     ########################################
     # View related traits.
     ########################################
-     # Create the UI for the traits.
-    view = View(Group(Item(name='widget_mode'), Item(name='widget',
-                            style='custom', resizable=True),
-                            label='Widget Source', show_labels=False),
-                            resizable=True)
+    # Create the UI for the traits.
+    view = View(
+        Group(
+            Item(name='widget_mode'),
+            Item(
+                name='widget', style='custom', resizable=True),
+            label='Widget Source',
+            show_labels=False),
+        resizable=True)
 
     #####################################################################
     # `object` interface
@@ -169,8 +180,12 @@ class ImplicitWidgets(Component):
     def update_implicit_function(self):
         """Update the implicit_function from the widget data.
         """
-        dispatch = {'Sphere': 'get_sphere', 'Box': 'get_planes',
-                    'Plane': 'get_plane', 'ImplicitPlane': 'get_plane'}
+        dispatch = {
+            'Sphere': 'get_sphere',
+            'Box': 'get_planes',
+            'Plane': 'get_plane',
+            'ImplicitPlane': 'get_plane'
+        }
         method = getattr(self.widget, dispatch[self.widget_mode])
         method(self.implicit_function)
 
@@ -192,21 +207,20 @@ class ImplicitWidgets(Component):
         """Wire up event handlers or tear them down given a widget
         `value`.  If `remove` is True, then tear them down."""
         if remove and self._observer_id > 0:
-                value.remove_observer(self._observer_id)
+            value.remove_observer(self._observer_id)
         else:
             self._observer_id = value.add_observer(self.update_mode_,
                                                    self._on_interaction_event)
         if isinstance(value, tvtk.PlaneWidget) or \
             isinstance(value, tvtk.ImplicitPlaneWidget):
-            value.on_trait_change(self._on_alignment_set,
-                                  'normal_to_x_axis', remove=remove)
-            value.on_trait_change(self._on_alignment_set,
-                                  'normal_to_y_axis', remove=remove)
-            value.on_trait_change(self._on_alignment_set,
-                                  'normal_to_z_axis', remove=remove)
+            value.on_trait_change(
+                self._on_alignment_set, 'normal_to_x_axis', remove=remove)
+            value.on_trait_change(
+                self._on_alignment_set, 'normal_to_y_axis', remove=remove)
+            value.on_trait_change(
+                self._on_alignment_set, 'normal_to_z_axis', remove=remove)
 
-        value.on_trait_change(self._on_widget_trait_changed,
-                              remove=remove)
+        value.on_trait_change(self._on_widget_trait_changed, remove=remove)
         value.on_trait_change(self.render, remove=remove)
 
     def _on_interaction_event(self, obj, event):
@@ -217,7 +231,7 @@ class ImplicitWidgets(Component):
         if w is not None:
             w.remove_observer(self._observer_id)
             self._observer_id = w.add_observer(self.update_mode_,
-                    self._on_interaction_event)
+                                               self._on_interaction_event)
 
             w.on_trait_change(self.render)
             self.render()
@@ -225,7 +239,8 @@ class ImplicitWidgets(Component):
     def _on_widget_trait_changed(self):
         if (not self._busy) and (self.update_mode != 'non-interactive'):
             self._busy = True
-            self.implicit_function = self._implicit_function_dict[self.widget_mode]
+            self.implicit_function = self._implicit_function_dict[
+                self.widget_mode]
             self.update_implicit_function()
             self.render()
             self._busy = False
@@ -250,18 +265,21 @@ class ImplicitWidgets(Component):
 
     def __widget_dict_default(self):
         """Default value for source dict."""
-        w = {'Box':tvtk.BoxWidget(place_factor = 0.9),
-             'Sphere':tvtk.SphereWidget(place_factor = 0.9),
-             'Plane':tvtk.PlaneWidget(place_factor = 0.9),
-             'ImplicitPlane':
-                tvtk.ImplicitPlaneWidget(place_factor=0.9,
-                                         draw_plane=False)}
+        w = {
+            'Box': tvtk.BoxWidget(place_factor=0.9),
+            'Sphere': tvtk.SphereWidget(place_factor=0.9),
+            'Plane': tvtk.PlaneWidget(place_factor=0.9),
+            'ImplicitPlane': tvtk.ImplicitPlaneWidget(
+                place_factor=0.9, draw_plane=False)
+        }
         return w
 
     def __implicit_function_dict_default(self):
         """Default value for source dict."""
-        ip = {'Box':tvtk.Planes(),
-              'Sphere':tvtk.Sphere(),
-              'Plane':tvtk.Plane(),
-              'ImplicitPlane': tvtk.Plane()}
+        ip = {
+            'Box': tvtk.Planes(),
+            'Sphere': tvtk.Sphere(),
+            'Plane': tvtk.Plane(),
+            'ImplicitPlane': tvtk.Plane()
+        }
         return ip

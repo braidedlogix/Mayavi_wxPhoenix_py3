@@ -110,6 +110,7 @@ USE_LOD_ACTOR = True
 
 VTK_VER = StrictVersion(tvtk.Version().vtk_version)
 
+
 ######################################################################
 # Utility functions.
 ######################################################################
@@ -150,11 +151,10 @@ def _create_structured_points_direct(x, y, z=None):
                "You passed nx=%d, ny=%d,  nz=%d"%(nx, ny, nz)
 
     xmin, ymin = x[0], y[0]
-    dx, dy= (x[1] - x[0]), (y[1] - y[0])
+    dx, dy = (x[1] - x[0]), (y[1] - y[0])
 
-    sp = tvtk.StructuredPoints(dimensions=(nx,ny,1),
-                               origin=(xmin, ymin, 0),
-                               spacing=(dx, dy, 1))
+    sp = tvtk.StructuredPoints(
+        dimensions=(nx, ny, 1), origin=(xmin, ymin, 0), spacing=(dx, dy, 1))
     if z is not None:
         sp.point_data.scalars = numpy.ravel(z)
         sp.point_data.scalars.name = 'scalars'
@@ -180,10 +180,9 @@ def sampler(xa, ya, func, *args, **kwargs):
         kwargs -- a dict of additional keyword arguments for func()
         (default is empty)
     """
-    ret = func(xa[:,None] + numpy.zeros_like(ya),
-               numpy.transpose(ya[:,None] + numpy.zeros_like(xa)),
-               *args, **kwargs
-               )
+    ret = func(xa[:, None] + numpy.zeros_like(ya),
+               numpy.transpose(ya[:, None] + numpy.zeros_like(xa)), *args,
+               **kwargs)
     return numpy.transpose(ret)
 
 
@@ -194,10 +193,10 @@ def _check_sanity(x, y, z):
           "This array has shape %s" % str(z.shape)
     assert len(z.shape) <= 2, msg
 
-    if len( z.shape ) == 2:
+    if len(z.shape) == 2:
         msg = "len(x)*len(y) != len(z.flat).  You passed "\
               "nx=%d, ny=%d, shape of z=%s"%(len(x), len(y), z.shape)
-        assert z.shape[0]*z.shape[1] == len(x)*len(y), msg
+        assert z.shape[0] * z.shape[1] == len(x) * len(y), msg
 
         msg = "length of y(%d) and x(%d) must match shape of z "\
               "%s. (Maybe you need to swap x and y?)"%(len(y), len(x),
@@ -209,13 +208,18 @@ def squeeze(a):
     "Returns a with any ones from the shape of a removed"
     a = numpy.asarray(a)
     b = numpy.asarray(a.shape)
-    val = numpy.reshape(a,
-                          tuple(numpy.compress(numpy.not_equal(b, 1), b)))
+    val = numpy.reshape(a, tuple(numpy.compress(numpy.not_equal(b, 1), b)))
     return val
 
 
-def make_surf_actor(x, y, z, warp=1, scale=[1.0, 1.0, 1.0],
-                    make_actor=True, *args, **kwargs):
+def make_surf_actor(x,
+                    y,
+                    z,
+                    warp=1,
+                    scale=[1.0, 1.0, 1.0],
+                    make_actor=True,
+                    *args,
+                    **kwargs):
     """Creates a surface given regularly spaced values of x, y and the
     corresponding z as arrays.  Also works if z is a function.
     Currently works only for regular data - can be enhanced later.
@@ -255,8 +259,8 @@ def make_surf_actor(x, y, z, warp=1, scale=[1.0, 1.0, 1.0],
         zval = numpy.ravel(z)
         assert len(zval) > 0, "z is empty - nothing to plot!"
 
-    xs = x*scale[0]
-    ys = y*scale[1]
+    xs = x * scale[0]
+    ys = y * scale[1]
     data = _create_structured_points_direct(xs, ys, zval)
     if not make_actor:
         return data
@@ -269,10 +273,10 @@ def make_surf_actor(x, y, z, warp=1, scale=[1.0, 1.0, 1.0],
         normals = tvtk.PolyDataNormals(feature_angle=45)
         configure_input_data(normals, warper.output)
 
-        mapper = tvtk.PolyDataMapper(scalar_range=(min(zval),max(zval)))
+        mapper = tvtk.PolyDataMapper(scalar_range=(min(zval), max(zval)))
         configure_input_data(mapper, normals.output)
     else:
-        mapper = tvtk.PolyDataMapper(scalar_range=(min(zval),max(zval)))
+        mapper = tvtk.PolyDataMapper(scalar_range=(min(zval), max(zval)))
         configure_input_data(mapper, data)
     actor = _make_actor(mapper=mapper)
     return data, actor
@@ -316,21 +320,20 @@ def make_triangles_points(x, y, z, scalars=None):
     assert y.shape == z.shape, "Arrays y and z must have same shape."
 
     nx, ny = x.shape
-    i, j = numpy.mgrid[0:nx-1,0:ny-1]
+    i, j = numpy.mgrid[0:nx - 1, 0:ny - 1]
     i, j = numpy.ravel(i), numpy.ravel(j)
-    t1 = i*ny+j, (i+1)*ny+j, (i+1)*ny+(j+1)
-    t2 = (i+1)*ny+(j+1), i*ny+(j+1), i*ny+j
+    t1 = i * ny + j, (i + 1) * ny + j, (i + 1) * ny + (j + 1)
+    t2 = (i + 1) * ny + (j + 1), i * ny + (j + 1), i * ny + j
     nt = len(t1[0])
-    triangles = numpy.zeros((nt*2, 3), 'l')
-    triangles[0:nt,0], triangles[0:nt,1], triangles[0:nt,2] = t1
-    triangles[nt:,0], triangles[nt:,1], triangles[nt:,2] = t2
+    triangles = numpy.zeros((nt * 2, 3), 'l')
+    triangles[0:nt, 0], triangles[0:nt, 1], triangles[0:nt, 2] = t1
+    triangles[nt:, 0], triangles[nt:, 1], triangles[nt:, 2] = t2
 
     points = numpy.zeros((nx, ny, 3), 'd')
-    points[:,:,0], points[:,:,1], points[:,:,2] = x, y, z
-    points = numpy.reshape(points, (nx*ny, 3))
+    points[:, :, 0], points[:, :, 1], points[:, :, 2] = x, y, z
+    points = numpy.reshape(points, (nx * ny, 3))
 
     return triangles, points
-
 
 
 ######################################################################
@@ -371,7 +374,6 @@ class MLabBase(HasTraits):
             rw.render()
 
 
-
 ######################################################################
 # `Glyphs` class.
 ######################################################################
@@ -381,8 +383,10 @@ class Glyphs(MLabBase):
 
     # A Glyph3D instance replicates the glyph_sources at various
     # points.
-    glyph = Instance(tvtk.Glyph3D, (), {'vector_mode':'use_vector',
-                                        'scale_mode':'data_scaling_off'})
+    glyph = Instance(tvtk.Glyph3D, (), {
+        'vector_mode': 'use_vector',
+        'scale_mode': 'data_scaling_off'
+    })
 
     # Color of the glyphs.
     color = vtk_color_trait((1.0, 1.0, 1.0))
@@ -441,6 +445,7 @@ class Arrows(Glyphs):
     # The arrow glyph which is placed at various locations.
     glyph_source = Instance(tvtk.ArrowSource, ())
 
+
 ######################################################################
 # `Cones` class.
 ######################################################################
@@ -494,8 +499,8 @@ class Cylinders(Glyphs):
 class Spheres(Glyphs):
     # The sphere which is placed at various locations.
     glyph_source = Instance(tvtk.SphereSource, (),
-                            {'phi_resolution':15,
-                             'theta_resolution':30})
+                            {'phi_resolution': 15,
+                             'theta_resolution': 30})
     # Radius of the sphere.
     radius = Float(0.05, desc='radius of the sphere')
 
@@ -514,7 +519,8 @@ class Spheres(Glyphs):
 class Points(Glyphs):
     # The point which is placed at various locations.
     glyph_source = Instance(tvtk.PointSource, (),
-                            {'radius':0, 'number_of_points':1})
+                            {'radius': 0,
+                             'number_of_points': 1})
 
 
 ######################################################################
@@ -524,11 +530,10 @@ class Line3(MLabBase):
     # Radius of the tube filter.
     radius = Float(0.01, desc='radius of the tubes')
     # Should a tube filter be used or not.
-    use_tubes = Bool(True,
-                     desc='specifies if the tube filter should be used')
+    use_tubes = Bool(True, desc='specifies if the tube filter should be used')
 
     # The Tube filter used to generate tubes from the lines.
-    tube_filter = Instance(tvtk.TubeFilter, (), {'number_of_sides':6})
+    tube_filter = Instance(tvtk.TubeFilter, (), {'number_of_sides': 6})
 
     # Color of the actor.
     color = vtk_color_trait((1.0, 1.0, 1.0))
@@ -542,8 +547,8 @@ class Line3(MLabBase):
 
         np = len(points) - 1
         lines = numpy.zeros((np, 2), 'l')
-        lines[:,0] = numpy.arange(0, np-0.5, 1, 'l')
-        lines[:,1] = numpy.arange(1, np+0.5, 1, 'l')
+        lines[:, 0] = numpy.arange(0, np - 0.5, 1, 'l')
+        lines[:, 1] = numpy.arange(1, np + 0.5, 1, 'l')
         pd = tvtk.PolyData(points=points, lines=lines)
         self.poly_data = pd
 
@@ -583,10 +588,14 @@ class Line3(MLabBase):
 ######################################################################
 class Outline(MLabBase):
     # The axis instance to use to annotate the outline
-    axis = Instance(tvtk.CubeAxesActor2D, (),
-                    {'label_format':"%4.2g", 'fly_mode':"outer_edges",
-                     'font_factor':1.25, 'number_of_labels':5,
-                     'corner_offset':0.0, 'scaling':0})
+    axis = Instance(tvtk.CubeAxesActor2D, (), {
+        'label_format': "%4.2g",
+        'fly_mode': "outer_edges",
+        'font_factor': 1.25,
+        'number_of_labels': 5,
+        'corner_offset': 0.0,
+        'scaling': 0
+    })
     # The outline source.
     outline = Instance(tvtk.OutlineSource, ())
 
@@ -654,22 +663,29 @@ class Title(MLabBase):
         self.text_actor.input = val
         self.render()
 
+
 ######################################################################
 # `LUTBase` class.
 ######################################################################
 class LUTBase(MLabBase):
     # The choices for the lookuptable
-    lut_type = Trait('red-blue', 'red-blue', 'blue-red',
-                     'black-white', 'white-black',
-                     desc='the type of the lookup table')
+    lut_type = Trait(
+        'red-blue',
+        'red-blue',
+        'blue-red',
+        'black-white',
+        'white-black',
+        desc='the type of the lookup table')
 
     # The LookupTable instance.
     lut = Instance(tvtk.LookupTable, ())
 
     # The scalar bar.
-    scalar_bar = Instance(tvtk.ScalarBarActor, (),
-                          {'orientation':'horizontal',
-                           'width':0.8, 'height':0.17})
+    scalar_bar = Instance(tvtk.ScalarBarActor, (), {
+        'orientation': 'horizontal',
+        'width': 0.8,
+        'height': 0.17
+    })
 
     # The scalar_bar widget.
     scalar_bar_widget = Instance(tvtk.ScalarBarWidget, ())
@@ -678,15 +694,14 @@ class LUTBase(MLabBase):
     legend_text = Str('Scalar', desc='the title of the legend')
 
     # Turn on/off the visibility of the scalar bar.
-    show_scalar_bar = Bool(False,
-                           desc='specifies if scalar bar is shown or not')
+    show_scalar_bar = Bool(
+        False, desc='specifies if scalar bar is shown or not')
 
     def __init__(self, **traits):
         super(LUTBase, self).__init__(**traits)
         self.lut.number_of_colors = 256
         self._lut_type_changed(self.lut_type)
-        self.scalar_bar.set(lookup_table=self.lut,
-                            title=self.legend_text)
+        self.scalar_bar.set(lookup_table=self.lut, title=self.legend_text)
         pc = self.scalar_bar.position_coordinate
         pc.coordinate_system = 'normalized_viewport'
         pc.value = 0.1, 0.01, 0.0
@@ -711,8 +726,10 @@ class LUTBase(MLabBase):
             saturation_range = 0.0, 0.0
             value_range = 1.0, 0.0
         lut = self.lut
-        lut.set(hue_range=hue_range, saturation_range=saturation_range,
-                value_range=value_range, number_of_table_values=256,
+        lut.set(hue_range=hue_range,
+                saturation_range=saturation_range,
+                value_range=value_range,
+                number_of_table_values=256,
                 ramp='sqrt')
         lut.force_build()
 
@@ -740,14 +757,19 @@ class LUTBase(MLabBase):
         super(LUTBase, self)._renwin_changed(old, new)
 
 
-
 ######################################################################
 # `SurfRegular` class.
 ######################################################################
 class SurfRegular(LUTBase):
-
-    def __init__(self, x, y, z, warp=1, scale=[1.0, 1.0, 1.0], f_args=(),
-                 f_kwargs=None, **traits):
+    def __init__(self,
+                 x,
+                 y,
+                 z,
+                 warp=1,
+                 scale=[1.0, 1.0, 1.0],
+                 f_args=(),
+                 f_kwargs=None,
+                 **traits):
         super(SurfRegular, self).__init__(**traits)
 
         if f_kwargs is None:
@@ -773,8 +795,15 @@ class SurfRegularC(LUTBase):
     # The contour filter.
     contour_filter = Instance(tvtk.ContourFilter, ())
 
-    def __init__(self, x, y, z, warp=1, scale=[1.0, 1.0, 1.0], f_args=(),
-                 f_kwargs=None, **traits):
+    def __init__(self,
+                 x,
+                 y,
+                 z,
+                 warp=1,
+                 scale=[1.0, 1.0, 1.0],
+                 f_args=(),
+                 f_kwargs=None,
+                 **traits):
         super(SurfRegularC, self).__init__(**traits)
 
         if f_kwargs is None:
@@ -831,8 +860,10 @@ class TriMesh(LUTBase):
 
         self.pd = make_triangle_polydata(triangles, points, scalars)
 
-        mapper = tvtk.PolyDataMapper(input=self.pd, lookup_table=self.lut,
-                                     scalar_visibility=self.scalar_visibility)
+        mapper = tvtk.PolyDataMapper(
+            input=self.pd,
+            lookup_table=self.lut,
+            scalar_visibility=self.scalar_visibility)
         if scalars is not None:
             rs = numpy.ravel(scalars)
             dr = min(rs), max(rs)
@@ -844,10 +875,14 @@ class TriMesh(LUTBase):
         if self.surface:
             representation = 's'
         if representation == 'w':
-            actor.property.set(diffuse=0.0, ambient=1.0, color=self.color,
+            actor.property.set(diffuse=0.0,
+                               ambient=1.0,
+                               color=self.color,
                                representation=representation)
         else:
-            actor.property.set(diffuse=1.0, ambient=0.0, color=self.color,
+            actor.property.set(diffuse=1.0,
+                               ambient=0.0,
+                               color=self.color,
                                representation=representation)
 
         self.actors.append(actor)
@@ -866,10 +901,12 @@ class TriMesh(LUTBase):
 
             actor = self.actors[0]
             if representation == 'w':
-                actor.property.set(diffuse=0.0, ambient=1.0,
+                actor.property.set(diffuse=0.0,
+                                   ambient=1.0,
                                    representation=representation)
             else:
-                actor.property.set(diffuse=1.0, ambient=0.0,
+                actor.property.set(diffuse=1.0,
+                                   ambient=0.0,
                                    representation=representation)
         self.render()
 
@@ -898,13 +935,14 @@ class FancyTriMesh(LUTBase):
     sphere_radius = Float(0.0, desc='radius of the spheres')
 
     # The TubeFilter used to make the tubes for the edges.
-    tube_filter = Instance(tvtk.TubeFilter, (),
-                           {'vary_radius':'vary_radius_off',
-                            'number_of_sides':6})
+    tube_filter = Instance(tvtk.TubeFilter, (), {
+        'vary_radius': 'vary_radius_off',
+        'number_of_sides': 6
+    })
     # The sphere source for the points.
     sphere_source = Instance(tvtk.SphereSource, (),
-                             {'theta_resolution':12,
-                              'phi_resolution':12})
+                             {'theta_resolution': 12,
+                              'phi_resolution': 12})
 
     def __init__(self, triangles, points, scalars=None, **traits):
         """
@@ -932,21 +970,24 @@ class FancyTriMesh(LUTBase):
         # Extract the edges and show the lines as tubes.
         self.extract_filter = tvtk.ExtractEdges(input=self.pd)
         extract_f = self.extract_filter
-        self.tube_filter.set(input=extract_f.output,
-                             radius=self.tube_radius)
-        edge_mapper = tvtk.PolyDataMapper(input=self.tube_filter.output,
-                                          lookup_table=self.lut,
-                                          scalar_visibility=scalar_vis)
+        self.tube_filter.set(input=extract_f.output, radius=self.tube_radius)
+        edge_mapper = tvtk.PolyDataMapper(
+            input=self.tube_filter.output,
+            lookup_table=self.lut,
+            scalar_visibility=scalar_vis)
         edge_actor = _make_actor(mapper=edge_mapper)
         edge_actor.property.color = self.color
 
         # Create the spheres for the points.
         self.sphere_source.radius = self.sphere_radius
-        spheres = tvtk.Glyph3D(scaling=0, source=self.sphere_source.output,
-                               input=extract_f.output)
-        sphere_mapper = tvtk.PolyDataMapper(input=spheres.output,
-                                            lookup_table=self.lut,
-                                            scalar_visibility=scalar_vis)
+        spheres = tvtk.Glyph3D(
+            scaling=0,
+            source=self.sphere_source.output,
+            input=extract_f.output)
+        sphere_mapper = tvtk.PolyDataMapper(
+            input=spheres.output,
+            lookup_table=self.lut,
+            scalar_visibility=scalar_vis)
         sphere_actor = _make_actor(mapper=sphere_mapper)
         sphere_actor.property.color = self.color
 
@@ -968,8 +1009,7 @@ class FancyTriMesh(LUTBase):
     def _tube_radius_changed(self, val):
         points = self.points
         if val < 1.0e-9:
-            val = (max(numpy.ravel(points)) -
-                   min(numpy.ravel(points)))/250.0
+            val = (max(numpy.ravel(points)) - min(numpy.ravel(points))) / 250.0
         self.tube_radius = val
         self.tube_filter.radius = val
         self.render()
@@ -977,8 +1017,7 @@ class FancyTriMesh(LUTBase):
     def _sphere_radius_changed(self, val):
         points = self.points
         if val < 1.0e-9:
-            val = (max(numpy.ravel(points)) -
-                       min(numpy.ravel(points)))/100.0
+            val = (max(numpy.ravel(points)) - min(numpy.ravel(points))) / 100.0
         self.sphere_radius = val
         self.sphere_source.radius = val
         self.render()
@@ -987,6 +1026,7 @@ class FancyTriMesh(LUTBase):
         if self.actors:
             self.actors[0].property.color = val
         self.render()
+
 
 ######################################################################
 # `Mesh` class.
@@ -1060,8 +1100,10 @@ class Surf(LUTBase):
         triangles, points = make_triangles_points(x, y, z, scalars)
         self.pd = make_triangle_polydata(triangles, points, scalars)
 
-        mapper = tvtk.PolyDataMapper(input=self.pd, lookup_table=self.lut,
-                                     scalar_visibility=self.scalar_visibility)
+        mapper = tvtk.PolyDataMapper(
+            input=self.pd,
+            lookup_table=self.lut,
+            scalar_visibility=self.scalar_visibility)
         if scalars is not None:
             rs = numpy.ravel(scalars)
             dr = min(rs), max(rs)
@@ -1126,8 +1168,8 @@ class Contour3(LUTBase):
         cf = self.contour_filter
         configure_input_data(cf, self.pd)
         cf.generate_values(self.number_of_contours, dr[0], dr[1])
-        mapper = tvtk.PolyDataMapper(input=cf.output, lookup_table=self.lut,
-                                     scalar_range=dr)
+        mapper = tvtk.PolyDataMapper(
+            input=cf.output, lookup_table=self.lut, scalar_range=dr)
         cont_actor = _make_actor(mapper=mapper)
 
         self.actors.append(cont_actor)
@@ -1163,9 +1205,9 @@ class ImShow(LUTBase):
         assert len(arr.shape) == 2, "Only 2D arrays can be viewed!"
 
         ny, nx = arr.shape
-        dx, dy, junk = numpy.array(scale)*1.0
-        xa = numpy.arange(0, nx*scale[0] - 0.1*dx, dx, 'f')
-        ya = numpy.arange(0, ny*scale[1] - 0.1*dy, dy, 'f')
+        dx, dy, junk = numpy.array(scale) * 1.0
+        xa = numpy.arange(0, nx * scale[0] - 0.1 * dx, dx, 'f')
+        ya = numpy.arange(0, ny * scale[1] - 0.1 * dy, dy, 'f')
 
         arr_flat = numpy.ravel(arr)
         min_val = min(arr_flat)
@@ -1263,7 +1305,8 @@ def figure(outline=True, browser=True):
 # Test functions.
 ######################################################################
 def test_arrows(fig):
-    a = Arrows([[-1,-1,-1],[1,0,0]], [[1,1,1],[0,1,0]], color=(1,0,0))
+    a = Arrows(
+        [[-1, -1, -1], [1, 0, 0]], [[1, 1, 1], [0, 1, 0]], color=(1, 0, 0))
     fig.add(a)
 
 
@@ -1271,52 +1314,56 @@ def test_lines(fig):
     """Generates a pretty set of lines."""
     n_mer, n_long = 6, 11
     pi = numpy.pi
-    dphi = pi/1000.0
-    phi = numpy.arange(0.0, 2*pi + 0.5*dphi, dphi, 'd')
-    mu = phi*n_mer
-    x = numpy.cos(mu)*(1+numpy.cos(n_long*mu/n_mer)*0.5)
-    y = numpy.sin(mu)*(1+numpy.cos(n_long*mu/n_mer)*0.5)
-    z = numpy.sin(n_long*mu/n_mer)*0.5
+    dphi = pi / 1000.0
+    phi = numpy.arange(0.0, 2 * pi + 0.5 * dphi, dphi, 'd')
+    mu = phi * n_mer
+    x = numpy.cos(mu) * (1 + numpy.cos(n_long * mu / n_mer) * 0.5)
+    y = numpy.sin(mu) * (1 + numpy.cos(n_long * mu / n_mer) * 0.5)
+    z = numpy.sin(n_long * mu / n_mer) * 0.5
 
     pts = numpy.zeros((len(mu), 3), 'd')
-    pts[:,0], pts[:,1], pts[:,2] = x, y, z
+    pts[:, 0], pts[:, 1], pts[:, 2] = x, y, z
 
     l = Line3(pts, radius=0.05, color=(0.0, 0.0, 0.8))
 
     fig.add(l)
 
+
 def test_molecule(fig):
     """Generates and shows a Caffeine molecule."""
-    o = [[30, 62, 19],[8, 21, 10]]
+    o = [[30, 62, 19], [8, 21, 10]]
     n = [[31, 21, 11], [18, 42, 14], [55, 46, 17], [56, 25, 13]]
     c = [[5, 49, 15], [30, 50, 16], [42, 42, 15], [43, 29, 13], [18, 28, 12],
          [32, 6, 8], [63, 36, 15], [59, 60, 20]]
     h = [[23, 5, 7], [32, 0, 16], [37, 5, 0], [73, 36, 16], [69, 60, 20],
          [54, 62, 28], [57, 66, 12], [6, 59, 16], [1, 44, 22], [0, 49, 6]]
 
-    oxygen = Spheres(o, radius=8, color=(1,0,0))
-    nitrogen = Spheres(n, radius=10, color=(0,0,1))
-    carbon = Spheres(c, radius=10, color=(0,1,0))
-    hydrogen = Spheres(h, radius=5, color=(1,1,1))
+    oxygen = Spheres(o, radius=8, color=(1, 0, 0))
+    nitrogen = Spheres(n, radius=10, color=(0, 0, 1))
+    carbon = Spheres(c, radius=10, color=(0, 1, 0))
+    hydrogen = Spheres(h, radius=5, color=(1, 1, 1))
 
     for i in oxygen, nitrogen, carbon, hydrogen:
         fig.add(i)
 
+
 def test_trimesh(fig):
     """Test for simple triangle mesh."""
-    pts = numpy.array([[0.0,0,0], [1.0,0.0,0.0], [1,1,0]], 'd')
+    pts = numpy.array([[0.0, 0, 0], [1.0, 0.0, 0.0], [1, 1, 0]], 'd')
     triangles = [[0, 1, 2]]
     t1 = TriMesh(triangles, pts)
     fig.add(t1)
     pts1 = pts.copy()
-    pts1[:,2] = 1.0
+    pts1[:, 2] = 1.0
     t2 = FancyTriMesh(triangles, pts1)
     fig.add(t2)
 
+
 def test_surf_regular(fig, contour=1):
     """Test Surf on regularly spaced co-ordinates like MayaVi."""
+
     def f(x, y):
-        return numpy.sin(x*y)/(x*y)
+        return numpy.sin(x * y) / (x * y)
 
     x = numpy.arange(-7., 7.05, 0.1)
     y = numpy.arange(-5., 5.05, 0.05)
@@ -1329,10 +1376,11 @@ def test_surf_regular(fig, contour=1):
 
 def test_simple_surf(fig):
     """Test Surf with a simple collection of points."""
-    x, y = numpy.mgrid[0:3:1,0:3:1]
+    x, y = numpy.mgrid[0:3:1, 0:3:1]
     z = x
     s = Surf(x, y, z, numpy.asarray(z, 'd'))
     fig.add(s)
+
 
 def test_surf(fig):
     """A very pretty picture of spherical harmonics translated from
@@ -1340,44 +1388,56 @@ def test_surf(fig):
     pi = numpy.pi
     cos = numpy.cos
     sin = numpy.sin
-    dphi, dtheta = pi/250.0, pi/250.0
-    [phi,theta] = numpy.mgrid[0:pi+dphi*1.5:dphi,0:2*pi+dtheta*1.5:dtheta]
-    m0 = 4; m1 = 3; m2 = 2; m3 = 3; m4 = 6; m5 = 2; m6 = 6; m7 = 4;
-    r = sin(m0*phi)**m1 + cos(m2*phi)**m3 + sin(m4*theta)**m5 + cos(m6*theta)**m7
-    x = r*sin(phi)*cos(theta)
-    y = r*cos(phi)
-    z = r*sin(phi)*sin(theta);
+    dphi, dtheta = pi / 250.0, pi / 250.0
+    [phi, theta] = numpy.mgrid[0:pi + dphi * 1.5:dphi, 0:2 * pi + dtheta * 1.5:
+                               dtheta]
+    m0 = 4
+    m1 = 3
+    m2 = 2
+    m3 = 3
+    m4 = 6
+    m5 = 2
+    m6 = 6
+    m7 = 4
+    r = sin(m0 * phi)**m1 + cos(m2 * phi)**m3 + sin(m4 * theta)**m5 + cos(
+        m6 * theta)**m7
+    x = r * sin(phi) * cos(theta)
+    y = r * cos(phi)
+    z = r * sin(phi) * sin(theta)
 
     s = Surf(x, y, z, z)
     fig.add(s)
+
 
 def test_mesh_sphere(fig):
     """Create a simple sphere and test the mesh."""
     pi = numpy.pi
     cos = numpy.cos
     sin = numpy.sin
-    du, dv = pi/20.0, pi/20.0
-    phi, theta = numpy.mgrid[0.01:pi+du*1.5:du, 0:2*pi+dv*1.5:dv]
+    du, dv = pi / 20.0, pi / 20.0
+    phi, theta = numpy.mgrid[0.01:pi + du * 1.5:du, 0:2 * pi + dv * 1.5:dv]
     r = 1.0
-    x = r*sin(phi)*cos(theta)
-    y = r*sin(phi)*sin(theta)
-    z = r*cos(phi)
+    x = r * sin(phi) * cos(theta)
+    y = r * sin(phi) * sin(theta)
+    z = r * cos(phi)
     s = FancyMesh(x, y, z, z, scalar_visibility=True)
     fig.add(s)
+
 
 def test_mesh(fig):
     """Create a fancy looking mesh (example taken from octaviz)."""
     pi = numpy.pi
     cos = numpy.cos
     sin = numpy.sin
-    du, dv = pi/20.0, pi/20.0
-    u, v = numpy.mgrid[0.01:pi+du*1.5:du, 0:2*pi+dv*1.5:dv]
-    x = (1- cos(u))*cos(u+2*pi/3) * cos(v + 2*pi/3.0)*0.5
-    y = (1- cos(u))*cos(u+2*pi/3) * cos(v - 2*pi/3.0)*0.5
-    z = cos(u-2*pi/3.)
+    du, dv = pi / 20.0, pi / 20.0
+    u, v = numpy.mgrid[0.01:pi + du * 1.5:du, 0:2 * pi + dv * 1.5:dv]
+    x = (1 - cos(u)) * cos(u + 2 * pi / 3) * cos(v + 2 * pi / 3.0) * 0.5
+    y = (1 - cos(u)) * cos(u + 2 * pi / 3) * cos(v - 2 * pi / 3.0) * 0.5
+    z = cos(u - 2 * pi / 3.)
 
     m = FancyMesh(x, y, z, z, scalar_visibility=True)
     fig.add(m)
+
 
 def test_imshow(fig):
     """Show a large random array."""
@@ -1389,7 +1449,7 @@ def test_imshow(fig):
 def main():
     gui = GUI()
     # Create and open an application window.
-    window = ivtk.IVTKWithCrustAndBrowser(size=(800,600))
+    window = ivtk.IVTKWithCrustAndBrowser(size=(800, 600))
     window.open()
     f = Figure(window.scene)
 

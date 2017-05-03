@@ -1,4 +1,3 @@
-
 from numpy import c_, zeros, arange
 
 from traits.api import HasStrictTraits, \
@@ -77,20 +76,16 @@ class DataSourceFactory(HasStrictTraits):
         """ Adds the vector data to the vtk source.
         """
         if self.has_vector_data:
-            vectors = c_[self.vector_u.ravel(),
-                         self.vector_v.ravel(),
-                         self.vector_w.ravel(),
-                        ]
+            vectors = c_[self.vector_u.ravel(), self.vector_v.ravel(),
+                         self.vector_w.ravel(), ]
             self._vtk_source.point_data.vectors = vectors
 
     def _mk_polydata(self):
         """ Creates a PolyData vtk data set using the factory's
             attributes.
         """
-        points = c_[self.position_x.ravel(),
-                    self.position_y.ravel(),
-                    self.position_z.ravel(),
-                   ]
+        points = c_[self.position_x.ravel(), self.position_y.ravel(),
+                    self.position_z.ravel(), ]
         lines = None
         if self.lines:
             np = len(points) - 1
@@ -98,8 +93,7 @@ class DataSourceFactory(HasStrictTraits):
             lines[:, 0] = arange(0, np - 0.5, 1, 'l')
             lines[:, 1] = arange(1, np + 0.5, 1, 'l')
         self._vtk_source = tvtk.PolyData(points=points, lines=lines)
-        if (self.connectivity_triangles is not None and
-                        self.connected):
+        if (self.connectivity_triangles is not None and self.connected):
             assert self.connectivity_triangles.shape[1] == 3, \
                     "The connectivity list must be Nx3."
             self._vtk_source.polys = self.connectivity_triangles
@@ -109,10 +103,11 @@ class DataSourceFactory(HasStrictTraits):
         """ Creates an ImageData VTK data set and the associated ArraySource
             using the factory's attributes.
         """
-        self._mayavi_source = ArraySource(transpose_input_array=True,
-                                          scalar_data=self.scalar_data,
-                                          origin=[0., 0., 0],
-                                          spacing=[1, 1, 1])
+        self._mayavi_source = ArraySource(
+            transpose_input_array=True,
+            scalar_data=self.scalar_data,
+            origin=[0., 0., 0],
+            spacing=[1, 1, 1])
         self._vtk_source = self._mayavi_source.image_data
 
     def _mk_rectilinear_grid(self):
@@ -144,10 +139,8 @@ class DataSourceFactory(HasStrictTraits):
         # FIXME: We need to figure out the dimensions of the data
         # here, if any.
         sg = tvtk.StructuredGrid(dimensions=self.scalar_data.shape)
-        sg.points = c_[self.position_x.ravel(),
-                       self.position_y.ravel(),
-                       self.position_z.ravel(),
-                      ]
+        sg.points = c_[self.position_x.ravel(), self.position_y.ravel(),
+                       self.position_z.ravel(), ]
         self._vtk_source = sg
         self._mayavi_source = VTKDataSource(data=self._vtk_source)
 
@@ -184,20 +177,24 @@ def view(src):
     """
     from mayavi import mlab
     mayavi = mlab.get_engine()
-    fig = mlab.figure(bgcolor=(1, 1, 1), fgcolor=(0, 0, 0),)
+    fig = mlab.figure(
+        bgcolor=(1, 1, 1),
+        fgcolor=(0, 0, 0), )
     mayavi.add_source(src)
 
     mlab.pipeline.surface(src, opacity=0.1)
-    mlab.pipeline.surface(mlab.pipeline.extract_edges(src),
-                            color=(0, 0, 0), )
+    mlab.pipeline.surface(
+        mlab.pipeline.extract_edges(src),
+        color=(0, 0, 0), )
 
 
 def test_image_data():
     from numpy import random
     scalars = random.random((3, 3, 3))
     factory = DataSourceFactory()
-    image_data = factory.build_data_source(scalar_data=scalars,
-                                       position_implicit=True,)
+    image_data = factory.build_data_source(
+        scalar_data=scalars,
+        position_implicit=True, )
     view(image_data)
 
 
@@ -206,16 +203,17 @@ def test_rectilinear_grid():
     factory = DataSourceFactory()
 
     scalars = random.random((3, 3, 3))
-    x = arange(3) ** 2
-    y = 0.5 * arange(3) ** 2
-    z = arange(3) ** 2
+    x = arange(3)**2
+    y = 0.5 * arange(3)**2
+    z = arange(3)**2
 
-    rectilinear_grid = factory.build_data_source(scalar_data=scalars,
-                                       position_implicit=False,
-                                       orthogonal_grid=True,
-                                       position_x=x,
-                                       position_y=y,
-                                       position_z=z)
+    rectilinear_grid = factory.build_data_source(
+        scalar_data=scalars,
+        position_implicit=False,
+        orthogonal_grid=True,
+        position_x=x,
+        position_y=y,
+        position_z=z)
     view(rectilinear_grid)
 
 
@@ -229,10 +227,8 @@ def test_structured_grid():
     y = y + 0.5 * random.random(y.shape)
     z = z + 0.5 * random.random(z.shape)
 
-    structured_grid = factory.build_data_source(scalar_data=scalars,
-                                       position_x=x,
-                                       position_y=y,
-                                       position_z=z)
+    structured_grid = factory.build_data_source(
+        scalar_data=scalars, position_x=x, position_y=y, position_z=z)
     view(structured_grid)
 
 

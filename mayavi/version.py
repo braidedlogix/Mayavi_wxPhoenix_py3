@@ -6,5 +6,3 @@ try:
     version = pkg_resources.require('Mayavi')[0].version
 except:
     version = ''
-
-

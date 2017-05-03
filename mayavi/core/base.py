@@ -13,8 +13,8 @@ import logging
 import imp
 
 # Enthought library imports.
-from traits.api import (Any, Instance, Property, Bool, Str, Python,
-    HasTraits, WeakRef, on_trait_change)
+from traits.api import (Any, Instance, Property, Bool, Str, Python, HasTraits,
+                        WeakRef, on_trait_change)
 from traitsui.api import TreeNodeObject
 from tvtk.pyface.tvtk_scene import TVTKScene
 from apptools.persistence import state_pickler
@@ -39,26 +39,37 @@ UI_DIR_NAME = ['ui']
 #  The core tree node menu actions:
 #-------------------------------------------------------------------------------
 
-NewAction    = 'NewAction'
-CopyAction   = Action(name         = 'Copy',
-                      action       = 'editor._menu_copy_node',
-                      enabled_when = 'editor._is_copyable(object)' )
-CutAction    = Action(name         = 'Cut',
-                      action       = 'editor._menu_cut_node',
-                      enabled_when = 'editor._is_cutable(object)' )
-PasteAction  = Action(name         = 'Paste',
-                      action       = 'editor._menu_paste_node',
-                      enabled_when = 'editor._is_pasteable(object)' )
-DeleteAction = Action(name         = 'Delete',
-                      action       = 'editor._menu_delete_node',
-                      enabled_when = 'editor._is_deletable(object)' )
-RenameAction = Action(name         = 'Rename',
-                      action       = 'editor._menu_rename_node',
-                      enabled_when = 'editor._is_renameable(object)' )
-standard_menu_actions = [Separator(), CutAction, CopyAction, PasteAction,
-                         Separator(),
-                         RenameAction, DeleteAction, Separator(),
-                        ]
+NewAction = 'NewAction'
+CopyAction = Action(
+    name='Copy',
+    action='editor._menu_copy_node',
+    enabled_when='editor._is_copyable(object)')
+CutAction = Action(
+    name='Cut',
+    action='editor._menu_cut_node',
+    enabled_when='editor._is_cutable(object)')
+PasteAction = Action(
+    name='Paste',
+    action='editor._menu_paste_node',
+    enabled_when='editor._is_pasteable(object)')
+DeleteAction = Action(
+    name='Delete',
+    action='editor._menu_delete_node',
+    enabled_when='editor._is_deletable(object)')
+RenameAction = Action(
+    name='Rename',
+    action='editor._menu_rename_node',
+    enabled_when='editor._is_renameable(object)')
+standard_menu_actions = [
+    Separator(),
+    CutAction,
+    CopyAction,
+    PasteAction,
+    Separator(),
+    RenameAction,
+    DeleteAction,
+    Separator(),
+]
 
 
 ######################################################################
@@ -115,9 +126,10 @@ class Base(TreeNodeObject):
     _saved_state = Any('')
 
     # Hide and show actions
-    _HideShowAction = Instance(Action,
-                               kw={'name': 'Hide/Show',
-                                   'action': 'object._hideshow'}, )
+    _HideShowAction = Instance(
+        Action,
+        kw={'name': 'Hide/Show',
+            'action': 'object._hideshow'}, )
 
     # The menu shown on right-click for this.
     _menu = Instance(Menu, transient=True)
@@ -136,6 +148,7 @@ class Base(TreeNodeObject):
 
     # Work around problem with HasPrivateTraits.
     __ = Python
+
     ##################################################
 
     ######################################################################
@@ -146,10 +159,9 @@ class Base(TreeNodeObject):
         """
         d = self.__dict__.copy()
         for attr in ('scene', '_is_running', '__sync_trait__',
-                     '__traits_listener__', '_icon_path',
-                     '_menu', '_HideShowAction', 'menu_helper',
-                     'parent', 'parent_', '_module_view',
-                     '_view_filename', 'mlab_source'):
+                     '__traits_listener__', '_icon_path', '_menu',
+                     '_HideShowAction', 'menu_helper', 'parent', 'parent_',
+                     '_module_view', '_view_filename', 'mlab_source'):
             d.pop(attr, None)
         return d
 
@@ -252,7 +264,7 @@ class Base(TreeNodeObject):
         view.buttons = ['OK', 'Cancel']
         return view
 
-    def trait_view(self, name = None, view_element = None ):
+    def trait_view(self, name=None, view_element=None):
         """ Gets or sets a ViewElement associated with an object's class.
 
         Overridden here to search for a separate file in the same directory
@@ -297,7 +309,7 @@ class Base(TreeNodeObject):
         else:
             return True
 
-    def tno_get_menu ( self, node ):
+    def tno_get_menu(self, node):
         """ Returns the contextual pop-up menu.
         """
         if self._menu is None:
@@ -325,7 +337,7 @@ class Base(TreeNodeObject):
         """ Inserts a child into the object's children.
         """
         if len(self.children_ui_list) > len(self.children):
-            idx = index -1
+            idx = index - 1
         else:
             idx = index
         self.children[idx:idx] = [child]
@@ -350,16 +362,14 @@ class Base(TreeNodeObject):
         For the base class, do not add anything to the children list.
         """
         if ((not preference_manager.root.show_helper_nodes or
-                        len(self.children) > 0)
-                or self._adder_node_class is None
-                or (not self.type == ' scene' and
-                    'none' in self.output_info.datasets)
-                    # We can't use isinstance, as we would have circular
-                    # imports
-                ):
+             len(self.children) > 0) or self._adder_node_class is None or
+            (not self.type == ' scene' and 'none' in self.output_info.datasets)
+                # We can't use isinstance, as we would have circular
+                # imports
+            ):
             return self.children
         else:
-            return [self._adder_node_class(object=self),]
+            return [self._adder_node_class(object=self), ]
 
     @on_trait_change('children[]')
     def _trigger_children_ui_list(self, old, new):
@@ -367,7 +377,7 @@ class Base(TreeNodeObject):
         """
         self.trait_property_changed('children_ui_list', old, new)
 
-    def _visible_changed(self , value):
+    def _visible_changed(self, value):
         # A hack to set the name when the tree view is not active.
         # `self.name` is set only when tno_get_label is called and this
         # is never called when the tree view is not shown leading to an
@@ -390,8 +400,8 @@ class Base(TreeNodeObject):
             view = self._module_view
         else:
             logger.debug("No view found for [%s] in [%s]. "
-                         "Using the base class trait_view instead.",
-                             self, self._view_filename)
+                         "Using the base class trait_view instead.", self,
+                         self._view_filename)
             view = super(Base, self).trait_view(name, view_element)
         return view
 
@@ -402,14 +412,14 @@ class Base(TreeNodeObject):
         result = {}
         view_filename = self._view_filename
         try:
-            exec(compile(
-                open(view_filename).read(), view_filename, 'exec'), {}, result
-            )
+            exec(
+                compile(open(view_filename).read(), view_filename, 'exec'),
+                {}, result)
             view = result['view']
         except IOError:
             logger.debug("No view found for [%s] in [%s]. "
-                            "Using the base class trait_view instead.",
-                            self, view_filename)
+                         "Using the base class trait_view instead.", self,
+                         view_filename)
             view = super(Base, self).trait_view(name, view_element)
         return view
 
@@ -442,19 +452,18 @@ class Base(TreeNodeObject):
                                         + UI_DIR_NAME + [class_filename]))
         return view_filename
 
-
     def __module_view_default(self):
         """ Try to load a view for this object.
         """
         view_filename = self._view_filename
         try:
-            result = imp.load_module('view', open(view_filename, 'r'),
-                            view_filename, ('.py', 'U', 1))
+            result = imp.load_module('view',
+                                     open(view_filename, 'r'), view_filename,
+                                     ('.py', 'U', 1))
             view = result.view
         except:
             view = None
         return view
-
 
     def __menu_default(self):
         extras = []
@@ -463,7 +472,7 @@ class Base(TreeNodeObject):
         menu_actions = [Separator()] + extras + \
                        [Separator(), self._HideShowAction, Separator()] + \
                        deepcopy(standard_menu_actions)
-        return Menu( *menu_actions)
+        return Menu(*menu_actions)
 
     def __icon_path_default(self):
         return resource_path()

@@ -65,36 +65,40 @@ class SceneModel(TVTKScene):
     # View related traits.
 
     # Render_window's view.
-    _stereo_view = Group(Item(name='stereo_render'),
-                         Item(name='stereo_type'),
-                         show_border=True,
-                         label='Stereo rendering',
-                         )
+    _stereo_view = Group(
+        Item(name='stereo_render'),
+        Item(name='stereo_type'),
+        show_border=True,
+        label='Stereo rendering', )
 
     # The default view of this object.
-    default_view = View(Group(
-                            Group(Item(name='background'),
-                                  Item(name='foreground'),
-                                  Item(name='parallel_projection'),
-                                  Item(name='disable_render'),
-                                  Item(name='off_screen_rendering'),
-                                  Item(name='jpeg_quality'),
-                                  Item(name='jpeg_progressive'),
-                                  Item(name='magnification'),
-                                  Item(name='anti_aliasing_frames'),
-                                  ),
-                            Group(Item(name='render_window',
-                                       style='custom',
-                                       visible_when='object.stereo',
-                                       editor=InstanceEditor(view=View(_stereo_view)),                                       show_label=False),
-                                  ),
-                            label='Scene'),
-                        Group(Item(name='light_manager',
-                                   style='custom',
-                                   editor=InstanceEditor(),
-                                   show_label=False),
-                                   label='Lights')
-                        )
+    default_view = View(
+        Group(
+            Group(
+                Item(name='background'),
+                Item(name='foreground'),
+                Item(name='parallel_projection'),
+                Item(name='disable_render'),
+                Item(name='off_screen_rendering'),
+                Item(name='jpeg_quality'),
+                Item(name='jpeg_progressive'),
+                Item(name='magnification'),
+                Item(name='anti_aliasing_frames'), ),
+            Group(
+                Item(
+                    name='render_window',
+                    style='custom',
+                    visible_when='object.stereo',
+                    editor=InstanceEditor(view=View(_stereo_view)),
+                    show_label=False), ),
+            label='Scene'),
+        Group(
+            Item(
+                name='light_manager',
+                style='custom',
+                editor=InstanceEditor(),
+                show_label=False),
+            label='Lights'))
 
     ###################################
     # Private traits.
@@ -337,4 +341,3 @@ class SceneModel(TVTKScene):
     def _get_scene(self):
         """Getter for the scene property."""
         return self
-

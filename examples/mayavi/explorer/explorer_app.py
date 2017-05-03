@@ -38,20 +38,22 @@ class Explorer3D(HasTraits):
                    enter_set=True)
 
     # Dimensions of the cube of data.
-    dimensions = Array(value=(128, 128, 128),
-                       dtype=int,
-                       shape=(3,),
-                       cols=1,
-                       labels=['nx', 'ny', 'nz'],
-                       desc='the array dimensions')
+    dimensions = Array(
+        value=(128, 128, 128),
+        dtype=int,
+        shape=(3, ),
+        cols=1,
+        labels=['nx', 'ny', 'nz'],
+        desc='the array dimensions')
 
     # The volume of interest (VOI).
-    volume = Array(dtype=float,
-                   value=(-5,5,-5,5,-5,5),
-                   shape=(6,),
-                   cols=2,
-                   labels=['xmin','xmax','ymin','ymax','zmin','zmax'],
-                   desc='the volume of interest')
+    volume = Array(
+        dtype=float,
+        value=(-5, 5, -5, 5, -5, 5),
+        shape=(6, ),
+        cols=2,
+        labels=['xmin', 'xmax', 'ymin', 'ymax', 'zmin', 'zmax'],
+        desc='the volume of interest')
 
     # Clicking this button resets the data with the new dimensions and
     # VOI.
@@ -71,14 +73,16 @@ class Explorer3D(HasTraits):
 
     ########################################
     # Our UI view.
-    view = View(Item('equation', editor=TextEditor(auto_set=False,
-                                                   enter_set=True)),
-                Item('dimensions'),
-                Item('volume'),
-                Item('update_data', show_label=False),
-                resizable=True,
-                scrollable=True,
-                )
+    view = View(
+        Item(
+            'equation', editor=TextEditor(
+                auto_set=False, enter_set=True)),
+        Item('dimensions'),
+        Item('volume'),
+        Item(
+            'update_data', show_label=False),
+        resizable=True,
+        scrollable=True, )
 
     ######################################################################
     # `object` interface.
@@ -107,11 +111,10 @@ class Explorer3D(HasTraits):
     ######################################################################
     def _make_data(self):
         dims = self.dimensions.tolist()
-        np = dims[0]*dims[1]*dims[2]
+        np = dims[0] * dims[1] * dims[2]
         xmin, xmax, ymin, ymax, zmin, zmax = self.volume
-        x, y, z = numpy.ogrid[xmin:xmax:dims[0]*1j,
-                              ymin:ymax:dims[1]*1j,
-                              zmin:zmax:dims[2]*1j]
+        x, y, z = numpy.ogrid[xmin:xmax:dims[0] * 1j, ymin:ymax:dims[1] * 1j,
+                              zmin:zmax:dims[2] * 1j]
         self._x = x.astype('f')
         self._y = y.astype('f')
         self._z = z.astype('f')
@@ -126,11 +129,12 @@ class Explorer3D(HasTraits):
         from mayavi.sources.array_source import ArraySource
         vol = self.volume
         origin = vol[::2]
-        spacing = (vol[1::2] - origin)/(self.dimensions -1)
-        src = ArraySource(transpose_input_array=False,
-                          scalar_data=self.data,
-                          origin=origin,
-                          spacing=spacing)
+        spacing = (vol[1::2] - origin) / (self.dimensions - 1)
+        src = ArraySource(
+            transpose_input_array=False,
+            scalar_data=self.data,
+            origin=origin,
+            spacing=spacing)
         self.source = src
         mayavi.add_source(src)
 
@@ -160,9 +164,7 @@ class Explorer3D(HasTraits):
     def _equation_changed(self, old, new):
         try:
             g = numpy.__dict__
-            s = eval(new, g, {'x':self._x,
-                              'y':self._y,
-                              'z':self._z})
+            s = eval(new, g, {'x': self._x, 'y': self._y, 'z': self._z})
             # The copy makes the data contiguous and the transpose
             # makes it suitable for display via tvtk.
             s = s.transpose().copy()
@@ -190,7 +192,7 @@ class Explorer3D(HasTraits):
         if src is not None:
             vol = self.volume
             origin = vol[::2]
-            spacing = (vol[1::2] - origin)/(self.dimensions -1)
+            spacing = (vol[1::2] - origin) / (self.dimensions - 1)
             # Set the source spacing and origin.
             src.set(spacing=spacing, origin=origin)
             # Update the sources data.
@@ -225,4 +227,3 @@ class Explorer3D(HasTraits):
         else:
             # Show the data once the mayavi engine has started.
             m.engine.on_trait_change(self._show_data, 'started')
-

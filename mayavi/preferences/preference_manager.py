@@ -28,11 +28,11 @@ from traits.etsconfig.api import ETSConfig
 from traits.api import HasTraits, Instance
 from traitsui.api import View, Group, Item
 from apptools.preferences.api import (ScopedPreferences, IPreferences,
-        PreferencesHelper)
+                                      PreferencesHelper)
 
 # Local imports.
-from mayavi.preferences.preferences_helpers import (
-        RootPreferencesHelper, MlabPreferencesHelper )
+from mayavi.preferences.preferences_helpers import (RootPreferencesHelper,
+                                                    MlabPreferencesHelper)
 
 # The application ID where the preferences are stored.
 ID = 'mayavi_e3'
@@ -57,19 +57,22 @@ class PreferenceManager(HasTraits):
     ######################################################################
     # Traits UI view.
 
-    traits_view = View(Group(
-                           Group(Item(name='root', style='custom'),
-                                 show_labels=False, label='Root',
-                                 show_border=True
-                                ),
-                           Group(Item(name='mlab', style='custom'),
-                                 show_labels=False, label='Mlab',
-                                 show_border=True,
-                                ),
-                           ),
-                       buttons=['OK', 'Cancel'],
-                       resizable=True
-                      )
+    traits_view = View(
+        Group(
+            Group(
+                Item(
+                    name='root', style='custom'),
+                show_labels=False,
+                label='Root',
+                show_border=True),
+            Group(
+                Item(
+                    name='mlab', style='custom'),
+                show_labels=False,
+                label='Mlab',
+                show_border=True, ), ),
+        buttons=['OK', 'Cancel'],
+        resizable=True)
 
     ######################################################################
     # `HasTraits` interface.
@@ -103,8 +106,7 @@ class PreferenceManager(HasTraits):
         path = join(ETSConfig.get_application_data(), ID)
         ETSConfig.application_home = path
         try:
-            for pkg in ('mayavi.preferences',
-                        'tvtk.plugins.scene'):
+            for pkg in ('mayavi.preferences', 'tvtk.plugins.scene'):
                 pref = 'preferences.ini'
                 pref_file = pkg_resources.resource_stream(pkg, pref)
 
@@ -126,4 +128,3 @@ class PreferenceManager(HasTraits):
 # A Global preference manager that all other modules can use.
 
 preference_manager = PreferenceManager()
-

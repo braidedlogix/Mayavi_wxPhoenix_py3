@@ -19,6 +19,7 @@ from mayavi.filters.filter_base import FilterBase
 from mayavi.core.pipeline_info import PipelineInfo
 from tvtk.common import is_old_pipeline
 
+
 ######################################################################
 # `ExtractGrid` class.
 ######################################################################
@@ -31,64 +32,98 @@ class ExtractGrid(FilterBase):
     __version__ = 0
 
     # Minimum x value.
-    x_min = Range(value=0, low='_x_low', high='_x_high',
-                  enter_set=True, auto_set=False,
-                  desc='minimum x value of the domain')
+    x_min = Range(
+        value=0,
+        low='_x_low',
+        high='_x_high',
+        enter_set=True,
+        auto_set=False,
+        desc='minimum x value of the domain')
 
     # Maximum x value.
-    x_max = Range(value=10000, low='_x_low', high='_x_high',
-                  enter_set=True, auto_set=False,
-                  desc='maximum x value of the domain')
+    x_max = Range(
+        value=10000,
+        low='_x_low',
+        high='_x_high',
+        enter_set=True,
+        auto_set=False,
+        desc='maximum x value of the domain')
 
     # Minimum y value.
-    y_min = Range(value=0, low='_y_low', high='_y_high',
-                  enter_set=True, auto_set=False,
-                  desc='minimum y value of the domain')
+    y_min = Range(
+        value=0,
+        low='_y_low',
+        high='_y_high',
+        enter_set=True,
+        auto_set=False,
+        desc='minimum y value of the domain')
 
     # Maximum y value.
-    y_max = Range(value=10000, low='_y_low', high='_y_high',
-                  enter_set=True, auto_set=False,
-                  desc='maximum y value of the domain')
+    y_max = Range(
+        value=10000,
+        low='_y_low',
+        high='_y_high',
+        enter_set=True,
+        auto_set=False,
+        desc='maximum y value of the domain')
 
     # Minimum z value.
-    z_min = Range(value=0, low='_z_low', high='_z_high',
-                  enter_set=True, auto_set=False,
-                  desc='minimum z value of the domain')
+    z_min = Range(
+        value=0,
+        low='_z_low',
+        high='_z_high',
+        enter_set=True,
+        auto_set=False,
+        desc='minimum z value of the domain')
 
     # Maximum z value.
-    z_max = Range(value=10000, low='_z_low', high='_z_high',
-                  enter_set=True, auto_set=False,
-                  desc='maximum z value of the domain')
+    z_max = Range(
+        value=10000,
+        low='_z_low',
+        high='_z_high',
+        enter_set=True,
+        auto_set=False,
+        desc='maximum z value of the domain')
 
     # Sample rate in x.
-    x_ratio = Range(value=1, low='_min_sample', high='_x_s_high',
-                    enter_set=True, auto_set=False,
-                    desc='sample rate along x')
+    x_ratio = Range(
+        value=1,
+        low='_min_sample',
+        high='_x_s_high',
+        enter_set=True,
+        auto_set=False,
+        desc='sample rate along x')
 
     # Sample rate in y.
-    y_ratio = Range(value=1, low='_min_sample', high='_y_s_high',
-                    enter_set=True, auto_set=False,
-                    desc='sample rate along y')
+    y_ratio = Range(
+        value=1,
+        low='_min_sample',
+        high='_y_s_high',
+        enter_set=True,
+        auto_set=False,
+        desc='sample rate along y')
 
     # Sample rate in z.
-    z_ratio = Range(value=1, low='_min_sample', high='_z_s_high',
-                    enter_set=True, auto_set=False,
-                    desc='sample rate along z')
+    z_ratio = Range(
+        value=1,
+        low='_min_sample',
+        high='_z_s_high',
+        enter_set=True,
+        auto_set=False,
+        desc='sample rate along z')
 
     # The actual TVTK filter that this class manages.
     filter = Instance(tvtk.Object, tvtk.ExtractVOI(), allow_none=False)
 
-    input_info = PipelineInfo(datasets=['image_data',
-                                        'rectilinear_grid',
-                                        'structured_grid'],
-                              attribute_types=['any'],
-                              attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['image_data', 'rectilinear_grid', 'structured_grid'],
+        attribute_types=['any'],
+        attributes=['any'])
 
-    output_info = PipelineInfo(datasets=['image_data',
-                                         'rectilinear_grid',
-                                         'structured_grid'],
-                               attribute_types=['any'],
-                               attributes=['any'])
+    output_info = PipelineInfo(
+        datasets=['image_data', 'rectilinear_grid', 'structured_grid'],
+        attribute_types=['any'],
+        attributes=['any'])
 
     ########################################
     # Private traits.
@@ -109,26 +144,27 @@ class ExtractGrid(FilterBase):
     # View related traits.
 
     # The View for this object.
-    view = View(Group(Item(label='Select Volume Of Interest'),
-                      Item(name='x_min'),
-                      Item(name='x_max'),
-                      Item(name='y_min'),
-                      Item(name='y_max'),
-                      Item(name='z_min'),
-                      Item(name='z_max'),
-                      Item('_'),
-                      Item(label='Select Sample Ratio'),
-                      Item(name='x_ratio'),
-                      Item(name='y_ratio'),
-                      Item(name='z_ratio'),
-                      label='VOI'
-                      ),
-                Group(Item(name='filter', style='custom',
-                           resizable=True),
-                      show_labels=False,
-                      label='Filter'),
-                resizable=True,
-                )
+    view = View(
+        Group(
+            Item(label='Select Volume Of Interest'),
+            Item(name='x_min'),
+            Item(name='x_max'),
+            Item(name='y_min'),
+            Item(name='y_max'),
+            Item(name='z_min'),
+            Item(name='z_max'),
+            Item('_'),
+            Item(label='Select Sample Ratio'),
+            Item(name='x_ratio'),
+            Item(name='y_ratio'),
+            Item(name='z_ratio'),
+            label='VOI'),
+        Group(
+            Item(
+                name='filter', style='custom', resizable=True),
+            show_labels=False,
+            label='Filter'),
+        resizable=True, )
 
     ######################################################################
     # `object` interface
@@ -153,9 +189,11 @@ class ExtractGrid(FilterBase):
             return
 
         input = inputs[0].get_output_dataset()
-        mapping = {'vtkStructuredGrid': tvtk.ExtractGrid,
-                   'vtkRectilinearGrid': tvtk.ExtractRectilinearGrid,
-                   'vtkImageData': tvtk.ExtractVOI}
+        mapping = {
+            'vtkStructuredGrid': tvtk.ExtractGrid,
+            'vtkRectilinearGrid': tvtk.ExtractRectilinearGrid,
+            'vtkImageData': tvtk.ExtractVOI
+        }
 
         for key, klass in mapping.items():
             if input.is_a(key):
@@ -248,9 +286,8 @@ class ExtractGrid(FilterBase):
 
     def _update_voi(self):
         f = self.filter
-        f.voi = (self.x_min, self.x_max,
-                 self.y_min, self.y_max,
-                 self.z_min, self.z_max)
+        f.voi = (self.x_min, self.x_max, self.y_min, self.y_max, self.z_min,
+                 self.z_max)
         f.update_whole_extent()
         f.update()
         self.data_changed = True

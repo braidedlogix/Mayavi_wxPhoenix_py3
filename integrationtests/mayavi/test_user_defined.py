@@ -17,7 +17,6 @@ from common import TestCase, get_example_data
 
 
 class TestUserDefined(TestCase):
-
     def check(self, saved=False):
         """Does the checking, if saved is True it does not change the
         properties at first to see how those behave and only tests the
@@ -34,7 +33,7 @@ class TestUserDefined(TestCase):
             assert src.get_output_dataset().point_data.scalars.name == 't'
             assert src.get_output_dataset().point_data.vectors.name == 'uvw'
             expect = ['ScalarGradient', 'Vorticity']
-            expect1 = [x +'-y' for x in expect]
+            expect1 = [x + '-y' for x in expect]
             expect2 = [x + ' magnitude' for x in expect]
             # FIXME: This is really a bug in VTK, the name of the scalar
             # should really be ScalarGradient-y.  This is fixed in
@@ -50,7 +49,8 @@ class TestUserDefined(TestCase):
 
             # Compute the vorticity
             ud.filter.vector_mode = 'compute_vorticity'
-        assert o.get_output_dataset().point_data.scalars.name == 'Vorticity magnitude'
+        assert o.get_output_dataset(
+        ).point_data.scalars.name == 'Vorticity magnitude'
         assert o.get_output_dataset().point_data.vectors.name == 'Vorticity'
         assert mm.scalar_lut_manager.data_name == 'Vorticity magnitude'
         # Turn on extraction.
@@ -61,7 +61,6 @@ class TestUserDefined(TestCase):
         # Turn off extraction.
         o.enabled = False
 
-
     def test(self):
         self.main()
 
@@ -70,8 +69,8 @@ class TestUserDefined(TestCase):
         # Imports.
         from mayavi.filters.optional import Optional
         from mayavi.filters.user_defined import UserDefined
-        from mayavi.filters.api import (CellToPointData,
-                ExtractVectorNorm, ExtractVectorComponents)
+        from mayavi.filters.api import (CellToPointData, ExtractVectorNorm,
+                                        ExtractVectorComponents)
         from mayavi.modules.api import ScalarCutPlane
         from mayavi.sources.vtk_xml_file_reader import VTKXMLFileReader
 
@@ -109,9 +108,9 @@ class TestUserDefined(TestCase):
 
         # Save visualization.
         f = BytesIO()
-        f.name = abspath('test.mv2') # We simulate a file.
+        f.name = abspath('test.mv2')  # We simulate a file.
         script.save_visualization(f)
-        f.seek(0) # So we can read this saved data.
+        f.seek(0)  # So we can read this saved data.
 
         # Remove existing scene.
         engine = script.engine
@@ -147,6 +146,7 @@ class TestUserDefined(TestCase):
         self.check(saved=True)
 
         # If we have come this far, we are golden!
+
 
 if __name__ == "__main__":
     t = TestUserDefined()

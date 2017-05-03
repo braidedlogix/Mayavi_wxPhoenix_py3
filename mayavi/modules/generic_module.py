@@ -18,6 +18,7 @@ from mayavi.core.module import Module
 from mayavi.core.common import handle_children_state
 from mayavi.components.actor import Actor
 
+
 ################################################################################
 # Utility function.
 ################################################################################
@@ -37,9 +38,7 @@ def find_object_given_state(needle, haystack, object):
     if needle is haystack:
         return object
     if hasattr(object, 'filter'):
-        return find_object_given_state(needle,
-                                       haystack.filter,
-                                       object.filter)
+        return find_object_given_state(needle, haystack.filter, object.filter)
     elif hasattr(object, 'filters'):
         for h, obj in zip(haystack.filters, object.filters):
             r = find_object_given_state(needle, h, obj)
@@ -65,8 +64,7 @@ class GenericModule(Module):
     # any.  This is needed for modules that use a contour component
     # because when we turn on filled contours the mapper must switch to
     # use cell data.
-    contour = Instance('mayavi.components.contour.Contour',
-                       allow_none=True)
+    contour = Instance('mayavi.components.contour.Contour', allow_none=True)
 
     # The *optional* Actor component for which the LUT must be set.  If
     # None is specified here, we will attempt to automatically determine
@@ -133,17 +131,21 @@ class GenericModule(Module):
     ######################################################################
     def default_traits_view(self):
         """Returns the default traits view for this object."""
-        le = ListEditor(use_notebook=True,
-                        deletable=False,
-                        export='DockWindowShell',
-                        page_name='.name')
-        view = View(Group(Item(name='components',
-                               style='custom',
-                               show_label=False,
-                               editor=le,
-                               resizable=True),
-                              show_labels=False),
-                    resizable=True)
+        le = ListEditor(
+            use_notebook=True,
+            deletable=False,
+            export='DockWindowShell',
+            page_name='.name')
+        view = View(
+            Group(
+                Item(
+                    name='components',
+                    style='custom',
+                    show_label=False,
+                    editor=le,
+                    resizable=True),
+                show_labels=False),
+            resizable=True)
         return view
 
     ######################################################################
@@ -201,7 +203,7 @@ class GenericModule(Module):
             # Hook up the others to each other.
             for i in range(1, len(components)):
                 component = components[i]
-                component.inputs = [components[i-1]]
+                component.inputs = [components[i - 1]]
             self._pipeline_ready = True
         # Start components.
         self._start_components()
@@ -258,4 +260,3 @@ class GenericModule(Module):
             if len(component.inputs) > 0 and \
                len(component.inputs[0].outputs) > 0:
                 component.start()
-

@@ -52,8 +52,7 @@ class Animator(HasTraits):
 
     start = Button('Start Animation')
     stop = Button('Stop Animation')
-    delay = Range(10, 100000, 500,
-                  desc='frequency with which timer is called')
+    delay = Range(10, 100000, 500, desc='frequency with which timer is called')
 
     # The internal timer we manage.
     timer = Any
@@ -61,13 +60,13 @@ class Animator(HasTraits):
     ######################################################################
     # User interface view
 
-    traits_view = View(Group(Item('start'),
-                             Item('stop'),
-                             show_labels=False),
-                       Item('_'),
-                       Item(name='delay'),
-                       title='Animation Controller',
-                       buttons=['OK'])
+    traits_view = View(
+        Group(
+            Item('start'), Item('stop'), show_labels=False),
+        Item('_'),
+        Item(name='delay'),
+        title='Animation Controller',
+        buttons=['OK'])
 
     ######################################################################
     # Initialize object
@@ -125,6 +124,7 @@ class Animator(HasTraits):
 
 ###############################################################################
 # Decorators.
+
 
 def animate(func=None, delay=500, ui=True, support_movie=True):
     """A convenient decorator to animate a generator that performs an
@@ -240,7 +240,6 @@ def animate(func=None, delay=500, ui=True, support_movie=True):
 
         def decorator_call(self, func, *args, **kw):
             return self(*args, **kw)
-
 
     def _wrapper(function):
         # Needed to create the Wrapper in the right scope.

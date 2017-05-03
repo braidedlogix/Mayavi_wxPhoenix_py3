@@ -4,7 +4,6 @@
 # Copyright (c) 2005, Enthought, Inc.
 # License: BSD Style.
 
-
 # Enthought library imports.
 from traits.api import Instance, Bool
 from tvtk.api import tvtk
@@ -32,9 +31,8 @@ class Surface(Module):
     # The actor component that represents the visualization.
     actor = Instance(Actor, allow_none=False, record=True)
 
-    input_info = PipelineInfo(datasets=['any'],
-                              attribute_types=['any'],
-                              attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])
 
     ######################################################################
     # `Module` interface
@@ -119,11 +117,9 @@ class Surface(Module):
 
     def _contour_changed(self, old, new):
         if old is not None:
-            old.on_trait_change(self._filled_contours_changed,
-                                'filled_contours',
-                                remove=True)
-        new.on_trait_change(self._filled_contours_changed,
-                            'filled_contours')
+            old.on_trait_change(
+                self._filled_contours_changed, 'filled_contours', remove=True)
+        new.on_trait_change(self._filled_contours_changed, 'filled_contours')
         self._change_components(old, new)
 
     def _actor_changed(self, old, new):
@@ -135,4 +131,3 @@ class Surface(Module):
         if mm is not None:
             new.inputs = [mm.source]
         self._change_components(old, new)
-

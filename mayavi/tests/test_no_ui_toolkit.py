@@ -12,7 +12,6 @@ from traits.etsconfig.api import ETSConfig
 
 
 class TestNoUIToolkit(unittest.TestCase):
-
     """Test if any important mayavi imports work with no UI
     whatsoever."""
 

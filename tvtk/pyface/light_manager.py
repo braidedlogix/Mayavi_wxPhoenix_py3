@@ -32,6 +32,7 @@ from tvtk.tvtk_base import vtk_color_trait, TraitRevPrefixMap
 from tvtk.common import is_old_pipeline, configure_input, configure_input_data
 from apptools.persistence import state_pickler
 
+
 ######################################################################
 # `LightGlyph` class.
 ######################################################################
@@ -70,7 +71,7 @@ class LightGlyph(HasTraits):
 
     def __get_pure_state__(self):
         d = self.__dict__.copy()
-        for name in ['__sync_trait__',  '__traits_listener__']:
+        for name in ['__sync_trait__', '__traits_listener__']:
             d.pop(name, None)
         return d
 
@@ -87,8 +88,8 @@ class LightGlyph(HasTraits):
     def add(self, ren, bounds):
         """Adds the actors to the given renderer (`ren`).  The actors
         are scaled as per the given bounds."""
-        scale = max(bounds[1]-bounds[0], bounds[3] - bounds[2],
-                    bounds[5]-bounds[4])*0.75
+        scale = max(bounds[1] - bounds[0], bounds[3] - bounds[2],
+                    bounds[5] - bounds[4]) * 0.75
         self.actor.scale = scale, scale, scale
         ren.add_actor(self.actor)
         cam = ren.active_camera
@@ -99,7 +100,7 @@ class LightGlyph(HasTraits):
         (`ren`)."""
         ren.remove_actor(self.actor)
 
-    def move_to(self, elevation=None, azimuth = None):
+    def move_to(self, elevation=None, azimuth=None):
         """Move the glyphs to the specified elevation and azimuth."""
         self.actor.rotate_x(-self.el)
         self.actor.rotate_y(-self.az)
@@ -123,12 +124,10 @@ class LightGlyph(HasTraits):
         self.actor.property.color = clr
 
 
-
 ######################################################################
 # `CameraLight` class.
 ######################################################################
 class CameraLight(HasTraits):
-
     """This class manages a tvtk.Light object and a LightGlyph object."""
 
     # The version of this class.  Used for persistence.
@@ -137,12 +136,11 @@ class CameraLight(HasTraits):
     #################################################################
     # Traits.
     #################################################################
-    elevation = Range(-90.0, 90.0, 0.0,
-                      desc="the elevation of the light")
-    azimuth = Range(-180.0, 180.0, 0.0,
-                    desc="the aziumthal angle of the light")
-    activate = Trait(False, false,
-                     desc="specifies if the light is enabled or not")
+    elevation = Range(-90.0, 90.0, 0.0, desc="the elevation of the light")
+    azimuth = Range(
+        -180.0, 180.0, 0.0, desc="the aziumthal angle of the light")
+    activate = Trait(
+        False, false, desc="specifies if the light is enabled or not")
     source = Instance(tvtk.Light, ())
 
     # FIXME: Traits Delegation does not work correctly and changes to
@@ -151,14 +149,16 @@ class CameraLight(HasTraits):
     #intensity = Delegate('source', modify=True)
 
     # For now we mirror these traits from the source.
-    intensity = Range(0.0, 1.0, 1.0,
-                      desc="the intensity of the light")
+    intensity = Range(0.0, 1.0, 1.0, desc="the intensity of the light")
     color = vtk_color_trait((1.0, 1.0, 1.0))
     color.desc = "the color of the light"
 
-    default_view = View(Item(name='activate'), Item(name='elevation'),
-                        Item(name='azimuth'), Item(name='intensity'),
-                        Item(name='color'))
+    default_view = View(
+        Item(name='activate'),
+        Item(name='elevation'),
+        Item(name='azimuth'),
+        Item(name='intensity'),
+        Item(name='color'))
 
     #################################################################
     # `object` interface.
@@ -249,22 +249,21 @@ class CameraLight(HasTraits):
     def _to_pos(self, elevation, azimuth):
         """Convert the given elevation and azimuth angles (degrees) to
         a position vector."""
-        theta = azimuth*pi/180.0
-        phi = (90.0-elevation)*pi/180.0
-        x = sin(theta)*sin(phi)
+        theta = azimuth * pi / 180.0
+        phi = (90.0 - elevation) * pi / 180.0
+        x = sin(theta) * sin(phi)
         y = cos(phi)
-        z = cos(theta)*sin(phi)
+        z = cos(theta) * sin(phi)
         return x, y, z
 
     def _from_pos(self, x, y, z):
         """Given the position vector, return an elevation and azimuth
         angle (in degrees)."""
         theta = atan2(x, z)
-        phi = atan2(sqrt(x**2+z**2), y)
-        az = theta*180.0/pi
-        el = 90.0 - phi*180.0/pi
+        phi = atan2(sqrt(x**2 + z**2), y)
+        az = theta * 180.0 / pi
+        el = 90.0 - phi * 180.0 / pi
         return el, az
-
 
 
 ######################################################################
@@ -273,6 +272,7 @@ class CameraLight(HasTraits):
 class CloseHandler(Handler):
     """This class cleans up after the UI for the Light Manager is
     closed."""
+
     def close(self, info, is_ok):
         """This method is invoked when the user closes the UI."""
         light_manager = info.object
@@ -284,7 +284,6 @@ class CloseHandler(Handler):
 # `LightManager` class.
 ######################################################################
 class LightManager(HasTraits):
-
     """This class manages all the lights and presents a GUI for the
     lights.
 
@@ -309,9 +308,13 @@ class LightManager(HasTraits):
     # default mode used to initialize the lights to a sane default.
     # The user can always change the light configuration via the GUI
     # such that the mode is neither 'vtk' nor 'raymond'.
-    light_mode = Trait('raymond', TraitRevPrefixMap({'raymond':1,
-                                                     'vtk':2}),
-                       desc='specifies a default lighting mode')
+    light_mode = Trait(
+        'raymond',
+        TraitRevPrefixMap({
+            'raymond': 1,
+            'vtk': 2
+        }),
+        desc='specifies a default lighting mode')
 
     # Specify the number of lights.  If new lights are added they are
     # by default turned off.  Similarly if the number of lights are
@@ -319,16 +322,20 @@ class LightManager(HasTraits):
     number_of_lights = Range(3, 8, 4, desc='specifies the number of lights')
 
     # The list of added lights.
-    lights = List(CameraLight, editor=ListEditor(use_notebook=True,
-                                                 page_name='Light'),
-                  record=True)
+    lights = List(
+        CameraLight,
+        editor=ListEditor(
+            use_notebook=True, page_name='Light'),
+        record=True)
 
-    view = View( Group( 'light_mode',
-                        'number_of_lights', ),
-                Item('lights', style='custom', show_label=False),
-                resizable=True,
-                buttons=['OK'])
-
+    view = View(
+        Group(
+            'light_mode',
+            'number_of_lights', ),
+        Item(
+            'lights', style='custom', show_label=False),
+        resizable=True,
+        buttons=['OK'])
 
     #################################################################
     # `object` interface.
@@ -359,8 +366,7 @@ class LightManager(HasTraits):
 
     def __get_pure_state__(self):
         d = self.__dict__.copy()
-        for name in ['__sync_trait__', 'renwin', 'ui',
-                     '__traits_listener__']:
+        for name in ['__sync_trait__', 'renwin', 'ui', '__traits_listener__']:
             d.pop(name, None)
         return d
 
@@ -388,15 +394,20 @@ class LightManager(HasTraits):
         """Pops up the GUI control widget."""
         if self.ui is None:
             self._show_glyphs()
-            view = View(Group(Item(name='light_mode'),
-                              Item(name='number_of_lights'),
-                              label='LightManager'),
-                        Group(Item(name='lights', style='custom'),
-                              label='Lights',
-                              selected=True, show_labels=False),
-                        resizable=True,
-                        buttons=['OK'],
-                        handler=CloseHandler())
+            view = View(
+                Group(
+                    Item(name='light_mode'),
+                    Item(name='number_of_lights'),
+                    label='LightManager'),
+                Group(
+                    Item(
+                        name='lights', style='custom'),
+                    label='Lights',
+                    selected=True,
+                    show_labels=False),
+                resizable=True,
+                buttons=['OK'],
+                handler=CloseHandler())
             self.ui = view.ui(self)
         else:
             try:
@@ -441,7 +452,7 @@ class LightManager(HasTraits):
                     lights[i].color = 1.0, 1.0, 1.0
 
             lights[0].move_to(45.0, 45.0)
-            lights[1].move_to(-30.0,-60.0)
+            lights[1].move_to(-30.0, -60.0)
             lights[1].intensity = 0.6
             lights[2].move_to(-30.0, 60.0)
             lights[2].intensity = 0.5
@@ -450,8 +461,8 @@ class LightManager(HasTraits):
                 lights[i].move_to(0.0, 0.0)
                 lights[i].intensity = 1.0
                 lights[i].color = 1.0, 1.0, 1.0
-                if i == 0 :
-                    lights[i].activate  = True
+                if i == 0:
+                    lights[i].activate = True
                 else:
                     lights[i].activate = False
 
@@ -470,4 +481,3 @@ class LightManager(HasTraits):
                 light = self.lights.pop()
                 light.close(self.renwin)
             changed = True
-

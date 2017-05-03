@@ -14,7 +14,6 @@ from common import TestCase, get_example_data
 
 
 class TestImageDataProbe(TestCase):
-
     def check(self, saved=False):
         """Does the checking, if saved is True it does not change the
         properties at first to see how those behave and only tests the
@@ -80,9 +79,9 @@ class TestImageDataProbe(TestCase):
 
         # Save visualization.
         f = BytesIO()
-        f.name = abspath('test.mv2') # We simulate a file.
+        f.name = abspath('test.mv2')  # We simulate a file.
         script.save_visualization(f)
-        f.seek(0) # So we can read this saved data.
+        f.seek(0)  # So we can read this saved data.
 
         # Remove existing scene.
         engine = script.engine
@@ -118,6 +117,7 @@ class TestImageDataProbe(TestCase):
         self.check(saved=True)
 
         # If we have come this far, we are golden!
+
 
 if __name__ == "__main__":
     t = TestImageDataProbe()

@@ -11,7 +11,6 @@
 # Author: Enthought, Inc.
 # Description: <Enthought pyface package component>
 #------------------------------------------------------------------------------
-
 """A VTK interactor scene widget for the PyFace PyQt backend.  See the class
 docs for more details.
 """
@@ -19,7 +18,6 @@ docs for more details.
 # Author: Prabhu Ramachandran <prabhu_r@users.sf.net>
 # Copyright (c) 2004-2016, Enthought, Inc.
 # License: BSD Style.
-
 
 import os
 import tempfile
@@ -46,6 +44,7 @@ from .QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 class _VTKRenderWindowInteractor(QVTKRenderWindowInteractor):
     """ This is a thin wrapper around the standard VTK PyQt interactor.
     """
+
     def __init__(self, scene, parent, **kwargs):
         QVTKRenderWindowInteractor.__init__(self, parent, **kwargs)
 
@@ -144,7 +143,8 @@ class _VTKRenderWindowInteractor(QVTKRenderWindowInteractor):
                 self._scene.save(fname)
             return
 
-        shift = ((modifiers & QtCore.Qt.ShiftModifier) == QtCore.Qt.ShiftModifier)
+        shift = (
+            (modifiers & QtCore.Qt.ShiftModifier) == QtCore.Qt.ShiftModifier)
 
         if key == QtCore.Qt.Key_Left:
             if shift:
@@ -221,7 +221,6 @@ class _VTKRenderWindowInteractor(QVTKRenderWindowInteractor):
             self._scene.busy = False
 
 
-
 ######################################################################
 # `Scene` class.
 ######################################################################
@@ -267,44 +266,44 @@ class Scene(TVTKScene, Widget):
     ########################################
 
     # Render_window's view.
-    _stereo_view = Group(Item(name='stereo_render'),
-                         Item(name='stereo_type'),
-                         show_border=True,
-                         label='Stereo rendering',
-                         )
+    _stereo_view = Group(
+        Item(name='stereo_render'),
+        Item(name='stereo_type'),
+        show_border=True,
+        label='Stereo rendering', )
 
     # The default view of this object.
-    default_view = View(Group(
-                            Group(Item(name='background'),
-                                  Item(name='foreground'),
-                                  Item(name='parallel_projection'),
-                                  Item(name='disable_render'),
-                                  Item(name='off_screen_rendering'),
-                                  Item(name='jpeg_quality'),
-                                  Item(name='jpeg_progressive'),
-                                  Item(name='magnification'),
-                                  Item(name='anti_aliasing_frames'),
-                                  Item(name='full_screen',
-                                       show_label=False),
-                                  ),
-                            Group(Item(name='render_window',
-                                       style='custom',
-                                       visible_when='object.stereo',
-                                       editor=InstanceEditor(view=View(_stereo_view)),
-                                       show_label=False),
-                                  ),
-                            label='Scene'),
-                         Group( Item(name='light_manager',
-                                style='custom', show_label=False),
-                                label='Lights'),
-                         Group(
-                             Item(
-                                 name='movie_maker',
-                                 style='custom', show_label=False
-                             ),
-                             label='Movie'),
-                         buttons=['OK', 'Cancel']
-                        )
+    default_view = View(
+        Group(
+            Group(
+                Item(name='background'),
+                Item(name='foreground'),
+                Item(name='parallel_projection'),
+                Item(name='disable_render'),
+                Item(name='off_screen_rendering'),
+                Item(name='jpeg_quality'),
+                Item(name='jpeg_progressive'),
+                Item(name='magnification'),
+                Item(name='anti_aliasing_frames'),
+                Item(
+                    name='full_screen', show_label=False), ),
+            Group(
+                Item(
+                    name='render_window',
+                    style='custom',
+                    visible_when='object.stereo',
+                    editor=InstanceEditor(view=View(_stereo_view)),
+                    show_label=False), ),
+            label='Scene'),
+        Group(
+            Item(
+                name='light_manager', style='custom', show_label=False),
+            label='Lights'),
+        Group(
+            Item(
+                name='movie_maker', style='custom', show_label=False),
+            label='Movie'),
+        buttons=['OK', 'Cancel'])
 
     ########################################
     # Private traits.

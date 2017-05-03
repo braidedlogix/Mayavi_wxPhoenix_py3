@@ -61,10 +61,11 @@ def has_subclass(tvtk_class):
     Unfortunately because of the VTK API we cannot tell whether the
     subclass is abstract or not
     """
+
     def is_sub_class(x):
-        return (inspect.isclass(x) and
-                issubclass(x, tvtk_class) and
+        return (inspect.isclass(x) and issubclass(x, tvtk_class) and
                 x is not tvtk_class)
+
     # wish there was an iterator version of inspect.getmembers
     return bool(inspect.getmembers(tvtk, is_sub_class))
 
@@ -88,6 +89,7 @@ class TestTVTK(unittest.TestCase):
 
         class A:
             pass
+
         a = A()
         w = tvtk_helper.wrap_vtk(a)
         self.assertEqual(a, w)
@@ -99,15 +101,17 @@ class TestTVTK(unittest.TestCase):
         o = tvtk.ImageFFT()
         vtk_ver = vtk.vtkVersion().GetVTKVersion()
         if vtk_ver[:3] in ['4.2', '4.4']:
-            cached = ['ImageFourierFilter', 'ImageDecomposeFilter',
-                      'ImageIterateFilter', 'ImageToImageFilter',
-                      'ImageSource', 'Source', 'ProcessObject',
-                      'Object', 'ObjectBase']
+            cached = [
+                'ImageFourierFilter', 'ImageDecomposeFilter',
+                'ImageIterateFilter', 'ImageToImageFilter', 'ImageSource',
+                'Source', 'ProcessObject', 'Object', 'ObjectBase'
+            ]
         else:
-            cached = ['ImageFourierFilter', 'ImageDecomposeFilter',
-                      'ImageIterateFilter', 'ThreadedImageAlgorithm',
-                      'ImageAlgorithm', 'Algorithm', 'Object',
-                      'ObjectBase']
+            cached = [
+                'ImageFourierFilter', 'ImageDecomposeFilter',
+                'ImageIterateFilter', 'ThreadedImageAlgorithm',
+                'ImageAlgorithm', 'Algorithm', 'Object', 'ObjectBase'
+            ]
 
         for i in cached:
             self.assertIn(i, tvtk_helper._cache)
@@ -127,6 +131,7 @@ class TestTVTK(unittest.TestCase):
         class XMLDataReader:
             def f(self):
                 return 'f'
+
         setattr(mod, 'XMLDataReader', XMLDataReader)
         sys.modules['tvtk.custom.xml_data_reader'] = mod
 
@@ -137,7 +142,7 @@ class TestTVTK(unittest.TestCase):
             if is_version_7():
                 expect = ()
             else:
-                expect = (object,)
+                expect = (object, )
         else:
             expect = tuple()
 
@@ -295,13 +300,13 @@ class TestTVTK(unittest.TestCase):
     def test_matrix4x4(self):
         """Test if Matrix4x4 works nicely."""
         m = tvtk.Matrix4x4()
-        [m.set_element(i, j, i*4 + j) for i in range(4) for j in range(4)]
+        [m.set_element(i, j, i * 4 + j) for i in range(4) for j in range(4)]
         s = pickle.dumps(m)
         del m
         m = pickle.loads(s)
         for i in range(4):
             for j in range(4):
-                self.assertEqual(m.get_element(i, j), i*4 + j)
+                self.assertEqual(m.get_element(i, j), i * 4 + j)
         # Test the from/to_array functions.
         a = numpy.array(list(range(16)), dtype=float)
         a.shape = 4, 4
@@ -435,7 +440,7 @@ class TestTVTK(unittest.TestCase):
         self.assertEqual(f.number_of_tuples, 2)
         self.assertEqual(mysum(f.to_array() - a), 0)
         for i, j in zip(a, f):
-            self.assertEqual(mysum(i-j), 0.0)
+            self.assertEqual(mysum(i - j), 0.0)
         self.assertEqual(f[0], (0.0, 0.0, 0.0))
         self.assertEqual(f[-1], (1., 1., 1.))
         self.assertEqual(repr(f), '[(0.0, 0.0, 0.0), (1.0, 1.0, 1.0)]')
@@ -544,10 +549,12 @@ class TestTVTK(unittest.TestCase):
 
     def test_property_change_notification(self):
         """Test if changes to properties generate notification events."""
+
         # Create a dummy class to test with.
         class Junk:
             def f(self, obj, name, old, new):
                 self.data = obj, name, old, new
+
         z = Junk()
         cs = tvtk.ConeSource()
         m = tvtk.PolyDataMapper()
@@ -562,11 +569,11 @@ class TestTVTK(unittest.TestCase):
         else:
             m.on_trait_change(z.f, 'input_connection')
             m.input_connection = cs.output_port
-            self.assertEqual(
-                z.data, (m, 'input_connection', None, cs.output_port))
+            self.assertEqual(z.data,
+                             (m, 'input_connection', None, cs.output_port))
             m.input_connection = None
-            self.assertEqual(
-                z.data, (m, 'input_connection', cs.output_port, None))
+            self.assertEqual(z.data,
+                             (m, 'input_connection', cs.output_port, None))
             m.on_trait_change(z.f, 'input_connection', remove=True)
             m.input_connection = cs.output_port
         a = tvtk.Actor()
@@ -639,8 +646,8 @@ class TestTVTK(unittest.TestCase):
         else:
             spw.input_connection = None
 
-    @unittest.skipIf(
-        vtk_major_version >= 6, "Setting scalar type is no longer supported on VTK 6")
+    @unittest.skipIf(vtk_major_version >= 6,
+                     "Setting scalar type is no longer supported on VTK 6")
     def test_image_data_scalar_type(self):
         """Does ImageData support all scalar types?.
         """
@@ -653,8 +660,8 @@ class TestTVTK(unittest.TestCase):
     def test_null_string_wrapper(self):
         "Check if a null string default is wrapped as a String trait."
         cap = tvtk.CaptionActor2D()
-        self.assertEqual(
-            ('caption', 'GetCaption') in cap._updateable_traits_, True)
+        self.assertEqual(('caption', 'GetCaption') in cap._updateable_traits_,
+                         True)
         self.assertEqual('caption' in cap._full_traitnames_list_, True)
 
     def test_spider_plot_actor_set_axis_label(self):
@@ -805,9 +812,10 @@ class TestTVTK(unittest.TestCase):
             # If we place this check as a unittest.skipIf decorator,
             # this would cause garbage collection tests in the test suite to fail
             # as the some classes are kept live
-            raise unittest.SkipTest(('ObjectFactory has a subclass. '
-                                     'This may cause the TVTK API to be different '
-                                     'from if it had not'))
+            raise unittest.SkipTest(
+                ('ObjectFactory has a subclass. '
+                 'This may cause the TVTK API to be different '
+                 'from if it had not'))
 
         # The Set/Get methods require many args
         # they should be coded as such
@@ -825,9 +833,10 @@ class TestTVTK(unittest.TestCase):
             # If we place this check as a unittest.skipIf decorator,
             # this would cause garbage collection tests in the test suite to fail
             # as the some classes are kept live
-            raise unittest.SkipTest(('ContextDevice2D has a subclass. '
-                                     'This may cause the TVTK API to be different '
-                                     'from if it had not'))
+            raise unittest.SkipTest(
+                ('ContextDevice2D has a subclass. '
+                 'This may cause the TVTK API to be different '
+                 'from if it had not'))
 
         # The Set/Get methods require many args
         # they should be coded as such
@@ -838,7 +847,6 @@ class TestTVTK(unittest.TestCase):
 # This separates out any tests for the entire module that would affect
 # the functioning of the other tests.
 class TestTVTKModule(unittest.TestCase):
-
     def tearDown(self):
         tvtk_helper._cache.clear()
         vtk.vtkObject.GlobalWarningDisplayOn()
@@ -880,11 +888,14 @@ class TestTVTKModule(unittest.TestCase):
         '''Test if all the attributes with MinValue/MaxValue are traits
         with Range
         '''
+
         def to_camel_case(text):
             """ Convert text to CamelCase"""
+
             def replace_func(matched):
                 word = matched.group(0).strip("_")
-                return word[0].upper()+word[1:].lower()
+                return word[0].upper() + word[1:].lower()
+
             return re.sub(r'(_?[a-zA-Z]+)', replace_func, text)
 
         def get_min_max_value(vtk_klass, vtk_attr_name):
@@ -922,9 +933,9 @@ class TestTVTKModule(unittest.TestCase):
                     # If max and min values are defined, setting the trait
                     # to outside this range should fail
                     with self.assertRaises(TraitError):
-                        setattr(obj, trait_name, (min_value-1, max_value))
+                        setattr(obj, trait_name, (min_value - 1, max_value))
                     with self.assertRaises(TraitError):
-                        setattr(obj, trait_name, (min_value, max_value+1))
+                        setattr(obj, trait_name, (min_value, max_value + 1))
 
     def test_no_trait_has_ptr_address_as_value(self):
         '''Test if none of the TVTK classes' traits has a value of "*_p_void"
@@ -988,9 +999,11 @@ class TestTVTKModule(unittest.TestCase):
         from subprocess import check_output, STDOUT
 
         output = check_output(
-            [sys.executable, "-v", "-c",
-             "from tvtk.api import tvtk; p = tvtk.Property()"], stderr=STDOUT
-        )
+            [
+                sys.executable, "-v", "-c",
+                "from tvtk.api import tvtk; p = tvtk.Property()"
+            ],
+            stderr=STDOUT)
         output = output.decode('ascii')
         self.assertFalse('QtCore' in output)
         self.assertFalse('wx' in output)
@@ -1001,6 +1014,7 @@ class TestTVTKModule(unittest.TestCase):
         self.assertIsInstance(reader.unicode_record_delimiters, unicode)
         self.assertIsInstance(reader.unicode_string_delimiters, unicode)
         self.assertIsInstance(reader.unicode_field_delimiters, unicode)
+
 
 if __name__ == "__main__":
     unittest.main()

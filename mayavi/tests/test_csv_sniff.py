@@ -19,7 +19,6 @@ from mayavi.tools.data_wizards.csv_sniff import \
 
 
 class Util(unittest.TestCase):
-
     def assertNamedClose(self, x, y):
         self.assertEqual(x.shape, y.shape)
         self.assertEqual(x.dtype.names, y.dtype.names)
@@ -36,8 +35,9 @@ class Util(unittest.TestCase):
             if repr(a) == 'nan':
                 self.assertTrue(repr(b) == 'nan')
             else:
-                self.assertTrue(abs(a - b) < 1e-6 * max(1, abs(a)),
-                             '%r != %r  %r' % (a, b, abs(a - b)))
+                self.assertTrue(
+                    abs(a - b) < 1e-6 * max(1, abs(a)),
+                    '%r != %r  %r' % (a, b, abs(a - b)))
 
         elif isinstance(a, (str, bytes)):
             self.assertEqual(a, b)
@@ -45,8 +45,8 @@ class Util(unittest.TestCase):
         else:
             self.assertFalse("Hmm, did not expect: %s" % a)
 
-class Test(Util):
 
+class Test(Util):
     def test_API(self):
         fo = tempfile.mktemp()
         with open(fo, 'w') as f:
@@ -58,12 +58,14 @@ class Test(Util):
         self.assertEqual(s.comments(), '#')
         self.assertEqual(s.delimiter(), ',')
         self.assertEqual(s.skiprows(), 1)
-        self.assertEqual(s.dtype(), {'names': ('A', 'B', 'C'),
-                                     'formats': (float, float, float)})
+        self.assertEqual(s.dtype(), {
+            'names': ('A', 'B', 'C'),
+            'formats': (float, float, float)
+        })
         x = s.loadtxt()
-        y = array([(1.0, 2.0, 3.20),
-                   (7.0, 4.0, 1.87)],
-                  dtype=[('A', float), ('B', float), ('C', float)])
+        y = array(
+            [(1.0, 2.0, 3.20), (7.0, 4.0, 1.87)],
+            dtype=[('A', float), ('B', float), ('C', float)])
         self.assertNamedClose(x, y)
 
         y = loadtxt(fo, **s.kwds())
@@ -78,7 +80,6 @@ class Test(Util):
         self.assertAllClose(x['B'], [2, 4])
         self.assertAllClose(x['C'], [3.2, 1.87])
 
-
     def test_comment(self):
         fo = tempfile.mktemp()
         with open(fo, 'w') as f:
@@ -87,13 +88,17 @@ class Test(Util):
                1    2   4.2   % comment''')
 
         s = Sniff(fo)
-        self.assertEqual(s.kwds(),
-          {'dtype': {'names': ('A', 'B', 'C'),
-                     'formats': (float, float, float)},
-           'delimiter': None,
-           'skiprows': 0,   # FIXME
-           'comments': '%'})
-
+        self.assertEqual(
+            s.kwds(),
+            {
+                'dtype': {
+                    'names': ('A', 'B', 'C'),
+                    'formats': (float, float, float)
+                },
+                'delimiter': None,
+                'skiprows': 0,  # FIXME
+                'comments': '%'
+            })
 
     def test_tabs(self):
         fo = tempfile.mktemp()
@@ -104,20 +109,21 @@ class Test(Util):
         self.assertEqual(s.delimiter(), None)
         self.assertEqual(s.skiprows(), 0)
 
-
     def test_nohead(self):
         fo = tempfile.mktemp()
         with open(fo, 'w') as f:
             f.write('''Hello;54;87\nWorld;42;86.5''')
 
         s = Sniff(fo)
-        self.assertEqual(s.kwds(),
-          {'comments': '#',
-           'delimiter': ';',
-           'skiprows': 0,
-           'dtype': {'names': ('Column 1', 'Column 2', 'Column 3'),
-                     'formats': ('S5', float, float)}})
-
+        self.assertEqual(s.kwds(), {
+            'comments': '#',
+            'delimiter': ';',
+            'skiprows': 0,
+            'dtype': {
+                'names': ('Column 1', 'Column 2', 'Column 3'),
+                'formats': ('S5', float, float)
+            }
+        })
 
     def test_empty_file(self):
         fo = tempfile.mktemp()
@@ -125,10 +131,12 @@ class Test(Util):
             f.write('')
         self.assertRaises(IndexError, Sniff, fo)
 
+
 class Test_csv_py_files(Util):
     """
         These tests require files in csv_files/
     """
+
     def check(self, name, skip_if_win=False):
         """
             Check if the output array from csv_files/<name>.csv
@@ -145,14 +153,15 @@ class Test_csv_py_files(Util):
         #       it was broken.  Since we define zip_safe = False in setup.py
         #       it is safe to assume the files are always present.
 
-        s = Sniff(os.path.join(os.path.dirname(__file__),
-                               'csv_files', name + '.csv'))
+        s = Sniff(
+            os.path.join(
+                os.path.dirname(__file__), 'csv_files', name + '.csv'))
 
-        f_py = os.path.join(os.path.dirname(__file__),
-                            'csv_files', name + '.py')
+        f_py = os.path.join(
+            os.path.dirname(__file__), 'csv_files', name + '.py')
 
         if not sys.platform.startswith('win'):
-            nan = float('nan') # must be in namespace for some .py files
+            nan = float('nan')  # must be in namespace for some .py files
 
         d = eval(open(f_py).read())
 

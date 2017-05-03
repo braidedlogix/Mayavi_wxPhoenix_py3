@@ -14,7 +14,6 @@
 #           Prabhu Ramachandran <prabhu [at] aero.iitb.ac.in>
 #
 #------------------------------------------------------------------------------
-
 """ A mostly-general Traits UI editor for viewing things in TVTK scenes.
 """
 
@@ -27,6 +26,7 @@ from traitsui.wx.editor import Editor
 from traitsui.basic_editor_factory import BasicEditorFactory
 
 from .decorated_scene import DecoratedScene
+
 
 #####################################################################
 # `_ActorEditor` class
@@ -42,7 +42,6 @@ class _ActorEditor(Editor):
     _sizer = Any()
     _scene = Any()
 
-
     #### Public 'Editor' interface #############################################
 
     def init(self, parent):
@@ -57,7 +56,6 @@ class _ActorEditor(Editor):
 
         self._create_scene()
 
-
     def update_editor(self):
         """ Updates the editor when the object trait changes external to the
         editor.
@@ -66,7 +64,6 @@ class _ActorEditor(Editor):
         # Everything should really be handled elsewhere in trait notifications.
         # Just pass here.
         pass
-
 
     def dispose(self):
         """ Disposes of the contents of an editor.
@@ -85,7 +82,6 @@ class _ActorEditor(Editor):
         # This will destroy self.control and all of its children, including the
         # scene's control.
         super(_ActorEditor, self).dispose()
-
 
     #### Private '_ActorEditor' interface ##################################
 
@@ -118,7 +114,6 @@ class _ActorEditor(Editor):
         # Force a render.
         scene.render()
 
-
     def _setup_scene_notifications(self, remove=False):
         """ Set up or remove all of the Trait notifications that control the
         scene widget.
@@ -127,31 +122,25 @@ class _ActorEditor(Editor):
         self.object.on_trait_change(
             self._set_scene_disable_render,
             name=self.factory.disable_render_name,
-            remove=remove,
-        )
+            remove=remove, )
         self.object.on_trait_event(
             self._scene.render,
             name=self.factory.do_render_name,
-            remove=remove,
-        )
+            remove=remove, )
         self.object.on_trait_change(
             self._actors_changed,
-            name=self.name+'_items',
-            remove=remove,
-        )
+            name=self.name + '_items',
+            remove=remove, )
         self.object.on_trait_change(
             self._actor_map_changed,
             name=self.name,
-            remove=remove,
-        )
-
+            remove=remove, )
 
     def _set_scene_disable_render(self, new):
         """ A callback for Traits notifications.
         """
 
         self._scene.disable_render = new
-
 
     def _actors_changed(self, event):
         """ Handle the event of the actors in the actor map changing.
@@ -175,7 +164,6 @@ class _ActorEditor(Editor):
         finally:
             scene.disable_render = old_disable_render
             scene.render()
-
 
     def _actor_map_changed(self, object, name, old, new):
         """ Handle the case when the entire actor map is set to something else.
@@ -246,5 +234,6 @@ class ActorEditor(BasicEditorFactory):
 
     # The name of the trait used for ITVTKActorModel.do_render.
     do_render_name = Str('do_render')
+
 
 #### EOF #######################################################################

@@ -25,6 +25,7 @@ def get_imayavi_engine(window):
     """
     return window.get_service(Engine)
 
+
 def get_imayavi(window):
     """Given the Envisage workbench window, returns the
     mayavi.script.Script instance (registered as
@@ -119,4 +120,3 @@ class Script(HasTraits):
         """Traits handler for changes to application.
         """
         self.engine = get_imayavi_engine(window)
-

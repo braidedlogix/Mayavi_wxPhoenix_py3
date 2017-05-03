@@ -4,7 +4,6 @@
 # Copyright (c) 2007,  Enthought, Inc.
 # License: BSD Style.
 
-
 # Enthought library imports.
 from traits.api import Instance
 from tvtk.api import tvtk
@@ -22,10 +21,9 @@ class StructuredGridOutline(Outline):
     """
 
     # The outline filter.
-    outline_filter = Instance(tvtk.StructuredGridOutlineFilter,
-                              allow_none = False, record=True)
+    outline_filter = Instance(
+        tvtk.StructuredGridOutlineFilter, allow_none=False, record=True)
 
     def setup_pipeline(self):
         self.outline_filter = tvtk.StructuredGridOutlineFilter()
         self.actor = Actor()
-

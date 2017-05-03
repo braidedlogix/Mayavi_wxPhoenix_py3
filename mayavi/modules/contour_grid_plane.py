@@ -39,21 +39,24 @@ class ContourGridPlane(Module):
     # The actor component that represents the visualization.
     actor = Instance(Actor, allow_none=False, record=True)
 
-    input_info = PipelineInfo(datasets=['image_data',
-                                        'structured_grid',
-                                        'rectilinear_grid'],
-                              attribute_types=['any'],
-                              attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['image_data', 'structured_grid', 'rectilinear_grid'],
+        attribute_types=['any'],
+        attributes=['any'])
 
-    view = View([Group(Item(name='grid_plane', style='custom'),
-                       show_labels=False),
-                 Group(Item(name='enable_contours')),
-                 Group(Item(name='contour', style='custom',
-                            enabled_when='object.enable_contours'),
-                       Item(name='actor', style='custom'),
-                       show_labels=False)
-                 ]
-                )
+    view = View([
+        Group(
+            Item(
+                name='grid_plane', style='custom'), show_labels=False),
+        Group(Item(name='enable_contours')), Group(
+            Item(
+                name='contour',
+                style='custom',
+                enabled_when='object.enable_contours'),
+            Item(
+                name='actor', style='custom'),
+            show_labels=False)
+    ])
 
     ######################################################################
     # `Module` interface
@@ -144,11 +147,9 @@ class ContourGridPlane(Module):
 
     def _contour_changed(self, old, new):
         if old is not None:
-            old.on_trait_change(self._filled_contours_changed,
-                                'filled_contours',
-                                remove=True)
-        new.on_trait_change(self._filled_contours_changed,
-                            'filled_contours')
+            old.on_trait_change(
+                self._filled_contours_changed, 'filled_contours', remove=True)
+        new.on_trait_change(self._filled_contours_changed, 'filled_contours')
         # Setup the contours input.
         gp = self.grid_plane
         if gp is not None:

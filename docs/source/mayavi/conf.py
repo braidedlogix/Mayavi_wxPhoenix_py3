@@ -11,12 +11,10 @@
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
 
-
 # Adding the current directory to the path, so that sphinx finds the
 # extensions.
 import sys, os
 sys.path.append(os.path.abspath('sphinxext'))
-
 
 # General configuration
 # ---------------------
@@ -47,7 +45,6 @@ extensions = ['sphinx.ext.autodoc', 'sphinxext.traitsdoc']
 #    """ Register our docstring processor.
 #    """
 #    app.connect('autodoc-process-signature', add_title)
-
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -91,7 +88,6 @@ today_fmt = '%B %d, %Y'
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
-
 
 # Options for HTML output
 # -----------------------
@@ -148,7 +144,7 @@ html_logo = 'mayavi-logo.png'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [('index', 'mayavi_user_guide.tex', 'Mayavi User Guide',
-                        'Prabhu Ramachandran, Gael Varoquaux', 'manual')]
+                    'Prabhu Ramachandran, Gael Varoquaux', 'manual')]
 
 # Additional stuff for the LaTeX preamble.
 latex_preamble = """
@@ -158,7 +154,6 @@ latex_preamble = """
 
 # A logo displayed on the cover page.
 latex_logo = 'm2_about.jpg'
-
 
 # Documents to append as an appendix to all manuals.
 #latex_appendices = []

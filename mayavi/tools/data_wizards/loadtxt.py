@@ -29,8 +29,14 @@ def _getconv(dtype):
         return str
 
 
-def loadtxt(fname, dtype=float, comments='#', delimiter=None, converters=None,
-            skiprows=0, usecols=None, unpack=False):
+def loadtxt(fname,
+            dtype=float,
+            comments='#',
+            delimiter=None,
+            converters=None,
+            skiprows=0,
+            usecols=None,
+            unpack=False):
     """
     Load ASCII data from fname into an array and return the array.
 

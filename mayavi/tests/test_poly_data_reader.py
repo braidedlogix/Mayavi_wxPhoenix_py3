@@ -18,10 +18,9 @@ import vtk
 vtk_major_version = vtk.vtkVersion.GetVTKMajorVersion()
 vtk_minor_version = vtk.vtkVersion.GetVTKMinorVersion()
 
+
 class TestPDBReader(DataReaderTestBase):
-
     def setup_reader(self):
-
         """"Setup the reader in here.  This is called after the engine
         has been created and started.  The engine is available as
         self.e.  This method is called by setUp().
@@ -52,9 +51,7 @@ class TestPDBReader(DataReaderTestBase):
 
 
 class TestBYUReader(DataReaderTestBase):
-
     def setup_reader(self):
-
         """"Setup the reader in here.  This is called after the engine
         has been created and started.  The engine is available as
         self.e.  This method is called by setUp().
@@ -85,9 +82,7 @@ class TestBYUReader(DataReaderTestBase):
 
 
 class TestOBJReader(DataReaderTestBase):
-
     def setup_reader(self):
-
         """"Setup the reader in here.  This is called after the engine
         has been created and started.  The engine is available as
         self.e.  This method is called by setUp().
@@ -118,9 +113,7 @@ class TestOBJReader(DataReaderTestBase):
 
 
 class TestParticleReader(DataReaderTestBase):
-
     def setup_reader(self):
-
         """"Setup the reader in here.  This is called after the engine
         has been created and started.  The engine is available as
         self.e.  This method is called by setUp().
@@ -129,7 +122,9 @@ class TestParticleReader(DataReaderTestBase):
         r = PolyDataReader()
         r.initialize(get_example_data('Particles.raw'))
         self.e.add_source(r)
-        r.reader.set(data_byte_order='big_endian', data_type='float', file_type='binary')
+        r.reader.set(data_byte_order='big_endian',
+                     data_type='float',
+                     file_type='binary')
         self.bounds = (817.33, 826.09, 545.02, 571.02, 1443.48, 1511.18)
 
     def test_particle_data_reader(self):
@@ -152,9 +147,7 @@ class TestParticleReader(DataReaderTestBase):
 
 
 class TestPLYReader(DataReaderTestBase):
-
     def setup_reader(self):
-
         """"Setup the reader in here.  This is called after the engine
         has been created and started.  The engine is available as
         self.e.  This method is called by setUp().
@@ -194,10 +187,9 @@ class TestPLYReader(DataReaderTestBase):
             raise unittest.SkipTest(
                 'PLY reader broken in this version of VTK. See issue #328')
 
+
 class TestPointsReader(DataReaderTestBase):
-
     def setup_reader(self):
-
         """"Setup the reader in here.  This is called after the engine
         has been created and started.  The engine is available as
         self.e.  This method is called by setUp().
@@ -206,7 +198,7 @@ class TestPointsReader(DataReaderTestBase):
         r = PolyDataReader()
         r.initialize(get_example_data('points.txt'))
         self.e.add_source(r)
-        self.bounds =  (0.0, 1.0, 0.0, 1.0, 0.0, 1.0)
+        self.bounds = (0.0, 1.0, 0.0, 1.0, 0.0, 1.0)
 
     def test_points_data_reader(self):
         "Test if the test fixture works"
@@ -228,9 +220,7 @@ class TestPointsReader(DataReaderTestBase):
 
 
 class TestSTLReader(DataReaderTestBase):
-
     def setup_reader(self):
-
         """"Setup the reader in here.  This is called after the engine
         has been created and started.  The engine is available as
         self.e.  This method is called by setUp().
@@ -239,8 +229,7 @@ class TestSTLReader(DataReaderTestBase):
         r = PolyDataReader()
         r.initialize(get_example_data('humanoid_tri.stla'))
         self.e.add_source(r)
-        self.bounds =  (0.60, 3.47, -3.96, 3.95, 3.05, 17.39)
-
+        self.bounds = (0.60, 3.47, -3.96, 3.95, 3.05, 17.39)
 
     def test_stl_data_reader(self):
         "Test if the test fixture works"
@@ -262,9 +251,7 @@ class TestSTLReader(DataReaderTestBase):
 
 
 class TestFacetReader(DataReaderTestBase):
-
     def setup_reader(self):
-
         """"Setup the reader in here.  This is called after the engine
         has been created and started.  The engine is available as
         self.e.  This method is called by setUp().
@@ -295,9 +282,7 @@ class TestFacetReader(DataReaderTestBase):
 
 
 class TestSLCReader(DataReaderTestBase):
-
     def setup_reader(self):
-
         """"Setup the reader in here.  This is called after the engine
         has been created and started.  The engine is available as
         self.e.  This method is called by setUp().
@@ -306,7 +291,7 @@ class TestSLCReader(DataReaderTestBase):
         r = PolyDataReader()
         r.initialize(get_example_data('nut.slc'))
         self.e.add_source(r)
-        self.bounds =  (0.0, 67.0, 0.0, 40.0, 0.0, 58.0)
+        self.bounds = (0.0, 67.0, 0.0, 40.0, 0.0, 58.0)
 
     def test_slc_data_reader(self):
         "Test if the test fixture works"
@@ -325,6 +310,7 @@ class TestSLCReader(DataReaderTestBase):
         # Test if the MayaVi2 visualization can be deep-copied.
 
         self.check_deepcopying(self.scene, self.bounds)
+
 
 if __name__ == '__main__':
     unittest.main()

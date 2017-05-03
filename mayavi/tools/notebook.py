@@ -7,7 +7,6 @@ from itertools import count
 from tvtk.api import tvtk
 from tvtk.common import configure_input
 
-
 _backend = 'x3d'
 _width = None
 _height = None
@@ -29,7 +28,7 @@ def init(backend='x3d', width=None, height=None, local=True):
     """
     global _backend, _width, _height
     backends = ('png', 'x3d')
-    error_msg = "Backend must be one of %r, got %s"%(backends, backend)
+    error_msg = "Backend must be one of %r, got %s" % (backends, backend)
     assert backend in backends, error_msg
     from mayavi import mlab
     mlab.options.offscreen = True
@@ -37,7 +36,7 @@ def init(backend='x3d', width=None, height=None, local=True):
     _width, _height = width, height
     _local = local
     _monkey_patch_for_ipython()
-    print("Notebook initialized with %s backend."%backend)
+    print("Notebook initialized with %s backend." % backend)
 
 
 def _monkey_patch_for_ipython():
@@ -62,18 +61,16 @@ def _repr_html_(self):
 
 def _fix_x3d_header(x3d):
     id = 'scene_%d' % next(counter)
-    rep = '<X3D profile="Immersive" version="3.0" id="%s" '%id
+    rep = '<X3D profile="Immersive" version="3.0" id="%s" ' % id
     if _width is not None:
-        rep += 'width="%dpx" '%_width
+        rep += 'width="%dpx" ' % _width
     if _height is not None:
-        rep += 'height="%dpx" '%_height
+        rep += 'height="%dpx" ' % _height
     rep += '>'
 
-    x3d = x3d.replace(
-        '<X3D profile="Immersive" version="3.0">',
-        rep
-    )
+    x3d = x3d.replace('<X3D profile="Immersive" version="3.0">', rep)
     return x3d
+
 
 def scene_to_x3d(scene):
     ex = tvtk.X3DExporter()
@@ -112,8 +109,9 @@ def scene_to_x3d(scene):
         }
     })
     </script>
-    '''%(x3d_elem, url_base, url_base)
+    ''' % (x3d_elem, url_base, url_base)
     return html
+
 
 def scene_to_png(scene):
     w2if = tvtk.WindowToImageFilter()
@@ -126,6 +124,7 @@ def scene_to_png(scene):
     data = base64.b64encode(ex.result.to_array()).decode('ascii')
     html = '<img src="data:image/png;base64,%s" alt="PNG image"></img>'
     return html % data
+
 
 def display(obj, backend=None):
     """Display given object on Jupyter notebook using given backend.

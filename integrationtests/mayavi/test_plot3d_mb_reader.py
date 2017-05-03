@@ -33,11 +33,13 @@ class TestPLOT3DReader(TestCase):
 
         # Read the multi-block plot3d file.
         r = PLOT3DReader()
-        r.reader.set(has_byte_count=True, multi_grid=True,
+        r.reader.set(has_byte_count=True,
+                     multi_grid=True,
                      byte_order='little_endian')
-        r.initialize(get_example_data('tiny.xyz'),
-                     get_example_data('tiny.q'),
-                     configure=False)
+        r.initialize(
+            get_example_data('tiny.xyz'),
+            get_example_data('tiny.q'),
+            configure=False)
 
         script.add_source(r)
 
@@ -58,18 +60,20 @@ class TestPLOT3DReader(TestCase):
         s.render()
 
         o1 = r1.children[0].children[0].children[0]
-        assert o1.outline_filter.output.bounds == (1.0, 2.0, 1.0, 2.0, 1.0, 2.0)
+        assert o1.outline_filter.output.bounds == (1.0, 2.0, 1.0, 2.0, 1.0, 2.0
+                                                   )
         r1.children[0].output_index = 1
-        assert o1.outline_filter.output.bounds == (2.0, 3.0, 1.0, 2.0, 1.0, 2.0)
+        assert o1.outline_filter.output.bounds == (2.0, 3.0, 1.0, 2.0, 1.0, 2.0
+                                                   )
 
         ############################################################
         # Test if saving a visualization and restoring it works.
 
         # Save visualization.
         f = BytesIO()
-        f.name = abspath('test.mv2') # We simulate a file.
+        f.name = abspath('test.mv2')  # We simulate a file.
         script.save_visualization(f)
-        f.seek(0) # So we can read this saved data.
+        f.seek(0)  # So we can read this saved data.
 
         # Remove existing scene.
         engine = script.engine
@@ -83,7 +87,8 @@ class TestPLOT3DReader(TestCase):
         o1 = s.children[1].children[0].children[0].children[0]
 
         assert o.outline_filter.output.bounds == (1.0, 2.0, 1.0, 2.0, 1.0, 2.0)
-        assert o1.outline_filter.output.bounds == (2.0, 3.0, 1.0, 2.0, 1.0, 2.0)
+        assert o1.outline_filter.output.bounds == (2.0, 3.0, 1.0, 2.0, 1.0, 2.0
+                                                   )
 
         # If we have come this far, we are golden!
         return
@@ -92,5 +97,3 @@ class TestPLOT3DReader(TestCase):
 if __name__ == "__main__":
     t = TestPLOT3DReader()
     t.test()
-
-

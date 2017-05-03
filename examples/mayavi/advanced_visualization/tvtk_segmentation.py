@@ -21,7 +21,7 @@ if not os.path.exists('MRbrain.tar.gz'):
         from urllib.request import urlopen
     print("Downloading data, Please Wait (7.8MB)")
     opener = urlopen(
-                'http://graphics.stanford.edu/data/voldata/MRbrain.tar.gz')
+        'http://graphics.stanford.edu/data/voldata/MRbrain.tar.gz')
     open('MRbrain.tar.gz', 'wb').write(opener.read())
 
 # Extract the data
@@ -34,11 +34,13 @@ except:
 tar_file.extractall('mri_data')
 tar_file.close()
 
-
 ### Read the data in a numpy 3D array ##########################################
 import numpy as np
-data = np.array([np.fromfile(os.path.join('mri_data', 'MRbrain.%i' % i),
-                                        dtype='>u2') for i in range(1, 110)])
+data = np.array([
+    np.fromfile(
+        os.path.join('mri_data', 'MRbrain.%i' % i), dtype='>u2')
+    for i in range(1, 110)
+])
 data.shape = (109, 256, 256)
 data = data.T
 
@@ -49,14 +51,14 @@ data = data.T
 # scipy.stats.scoreatpercentile)
 sorted_data = np.sort(data.ravel())
 l = len(sorted_data)
-lower_thr = sorted_data[0.2*l]
-upper_thr = sorted_data[0.8*l]
+lower_thr = sorted_data[0.2 * l]
+upper_thr = sorted_data[0.8 * l]
 
 # The white matter boundary: find the densest part of the upper half
 # of histogram, and take a value 10% higher, to cut _in_ the white matter
 hist, bins = np.histogram(data[data > np.mean(data)], bins=50)
 brain_thr_idx = np.argmax(hist)
-brain_thr =  bins[brain_thr_idx + 4]
+brain_thr = bins[brain_thr_idx + 4]
 
 del hist, bins, brain_thr_idx
 
@@ -91,9 +93,9 @@ median_filter.set_kernel_size(3, 3, 3)
 median = mlab.pipeline.user_defined(thresh, filter=median_filter)
 
 diffuse_filter = tvtk.ImageAnisotropicDiffusion3D(
-                                    diffusion_factor=1.0,
-                                    diffusion_threshold=100.0,
-                                    number_of_iterations=5, )
+    diffusion_factor=1.0,
+    diffusion_threshold=100.0,
+    number_of_iterations=5, )
 
 diffuse = mlab.pipeline.user_defined(median, filter=diffuse_filter)
 
@@ -107,13 +109,12 @@ dec.filter.feature_angle = 60.
 dec.filter.target_reduction = 0.7
 
 smooth_ = tvtk.SmoothPolyDataFilter(
-                    number_of_iterations=10,
-                    relaxation_factor=0.1,
-                    feature_angle=60,
-                    feature_edge_smoothing=False,
-                    boundary_smoothing=False,
-                    convergence=0.,
-                )
+    number_of_iterations=10,
+    relaxation_factor=0.1,
+    feature_angle=60,
+    feature_edge_smoothing=False,
+    boundary_smoothing=False,
+    convergence=0., )
 smooth = mlab.pipeline.user_defined(dec, filter=smooth_)
 
 # Get the largest connected region
@@ -124,14 +125,12 @@ connect = mlab.pipeline.user_defined(smooth, filter=connect_)
 compute_normals = mlab.pipeline.poly_data_normals(connect)
 compute_normals.filter.feature_angle = 80
 
-surf = mlab.pipeline.surface(compute_normals,
-                                        color=(0.9, 0.72, 0.62))
+surf = mlab.pipeline.surface(compute_normals, color=(0.9, 0.72, 0.62))
 
 #----------------------------------------------------------------------
 # Display a cut plane of the raw data
-ipw = mlab.pipeline.image_plane_widget(src, colormap='bone',
-                plane_orientation='z_axes',
-                slice_index=55)
+ipw = mlab.pipeline.image_plane_widget(
+    src, colormap='bone', plane_orientation='z_axes', slice_index=55)
 
 mlab.view(-165, 32, 350, [143, 133, 73])
 mlab.roll(180)

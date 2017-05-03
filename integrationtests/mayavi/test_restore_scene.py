@@ -19,7 +19,6 @@ from common import TestCase, get_example_data
 
 
 class TestRestoreScene(TestCase):
-
     def test(self):
         self.main()
 
@@ -40,15 +39,15 @@ class TestRestoreScene(TestCase):
         # In order to test the restoration of visualization properly
         # we should modify the camera
         view(130., 44., 65., [14., 14., 14.])
-        
+
         ############################################################
         # Test if saving a visualization and restoring it works.
 
         # Save visualization.
         f = BytesIO()
-        f.name = abspath('test.mv2') # We simulate a file.
+        f.name = abspath('test.mv2')  # We simulate a file.
         script.save_visualization(f)
-        f.seek(0) # So we can read this saved data.
+        f.seek(0)  # So we can read this saved data.
 
         # This is the old camera state
         old_camera_state = get_state(scene.scene.camera)
@@ -70,10 +69,8 @@ class TestRestoreScene(TestCase):
             new_value = array(new_value)
             old_value = array(old_camera_state[attr])
             assert (new_value == old_value).all()
-            
 
 
 if __name__ == "__main__":
     t = TestRestoreScene()
     t.test()
-

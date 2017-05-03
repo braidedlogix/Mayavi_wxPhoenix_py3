@@ -17,7 +17,6 @@ from mayavi.sources.unstructured_grid_reader import UnstructuredGridReader
 
 
 class TestCutter(unittest.TestCase):
-
     def setUp(self):
         """Initial setting up of test fixture, automatically called by TestCase
            before any other test method is invoked"""
@@ -54,19 +53,19 @@ class TestCutter(unittest.TestCase):
 
         # Change the plane normal
         ip.normal = 1, 1, 1
-        updated_cells =  poly_data.number_of_cells
+        updated_cells = poly_data.number_of_cells
         self.assertNotEqual(initial_cells, updated_cells)
 
         # Change the plane origin
         ip.normal = 1, 1, 1
-        updated_cells =  poly_data.number_of_cells
+        updated_cells = poly_data.number_of_cells
         self.assertNotEqual(initial_cells, updated_cells)
 
     def test_with_structured_data(self):
         e = self.e
 
-        sgrid=datasets.generateStructuredGrid()
-        src = VTKDataSource(data = sgrid)
+        sgrid = datasets.generateStructuredGrid()
+        src = VTKDataSource(data=sgrid)
         e.add_source(src)
 
         self.check()
@@ -80,6 +79,7 @@ class TestCutter(unittest.TestCase):
         e.add_source(r)
 
         self.check()
+
 
 if __name__ == '__main__':
     unittest.main()

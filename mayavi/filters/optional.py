@@ -7,6 +7,7 @@ around any mayavi filter or component.
 
 from mayavi.filters.wrapper import Wrapper
 
+
 ################################################################################
 # `Optional` class.
 ################################################################################
@@ -18,4 +19,3 @@ class Optional(Wrapper):
 
     # This filter should allow us to turn on/off the filter.
     _show_enabled = True
-

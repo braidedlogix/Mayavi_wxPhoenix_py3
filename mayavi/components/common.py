@@ -37,12 +37,13 @@ def convert_to_poly_data(obj):
     if obj.is_a('vtkPolyData') or data.is_a('vtkPolyData'):
         return obj
 
-
-    conv = {'vtkStructuredPoints': tvtk.ImageDataGeometryFilter,
-            'vtkImageData': tvtk.ImageDataGeometryFilter,
-            'vtkRectilinearGrid': tvtk.RectilinearGridGeometryFilter,
-            'vtkStructuredGrid': tvtk.StructuredGridGeometryFilter,
-            'vtkUnstructuredGrid':tvtk.GeometryFilter}
+    conv = {
+        'vtkStructuredPoints': tvtk.ImageDataGeometryFilter,
+        'vtkImageData': tvtk.ImageDataGeometryFilter,
+        'vtkRectilinearGrid': tvtk.RectilinearGridGeometryFilter,
+        'vtkStructuredGrid': tvtk.StructuredGridGeometryFilter,
+        'vtkUnstructuredGrid': tvtk.GeometryFilter
+    }
 
     fil = None
     for name, fil_class in conv.items():
@@ -55,4 +56,5 @@ def convert_to_poly_data(obj):
         fil.update()
         return fil
     else:
-        error('Given object is not a VTK dataset: %s'%data.__class__.__name__)
+        error('Given object is not a VTK dataset: %s' %
+              data.__class__.__name__)

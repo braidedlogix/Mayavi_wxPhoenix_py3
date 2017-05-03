@@ -16,6 +16,7 @@ from mayavi.core.source import Source
 from mayavi.core.common import handle_children_state, exception
 from mayavi.core.adder_node import SourceAdderNode
 
+
 ######################################################################
 # `Scene` class.
 ######################################################################
@@ -46,17 +47,14 @@ class Scene(Base):
     type = Str(' scene')
 
     # The objects view.
-    view = View(Group(Item(name='scene', style='custom'),
-                           show_labels=False)
-               )
+    view = View(Group(Item(name='scene', style='custom'), show_labels=False))
 
     # The adder node dialog class
     _adder_node_class = SourceAdderNode
 
     # The dispatch, to register callbacks on mouse pick
     _mouse_pick_dispatcher = Instance(
-        'mayavi.core.mouse_pick_dispatcher.MousePickDispatcher',
-        record=False)
+        'mayavi.core.mouse_pick_dispatcher.MousePickDispatcher', record=False)
 
     ######################################################################
     # `object` interface
@@ -84,8 +82,11 @@ class Scene(Base):
     # `Scene` interface
     ######################################################################
 
-    def on_mouse_pick(self, callback, type='point', button='Left',
-                            remove=False):
+    def on_mouse_pick(self,
+                      callback,
+                      type='point',
+                      button='Left',
+                      remove=False):
         """ Add a picking callback on mouse click.
 
             When the mouse button is press, object picking is called, and
@@ -118,7 +119,6 @@ class Scene(Base):
         else:
             self._mouse_pick_dispatcher.callbacks.append(key)
         return self._mouse_pick_dispatcher._active_pickers[type]
-
 
     ######################################################################
     # `Base` interface

@@ -32,14 +32,15 @@ class ActorViewer(HasTraits):
     ######################
     # Using 'scene_class=MayaviScene' adds a Mayavi icon to the toolbar,
     # to pop up a dialog editing the pipeline.
-    view = View(Item(name='scene',
-                     editor=SceneEditor(scene_class=MayaviScene),
-                     show_label=False,
-                     resizable=True,
-                     height=500,
-                     width=500),
-                resizable=True
-                )
+    view = View(
+        Item(
+            name='scene',
+            editor=SceneEditor(scene_class=MayaviScene),
+            show_label=False,
+            resizable=True,
+            height=500,
+            width=500),
+        resizable=True)
 
     def __init__(self, **traits):
         HasTraits.__init__(self, **traits)
@@ -48,8 +49,8 @@ class ActorViewer(HasTraits):
     def generate_data(self):
         # Create some data
         X, Y = mgrid[-2:2:100j, -2:2:100j]
-        R = 10*sqrt(X**2 + Y**2)
-        Z = sin(R)/R
+        R = 10 * sqrt(X**2 + Y**2)
+        Z = sin(R) / R
 
         self.scene.mlab.surf(X, Y, Z, colormap='gist_earth')
 

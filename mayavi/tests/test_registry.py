@@ -15,8 +15,8 @@ from mayavi.core.pipeline_info import PipelineInfo
 # Local Imports
 from mayavi.tests.common import get_example_data
 
-class DummyReader(PLOT3DReader):
 
+class DummyReader(PLOT3DReader):
     def print_info(self):
         """This is a Dummy Reader for Testing Purposes
         Its extended from PLOT3D Reader"""
@@ -32,7 +32,6 @@ class DummyReader(PLOT3DReader):
 
 
 class TestRegistry(unittest.TestCase):
-
     def setUp(self):
         """Initial setting up of test fixture, automatically called by TestCase
         before any other test method is invoked"""
@@ -41,7 +40,7 @@ class TestRegistry(unittest.TestCase):
         #e = Engine()
         e.start()
         e.new_scene()
-        self.e=e
+        self.e = e
         self.scene = e.current_scene
         return
 
@@ -80,19 +79,19 @@ class TestRegistry(unittest.TestCase):
         # Inserting a dummy reader into the registry also capable of
         # reading files with extension 'xyz'
         open_dummy = SourceMetadata(
-                id            = "DummyFile",
-                class_name    = "mayavi.tests.test_registry.DummyReader",
-                menu_name     = "&PLOT3D file",
-                tooltip       = "Open a PLOT3D data data",
-                desc        = "Open a PLOT3D data data",
-                help        = "Open a PLOT3D data data",
-                extensions = ['xyz'],
-                wildcard = 'PLOT3D files (*.xyz)|*.xyz',
-                can_read_test = 'mayavi.tests.test_registry:DummyReader.check_read',
-                output_info = PipelineInfo(datasets=['structured_grid'],
-                    attribute_types=['any'],
-                    attributes=['any'])
-                )
+            id="DummyFile",
+            class_name="mayavi.tests.test_registry.DummyReader",
+            menu_name="&PLOT3D file",
+            tooltip="Open a PLOT3D data data",
+            desc="Open a PLOT3D data data",
+            help="Open a PLOT3D data data",
+            extensions=['xyz'],
+            wildcard='PLOT3D files (*.xyz)|*.xyz',
+            can_read_test='mayavi.tests.test_registry:DummyReader.check_read',
+            output_info=PipelineInfo(
+                datasets=['structured_grid'],
+                attribute_types=['any'],
+                attributes=['any']))
         registry.sources.append(open_dummy)
         reader = registry.get_file_reader(get_example_data('tiny.xyz'))
         callable = reader.get_callable()
@@ -120,19 +119,19 @@ class TestRegistry(unittest.TestCase):
         which dont have a can_read_test and claim to read the file with
         the given extension"""
         open_dummy = SourceMetadata(
-                id            = "DummyFile",
-                class_name    = "mayavi.tests.test_registry.DummyReader",
-                menu_name     = "&PLOT3D file",
-                tooltip       = "Open a PLOT3D data data",
-                desc        = "Open a PLOT3D data data",
-                help        = "Open a PLOT3D data data",
-                extensions = ['xyz'],
-                wildcard = 'PLOT3D files (*.xyz)|*.xyz',
-                can_read_test = 'mayavi.tests.test_registry:DummyReader.check_read',
-                output_info = PipelineInfo(datasets=['structured_grid'],
-                    attribute_types=['any'],
-                    attributes=['any'])
-                )
+            id="DummyFile",
+            class_name="mayavi.tests.test_registry.DummyReader",
+            menu_name="&PLOT3D file",
+            tooltip="Open a PLOT3D data data",
+            desc="Open a PLOT3D data data",
+            help="Open a PLOT3D data data",
+            extensions=['xyz'],
+            wildcard='PLOT3D files (*.xyz)|*.xyz',
+            can_read_test='mayavi.tests.test_registry:DummyReader.check_read',
+            output_info=PipelineInfo(
+                datasets=['structured_grid'],
+                attribute_types=['any'],
+                attributes=['any']))
         registry.sources.append(open_dummy)
 
         # Remove the poly data reader.
@@ -149,6 +148,7 @@ class TestRegistry(unittest.TestCase):
         # Add back the poly data reader.
         registry.sources.insert(index, poly)
         registry.sources.remove(open_dummy)
+
 
 if __name__ == '__main__':
     unittest.main()

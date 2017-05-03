@@ -21,6 +21,7 @@ from mayavi.core.common import error
 from mayavi.preferences.api import set_scene_preferences, \
         get_scene_preferences
 
+
 ###############################################################################
 # A decorated scene with an additional button.
 ###############################################################################
@@ -49,14 +50,14 @@ class MayaviScene(DecoratedScene):
     # Trait handlers.
     ######################################################################
     def _actions_default(self):
-        actions = [ Group(
-                    Action(tooltip="View the Mayavi pipeline",
-                        image=ImageResource('m2',
-                                search_path=self.image_search_path),
-                        on_perform=self.show_engine,
-                        ),
-                        ),
-                        ]
+        actions = [
+            Group(
+                Action(
+                    tooltip="View the Mayavi pipeline",
+                    image=ImageResource(
+                        'm2', search_path=self.image_search_path),
+                    on_perform=self.show_engine, ), ),
+        ]
         actions.extend(DecoratedScene._actions_default(self))
         return actions
 
@@ -68,6 +69,7 @@ def mayavi_scene_factory(parent):
     s = MayaviScene(parent, stereo=p['stereo'])
     set_scene_preferences(s, p)
     return s
+
 
 ###############################################################################
 # A viewer making use of the MayaviScene
@@ -85,12 +87,12 @@ class MayaviViewer(IVTK):
 def viewer_factory(size=(400, 350)):
     viewer = MayaviViewer()
     viewer.menu_bar_manager = None
-    viewer.size=size
+    viewer.size = size
     viewer.open()
     return viewer
+
 
 if __name__ == '__main__':
     from mayavi.tools.show import show
     viewer_factory()
     show()
-

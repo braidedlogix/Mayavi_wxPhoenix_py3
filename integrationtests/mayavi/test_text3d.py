@@ -16,7 +16,6 @@ from common import TestCase
 
 
 class TestText3DUnitTest(unittest.TestCase):
-
     def setUp(self):
         # Make a temporary directory for saved figures
         self.temp_dir = tempfile.mkdtemp()
@@ -57,13 +56,11 @@ class TestText3DUnitTest(unittest.TestCase):
 
 
 class TestText3D(TestCase):
-
     def test(self):
         self.main()
 
     def do(self):
-        suite = unittest.TestLoader().loadTestsFromTestCase(
-            TestText3DUnitTest)
+        suite = unittest.TestLoader().loadTestsFromTestCase(TestText3DUnitTest)
 
         result = unittest.TextTestRunner().run(suite)
 

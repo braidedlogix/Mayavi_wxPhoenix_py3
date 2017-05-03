@@ -15,6 +15,7 @@ from pyface.workbench.api import Perspective, PerspectiveItem
 
 logger = logging.getLogger()
 
+
 ###############################################################################
 # `ExplorerPerspective` class.
 ###############################################################################
@@ -34,9 +35,8 @@ class ExplorerPerspective(Perspective):
     EXPLORER_VIEW = 'explorer3d.Explorer3D'
 
     # The contents of the perspective.
-    contents = [
-        PerspectiveItem(id=EXPLORER_VIEW, position='left'),
-    ]
+    contents = [PerspectiveItem(id=EXPLORER_VIEW, position='left'), ]
+
 
 ###############################################################################
 # `ExplorerPlugin` class.
@@ -45,7 +45,7 @@ class ExplorerPlugin(Plugin):
 
     # Extension points we contribute to.
     PERSPECTIVES = 'envisage.ui.workbench.perspectives'
-    VIEWS             = 'envisage.ui.workbench.views'
+    VIEWS = 'envisage.ui.workbench.views'
     SERVICE_OFFERS = 'envisage.ui.workbench.service_offers'
 
     # The plugin's unique identifier.
@@ -63,7 +63,6 @@ class ExplorerPlugin(Plugin):
     # Views.
     views = List(contributes_to=VIEWS)
 
-
     ######################################################################
     # Private methods.
     def _perspectives_default(self):
@@ -73,9 +72,8 @@ class ExplorerPlugin(Plugin):
     def _service_offers_default(self):
         """ Trait initializer. """
         explorer_service_offer = ServiceOffer(
-            protocol = 'explorer_app.Explorer3D',
-            factory  = 'explorer_app.Explorer3D'
-        )
+            protocol='explorer_app.Explorer3D',
+            factory='explorer_app.Explorer3D')
 
         return [explorer_service_offer]
 
@@ -89,13 +87,13 @@ class ExplorerPlugin(Plugin):
                 TraitsUIView
 
         explorer = self._get_explorer(window)
-        tui_engine_view = TraitsUIView(obj=explorer,
-                                       id='explorer3d.Explorer3D',
-                                       name='Explorer3D',
-                                       window=window,
-                                       position='left',
-                                       **traits
-                                       )
+        tui_engine_view = TraitsUIView(
+            obj=explorer,
+            id='explorer3d.Explorer3D',
+            name='Explorer3D',
+            window=window,
+            position='left',
+            **traits)
         return tui_engine_view
 
     def _get_explorer(self, window):
@@ -113,9 +111,7 @@ def main():
 
     # Create an Envisage application.
     id = 'explorer3d.Explorer3D'
-    application = WorkbenchApplication(id=id,
-                                       plugins = plugins
-                                       )
+    application = WorkbenchApplication(id=id, plugins=plugins)
     # This needs to be done here since the ETSConfig.application_home is
     # not set correctly up to this point.
     setup_logger(logger, 'explorer3d.log', mode=logging.ERROR)
@@ -123,7 +119,7 @@ def main():
     # Start the application.
     application.run()
 
+
 # Application entry point.
 if __name__ == '__main__':
     main()
-

@@ -38,8 +38,7 @@ class TestScriptRecording(unittest.TestCase):
         tape.register(e, known=True, script_id='engine')
         e.new_scene()
         #print tape.script
-        self.assertEqual(tape.lines[-1],
-                         "dummy_viewer = engine.new_scene()")
+        self.assertEqual(tape.lines[-1], "dummy_viewer = engine.new_scene()")
 
         src = ParametricSurface()
         e.add_source(src)
@@ -60,10 +59,9 @@ class TestScriptRecording(unittest.TestCase):
         expect = 'from mayavi.modules.outline import Outline'
         self.assertEqual(tape.lines[-3], expect)
         self.assertEqual(tape.lines[-2], "outline = Outline()")
-        self.assertEqual(tape.lines[-1],
-                         "engine.add_module(outline)")
+        self.assertEqual(tape.lines[-1], "engine.add_module(outline)")
 
-        o.actor.property.color = (1,0,0)
+        o.actor.property.color = (1, 0, 0)
         self.assertEqual(tape.lines[-1],
                          "outline.actor.property.color = (1.0, 0.0, 0.0)")
 
@@ -72,8 +70,7 @@ class TestScriptRecording(unittest.TestCase):
         expect = 'from mayavi.modules.surface import Surface'
         self.assertEqual(tape.lines[-3], expect)
         self.assertEqual(tape.lines[-2], "surface = Surface()")
-        self.assertEqual(tape.lines[-1],
-                         "engine.add_module(surface)")
+        self.assertEqual(tape.lines[-1], "engine.add_module(surface)")
 
         s.actor.property.representation = 'wireframe'
         self.assertEqual(tape.lines[-1],
@@ -95,10 +92,10 @@ class TestScriptRecording(unittest.TestCase):
 
         # Stop recording and test.
         tape.unregister(e)
-        tape.record('#end') # Placeholder
+        tape.record('#end')  # Placeholder
         o.actor.property.opacity = 0.5
         self.assertEqual(tape.lines[-1], '#end')
-        s.actor.property.color = (1,0,0)
+        s.actor.property.color = (1, 0, 0)
         self.assertEqual(tape.lines[-1], '#end')
         s.enable_contours = True
         self.assertEqual(tape.lines[-1], '#end')

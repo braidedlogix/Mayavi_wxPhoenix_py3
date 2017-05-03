@@ -9,6 +9,7 @@
 # Enthought library imports.
 from traits.api import Dict, Event, HasTraits, Bool
 
+
 #####################################################################
 # `ITVTKActorModel` class
 #####################################################################
@@ -29,5 +30,3 @@ class ITVTKActorModel(HasTraits):
 
     # Send this event in order to force a rendering of the scene.
     do_render = Event()
-
-

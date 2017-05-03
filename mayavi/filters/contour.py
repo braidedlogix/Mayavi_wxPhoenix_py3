@@ -10,6 +10,7 @@ from mayavi.components.contour import Contour as ContourComponent
 from mayavi.core.pipeline_info import PipelineInfo
 from mayavi.filters.wrapper import Wrapper
 
+
 ################################################################################
 # `Contour` class.
 ################################################################################
@@ -24,10 +25,8 @@ class Contour(Wrapper):
     # The contour component this wraps.
     filter = Instance(ContourComponent, args=(), record=True)
 
-    input_info = PipelineInfo(datasets=['any'],
-                              attribute_types=['point'],
-                              attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['any'], attribute_types=['point'], attributes=['any'])
 
-    output_info = PipelineInfo(datasets=['any'],
-                               attribute_types=['any'],
-                               attributes=['any'])
+    output_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])

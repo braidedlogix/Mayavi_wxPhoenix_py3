@@ -27,11 +27,14 @@ from .engine_manager import get_engine, options, set_engine
 ######################################################################
 
 # A list to store the allocated scene numbers
-__scene_number_list = set((0,))
+__scene_number_list = set((0, ))
 
 
-def figure(figure=None, bgcolor=None, fgcolor=None, engine=None,
-                size=(400, 350)):
+def figure(figure=None,
+           bgcolor=None,
+           fgcolor=None,
+           engine=None,
+           size=(400, 350)):
     """ Creates a new scene or retrieves an existing scene. If the mayavi
     engine is not running this also starts it.
 
@@ -63,15 +66,15 @@ def figure(figure=None, bgcolor=None, fgcolor=None, engine=None,
             engine = get_engine()
         if figure is None:
             name = max(__scene_number_list) + 1
-            __scene_number_list.update((name,))
+            __scene_number_list.update((name, ))
             name = 'Mayavi Scene %d' % name
             engine.new_scene(name=name, size=size)
             engine.current_scene.name = name
         else:
-            if type(figure) in (int, np.int, np.int0, np.int8,
-                            np.int16, np.int32, np.int64):
+            if type(figure) in (int, np.int, np.int0, np.int8, np.int16,
+                                np.int32, np.int64):
                 name = int(figure)
-                __scene_number_list.update((name,))
+                __scene_number_list.update((name, ))
                 name = 'Mayavi Scene %d' % name
             else:
                 name = str(figure)
@@ -162,8 +165,8 @@ def close(scene=None, all=False):
         if scene is None:
             scene = engine.current_scene
         else:
-            if type(scene) in (int, np.int, np.int0, np.int8,
-                            np.int16, np.int32, np.int64):
+            if type(scene) in (int, np.int, np.int0, np.int8, np.int16,
+                               np.int32, np.int64):
                 scene = int(scene)
                 name = 'Mayavi Scene %d' % scene
             else:
@@ -192,8 +195,7 @@ def draw(figure=None):
     figure.render()
 
 
-def savefig(filename, size=None, figure=None, magnification='auto',
-                    **kwargs):
+def savefig(filename, size=None, figure=None, magnification='auto', **kwargs):
     """ Save the current scene.
         The output format are deduced by the extension to filename.
         Possibilities are png, jpg, bmp, tiff, ps, eps, pdf, rib (renderman),
@@ -235,17 +237,15 @@ def savefig(filename, size=None, figure=None, magnification='auto',
             current_x, current_y = tuple(figure.scene.get_size())
             target_x, target_y = size
             if magnification is 'auto':
-                magnification = max(target_x // current_x,
-                                            target_y // current_y) + 1
+                magnification = max(target_x // current_x, target_y //
+                                    current_y) + 1
                 target_x = int(target_x / magnification)
                 target_y = int(target_y / magnification)
                 size = target_x, target_y
         elif magnification is 'auto':
             magnification = 1
         figure.scene.magnification = int(magnification)
-        figure.scene.save(filename,
-                            size=size,
-                            **kwargs)
+        figure.scene.save(filename, size=size, **kwargs)
     finally:
         figure.scene.magnification = int(current_mag)
 
@@ -255,9 +255,9 @@ def sync_camera(reference_figure, target_figure):
         reference_figure.
     """
     reference_figure.scene._renderer.sync_trait('active_camera',
-                        target_figure.scene._renderer)
+                                                target_figure.scene._renderer)
     target_figure.scene._renderer.active_camera.on_trait_change(
-            lambda: do_later(target_figure.scene.render))
+        lambda: do_later(target_figure.scene.render))
 
 
 def screenshot(figure=None, mode='rgb', antialiased=False):

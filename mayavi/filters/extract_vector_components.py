@@ -25,20 +25,19 @@ class ExtractVectorComponents(FilterBase):
     filter = Instance(tvtk.ExtractVectorComponents, args=(), allow_none=False)
 
     # The Vector Component to be extracted
-    component = Enum('x-component', 'y-component', 'z-component',
-                     desc='component of the vector to be extracted')
+    component = Enum(
+        'x-component',
+        'y-component',
+        'z-component',
+        desc='component of the vector to be extracted')
 
-    input_info = PipelineInfo(datasets=['any'],
-                              attribute_types=['any'],
-                              attributes=['vectors'])
+    input_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['vectors'])
 
-    output_info = PipelineInfo(datasets=['any'],
-                               attribute_types=['any'],
-                               attributes=['any'])
+    output_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])
 
-    view = View(Group(Item(name='component')),
-                resizable=True
-                )
+    view = View(Group(Item(name='component')), resizable=True)
 
     ######################################################################
     # `Filter` interface.

@@ -73,8 +73,8 @@ class TestVTKDataSource(TestContour):
         cp = ScalarCutPlane()
         script.add_module(cp)
         ip = cp.implicit_plane
-        ip.normal = 0,0,1
-        ip.origin = 0,0,5
+        ip.normal = 0, 0, 1
+        ip.origin = 0, 0, 5
         ip.widget.enabled = False
 
         # Set the scene to an isometric view.
@@ -87,9 +87,9 @@ class TestVTKDataSource(TestContour):
 
         # Save visualization.
         f = BytesIO()
-        f.name = abspath('test.mv2') # We simulate a file.
+        f.name = abspath('test.mv2')  # We simulate a file.
         script.save_visualization(f)
-        f.seek(0) # So we can read this saved data.
+        f.seek(0)  # So we can read this saved data.
 
         # Remove existing scene.
         engine = script.engine

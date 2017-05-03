@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """This script demonstrates how to create a numpy array data and
 visualize it as image data using a few modules.
 
@@ -21,15 +20,16 @@ from mayavi.modules.image_plane_widget import ImagePlaneWidget
 def make_data(dims=(128, 128, 128)):
     """Creates some simple array data of the given dimensions to test
     with."""
-    np = dims[0]*dims[1]*dims[2]
+    np = dims[0] * dims[1] * dims[2]
 
     # Create some scalars to render.
-    x, y, z = numpy.ogrid[-5:5:dims[0]*1j,-5:5:dims[1]*1j,-5:5:dims[2]*1j]
+    x, y, z = numpy.ogrid[-5:5:dims[0] * 1j, -5:5:dims[1] * 1j, -5:5:dims[2] *
+                          1j]
     x = x.astype('f')
     y = y.astype('f')
     z = z.astype('f')
 
-    scalars = (numpy.sin(x*y*z)/(x*y*z))
+    scalars = (numpy.sin(x * y * z) / (x * y * z))
     # The copy makes the data contiguous and the transpose makes it
     # suitable for display via tvtk.  Please note that we assume here
     # that the ArraySource is configured to not transpose the data.
@@ -68,4 +68,3 @@ def view_numpy():
 
 if __name__ == '__main__':
     view_numpy()
-

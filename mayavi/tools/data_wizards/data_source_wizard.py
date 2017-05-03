@@ -1,4 +1,3 @@
-
 from numpy import ones, resize, linspace, atleast_3d
 
 from traits.api import Property, Str, Button, Trait, \
@@ -40,25 +39,18 @@ class DataSourceWizard(HasTraits):
         return names
 
     # Dictionnary mapping the views
-    data_type = Trait('point',
-            {'A surface':
-                    'surface',
-            'A set of points, that can be connected by lines':
-                    'point',
-            'A set of vectors':
-                    'vector',
-            'Volumetric data':
-                    'volumetric',
-            })
+    data_type = Trait('point', {
+        'A surface': 'surface',
+        'A set of points, that can be connected by lines': 'point',
+        'A set of vectors': 'vector',
+        'Volumetric data': 'volumetric',
+    })
 
-    position_type = Trait('image data',
-                     {'Specified explicitly':
-                        'explicit',
-                      'Implicitely positioned on a regular grid':
-                        'image data',
-                      'On an orthogonal grid with varying spacing':
-                        'orthogonal grid',
-                        })
+    position_type = Trait('image data', {
+        'Specified explicitly': 'explicit',
+        'Implicitely positioned on a regular grid': 'image data',
+        'On an orthogonal grid with varying spacing': 'orthogonal grid',
+    })
 
     # The array that is used for finding out the shape of the grid,
     # when creating an ImageData
@@ -91,30 +83,32 @@ class DataSourceWizard(HasTraits):
     _grid_shape_source_labels = Property(depends_on='_data_sources_names')
 
     def _get__grid_shape_source_labels(self):
-        values = ['Shape of array: "%s"' % name
-                    for name in  self._data_sources_names]
+        values = [
+            'Shape of array: "%s"' % name for name in self._data_sources_names
+        ]
         values.sort
         values.append('Specified explicitly')
         return values
 
     # The shape of the grid array. Used when position is implicit
-    grid_shape = CArray(shape=(3,), dtype='i')
+    grid_shape = CArray(shape=(3, ), dtype='i')
 
     # Whether or not the data points should be connected.
     lines = false
 
     # The scalar data selection
-    scalar_data = Str('', help="Select the array that gives the value of the "
-                            "scalars plotted.")
+    scalar_data = Str('',
+                      help="Select the array that gives the value of the "
+                      "scalars plotted.")
 
     position_x = Str(help="Select the array that gives the x "
-                        "position of the data points")
+                     "position of the data points")
 
     position_y = Str(help="Select the array that gives the y "
-                        "position of the data points")
+                     "position of the data points")
 
     position_z = Str(help="Select the array that gives the z "
-                        "position of the data points")
+                     "position of the data points")
 
     connectivity_triangles = Str
 
@@ -139,10 +133,15 @@ class DataSourceWizard(HasTraits):
         if len(array_names) == 0:
             # We should probably bail out here.
             return False
-        for attr in ('position_x', 'position_y', 'position_z',
-                     'scalar_data', 'vector_u', 'vector_v',
-                     'vector_w', 'connectivity_triangles',
-                     ):
+        for attr in (
+                'position_x',
+                'position_y',
+                'position_z',
+                'scalar_data',
+                'vector_u',
+                'vector_v',
+                'vector_w',
+                'connectivity_triangles', ):
             if len(array_names) > 0:
                 array_name = array_names.pop()
             setattr(self, attr, array_name)
@@ -180,8 +179,8 @@ class DataSourceWizard(HasTraits):
 
         if found_some:
             # Need to re-attribute the guessed names.
-            for attr in ('scalar_data', 'vector_u', 'vector_v',
-                        'vector_w', 'connectivity_triangles'):
+            for attr in ('scalar_data', 'vector_u', 'vector_v', 'vector_w',
+                         'connectivity_triangles'):
                 if len(array_names) > 0:
                     setattr(self, attr, array_names.pop())
                 else:
@@ -207,8 +206,8 @@ class DataSourceWizard(HasTraits):
         else:
             factory.connected = True
 
-        if (self.position_type_ == "image data"
-                and not self.data_type_ == "point"):
+        if (self.position_type_ == "image data" and
+                not self.data_type_ == "point"):
             if not self.has_scalar_data and not self.vector_u == '':
                 # With image data we need a scalar array always:
                 factory.scalar_data = ones(self.grid_shape)
@@ -221,7 +220,7 @@ class DataSourceWizard(HasTraits):
             factory.orthogonal_grid = True
         if self.position_type_ == "explicit" and self.data_type_ == "surface":
             factory.connectivity_triangles = self.get_data(
-                                                self.connectivity_triangles)
+                self.connectivity_triangles)
         if self.lines and self.data_type_ == "point":
             factory.lines = True
 
@@ -266,8 +265,11 @@ class DataSourceWizard(HasTraits):
         """
         arrays = []
         if self.data_type_ == 'point' or self.position_type_ == 'explicit':
-            arrays.extend(
-                    ['position_x', 'position_y', 'position_z', ])
+            arrays.extend([
+                'position_x',
+                'position_y',
+                'position_z',
+            ])
         if self.data_type_ == 'vector' or self.has_vector_data:
             arrays.extend(['vector_u', 'vector_v', 'vector_w'])
         if self.has_scalar_data or self.data_type_ == 'volumetric':
@@ -284,8 +286,8 @@ class DataSourceWizard(HasTraits):
         for attr in arrays_to_check:
             if not self.get_data(getattr(self, attr)).size == size:
                 return False
-        if (self.data_type_ == 'surface'
-                and self.position_type_ == "explicit"):
+        if (self.data_type_ == 'surface' and
+                self.position_type_ == "explicit"):
             if not self.connectivity_triangles.size / 3 == size:
                 return False
         return True
@@ -305,8 +307,10 @@ class ArrayColumnWrapper(HasStrictTraits):
 ############################################################################
 class ArrayColumnAdapter(TabularAdapter):
 
-    columns = [('name',  'name'),
-               ('shape', 'shape'), ]
+    columns = [
+        ('name', 'name'),
+        ('shape', 'shape'),
+    ]
 
     width = 100
 
@@ -340,11 +344,10 @@ class DataSourceWizardView(DataSourceWizard):
 
     _position_text = Property(depends_on="position_type_")
 
-    _position_text_dict = {'explicit':
-                'Coordinnates of the data points:',
-                           'orthogonal grid':
-                'Position of the layers along each axis:',
-            }
+    _position_text_dict = {
+        'explicit': 'Coordinnates of the data points:',
+        'orthogonal grid': 'Position of the layers along each axis:',
+    }
 
     def _get__position_text(self):
         return self._position_text_dict.get(self.position_type_, "")
@@ -355,10 +358,10 @@ class DataSourceWizardView(DataSourceWizard):
 
     def _get__data_sources_wrappers(self):
         return [
-            ArrayColumnWrapper(name=name,
-                shape=repr(self.data_sources[name].shape))
-                    for name in self._data_sources_names
-                ]
+            ArrayColumnWrapper(
+                name=name, shape=repr(self.data_sources[name].shape))
+            for name in self._data_sources_names
+        ]
 
     # A traits pointing to the object, to play well with traitsUI
     _self = Instance(DataSourceWizard)
@@ -404,7 +407,7 @@ class DataSourceWizardView(DataSourceWizard):
     _preview_window = Instance(PreviewWindow, ())
 
     _info_image = Instance(ImageResource,
-                    ImageLibrary.image_resource('@std:alert16',))
+                           ImageLibrary.image_resource('@std:alert16', ))
 
     #----------------------------------------------------------------------
     # TraitsUI views
@@ -569,48 +572,47 @@ class DataSourceWizardView(DataSourceWizard):
                 ))
 
     _questions_view = View(
-                Item('_top_label', editor=TitleEditor(),
-                        show_label=False),
-                HGroup(
-                    Item('_data_type_text', style='readonly',
-                                resizable=False),
-                    spring,
-                    'data_type',
-                    spring,
-                    show_border=True,
-                    show_labels=False,
-                  ),
-                HGroup(
-                    Item('_self', style='custom',
-                        editor=InstanceEditor(
-                                    view_name='_suitable_traits_view'),
-                        ),
-                    Group(
-                        # FIXME: Giving up on context sensitive help
-                        # because of lack of time.
-                        #Group(
-                        #    Item('_shown_help_text', editor=HTMLEditor(),
-                        #        width=300,
-                        #        label='Help',
-                        #        ),
-                        #    show_labels=False,
-                        #    label='Help',
-                        #),
-                        #Group(
-                            Item('_preview_button',
-                                    enabled_when='_is_ok'),
-                            Item('_preview_window', style='custom',
-                                    label='Preview structure'),
-                            show_labels=False,
-                            #label='Preview structure',
-                        #),
-                        #layout='tabbed',
-                        #dock='tab',
-                    ),
-                    show_labels=False,
-                    show_border=True,
-                ),
-            )
+        Item(
+            '_top_label', editor=TitleEditor(), show_label=False),
+        HGroup(
+            Item(
+                '_data_type_text', style='readonly', resizable=False),
+            spring,
+            'data_type',
+            spring,
+            show_border=True,
+            show_labels=False, ),
+        HGroup(
+            Item(
+                '_self',
+                style='custom',
+                editor=InstanceEditor(view_name='_suitable_traits_view'), ),
+            Group(
+                # FIXME: Giving up on context sensitive help
+                # because of lack of time.
+                #Group(
+                #    Item('_shown_help_text', editor=HTMLEditor(),
+                #        width=300,
+                #        label='Help',
+                #        ),
+                #    show_labels=False,
+                #    label='Help',
+                #),
+                #Group(
+                Item(
+                    '_preview_button', enabled_when='_is_ok'),
+                Item(
+                    '_preview_window',
+                    style='custom',
+                    label='Preview structure'),
+                show_labels=False,
+                #label='Preview structure',
+                #),
+                #layout='tabbed',
+                #dock='tab',
+            ),
+            show_labels=False,
+            show_border=True, ), )
 
     _point_data_view = \
                 View(Group(
@@ -657,31 +659,37 @@ class DataSourceWizardView(DataSourceWizard):
                 ))
 
     _wizard_view = View(
-          Group(
+        Group(
             HGroup(
-                Item('_self', style='custom', show_label=False,
-                     editor=InstanceEditor(view='_array_view'),
-                     width=0.17,
-                     ),
+                Item(
+                    '_self',
+                    style='custom',
+                    show_label=False,
+                    editor=InstanceEditor(view='_array_view'),
+                    width=0.17, ),
                 '_',
-                Item('_self', style='custom', show_label=False,
-                     editor=InstanceEditor(view='_questions_view'),
-                     ),
-                ),
+                Item(
+                    '_self',
+                    style='custom',
+                    show_label=False,
+                    editor=InstanceEditor(view='_questions_view'), ), ),
             HGroup(
-                Item('_info_image', editor=ImageEditor(),
+                Item(
+                    '_info_image',
+                    editor=ImageEditor(),
                     visible_when="_is_not_ok"),
-                Item('_info_text', style='readonly', resizable=False,
+                Item(
+                    '_info_text',
+                    style='readonly',
+                    resizable=False,
                     visible_when="_is_not_ok"),
                 spring,
                 '_cancel_button',
-                Item('_ok_button', enabled_when='_is_ok'),
-                show_labels=False,
-            ),
-          ),
+                Item(
+                    '_ok_button', enabled_when='_is_ok'),
+                show_labels=False, ), ),
         title='Import arrays',
-        resizable=True,
-        )
+        resizable=True, )
 
     #----------------------------------------------------------------------
     # Public interface
@@ -734,15 +742,10 @@ if __name__ == '__main__':
     from numpy import mgrid
 
     x, y, z = mgrid[-5:5, -5:5, -5:5]
-    r = x ** 2 + y ** 2 + z ** 2
+    r = x**2 + y**2 + z**2
     X = linspace(0, 8)
 
-    data_sources = {
-            'x': X,
-            'y': y,
-            'z': z,
-            'r': r
-        }
+    data_sources = {'x': X, 'y': y, 'z': z, 'r': r}
 
     wizard = DataSourceWizardView(data_sources=data_sources)
     wizard.init_arrays()

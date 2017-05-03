@@ -37,16 +37,19 @@ class StopShow(HasTraits):
     ########################################
     # Traits
 
-    stop = Button('Stop interaction',
-                  desc='if the UI interaction is to be stopped')
+    stop = Button(
+        'Stop interaction', desc='if the UI interaction is to be stopped')
 
     # Private traits.
     # Stores a reference to the UI object so it can be disposed when the
     # interaction is stopped.
     _ui = Any
 
-    view = View(Group(Item('stop'), show_labels=False),
-                buttons=[], title='Control Show')
+    view = View(
+        Group(
+            Item('stop'), show_labels=False),
+        buttons=[],
+        title='Control Show')
 
     ######################################################################
     # `object` interface.

@@ -7,9 +7,9 @@ that is entirely based on the Glyph module.
 # Copyright (c) 2005, Enthought, Inc.
 # License: BSD Style.
 
-
 # Local imports
 from mayavi.modules.glyph import Glyph
+
 
 ######################################################################
 # `Vectors` class.
@@ -24,4 +24,4 @@ class Vectors(Glyph):
         self.glyph.set(scale_mode='scale_by_vector',
                        color_mode='color_by_vector',
                        show_scale_mode=False)
-        self.glyph.glyph_source.glyph_position='tail'
+        self.glyph.glyph_source.glyph_position = 'tail'

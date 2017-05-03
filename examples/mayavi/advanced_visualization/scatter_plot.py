@@ -59,5 +59,6 @@ def main():
     s.actor.property.set(representation='p', point_size=2)
     # You could also use glyphs to render the points via the Glyph module.
 
+
 if __name__ == '__main__':
     main()

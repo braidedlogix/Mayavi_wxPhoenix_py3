@@ -23,6 +23,7 @@ from mayavi.components.actor import Actor
 # `Text3D` class.
 ######################################################################
 
+
 class Text3D(Module):
     # The version of this class.  Used for persistence.
     __version__ = 0
@@ -34,54 +35,68 @@ class Text3D(Module):
     vector_text = Instance(tvtk.VectorText, allow_none=False, record=True)
 
     # The text to be displayed.
-    text = Str('Text', desc='the text to be displayed',
-                       enter_set=True, auto_set=False)
+    text = Str('Text',
+               desc='the text to be displayed',
+               enter_set=True,
+               auto_set=False)
 
     # The position of the actor
-    position = CArray(value=(0., 0., 0.), cols=3,
-                      desc='the world coordinates of the text',
-                      enter_set=True, auto_set=False)
+    position = CArray(
+        value=(0., 0., 0.),
+        cols=3,
+        desc='the world coordinates of the text',
+        enter_set=True,
+        auto_set=False)
 
     # The scale of the actor
-    scale = CArray(value=(1., 1., 1.), cols=3,
-                      desc='the scale of the text',
-                      enter_set=True, auto_set=False)
+    scale = CArray(
+        value=(1., 1., 1.),
+        cols=3,
+        desc='the scale of the text',
+        enter_set=True,
+        auto_set=False)
 
     # The orientation of the actor
-    orientation = CArray(value=(0., 0., 0.), cols=3,
-                      desc='the orientation angles of the text',
-                      enter_set=True, auto_set=False)
+    orientation = CArray(
+        value=(0., 0., 0.),
+        cols=3,
+        desc='the orientation angles of the text',
+        enter_set=True,
+        auto_set=False)
 
     # Orient actor to camera
-    orient_to_camera = Bool(True,
-                      desc='if the text is kept facing the camera')
+    orient_to_camera = Bool(True, desc='if the text is kept facing the camera')
 
-    input_info = PipelineInfo(datasets=['any'],
-                              attribute_types=['any'],
-                              attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])
 
     ########################################
     # The view of this object.
 
-    view = View(Group(Item(name='text'),
-                      Group(Item(name='position'),
-                        show_labels=False, show_border=True,
-                        label='Position'),
-                      Group(Item(name='scale'),
-                        show_labels=False, show_border=True,
-                        label='Scale'),
-                      Group(
-                           Item(name='orient_to_camera'),
-                           Item(name='orientation',
-                                 label='Angles'),
-                        show_border=True,
-                        label='Orientation'),
-                      label='Text',
-                      ),
-                  Group(Item(name='actor', style='custom',
-                             show_label=False),
-                      label='Actor'),
-                )
+    view = View(
+        Group(
+            Item(name='text'),
+            Group(
+                Item(name='position'),
+                show_labels=False,
+                show_border=True,
+                label='Position'),
+            Group(
+                Item(name='scale'),
+                show_labels=False,
+                show_border=True,
+                label='Scale'),
+            Group(
+                Item(name='orient_to_camera'),
+                Item(
+                    name='orientation', label='Angles'),
+                show_border=True,
+                label='Orientation'),
+            label='Text', ),
+        Group(
+            Item(
+                name='actor', style='custom', show_label=False),
+            label='Actor'), )
 
     ######################################################################
     # `Module` interface
@@ -102,7 +117,6 @@ class Text3D(Module):
         self.outputs = [self.vector_text.output]
         self.actor = Actor()
         self._text_changed(self.text)
-
 
     def update_pipeline(self):
         """Override this method so that it *updates* the tvtk pipeline
@@ -130,7 +144,6 @@ class Text3D(Module):
         vector_text.text = str(value)
         self.render()
 
-
     def _actor_changed(self, old, new):
         new.scene = self.scene
         new.inputs = [self]
@@ -142,11 +155,9 @@ class Text3D(Module):
         self.actors = new.actors
         self.render()
 
-
     def _orient_to_camera_changed(self):
         self.actor.actor = \
                     self._get_actor_or_follower(old=self.actor.actor)
-
 
     def _get_actor_or_follower(self, old=None):
         """ Get a tvtk.Actor or a tvtk.Follower for the actor of the
@@ -170,10 +181,7 @@ class Text3D(Module):
         self.sync_trait('orientation', new, 'orientation')
         return new
 
-
     def _scene_changed(self, old, new):
         super(Text3D, self)._scene_changed(old, new)
         if new is not None and self.orient_to_camera:
             self.actor.actor.camera = new.camera
-
-

@@ -15,7 +15,6 @@ from common import TestCase, get_example_data
 
 
 class TestGenericModule(TestCase):
-
     def test(self):
         self.main()
 
@@ -49,12 +48,12 @@ class TestGenericModule(TestCase):
         c = Contour()
         ctr = Optional(filter=c, label_text='Enable contours', enabled=False)
         p = PolyDataNormals(name='Normals')
-        normals = Optional(filter=p, label_text='Compute normals', enabled=False)
+        normals = Optional(
+            filter=p, label_text='Compute normals', enabled=False)
         a = Actor()
         components = [cp, warper, ctr, normals, a]
-        m = GenericModule(name='ScalarCutPlane',
-                          components=components,
-                          contour=c, actor=a)
+        m = GenericModule(
+            name='ScalarCutPlane', components=components, contour=c, actor=a)
 
         script.add_module(m)
         s.scene.isometric_view()
@@ -109,9 +108,9 @@ class TestGenericModule(TestCase):
 
         # Save visualization.
         f = BytesIO()
-        f.name = abspath('test.mv2') # We simulate a file.
+        f.name = abspath('test.mv2')  # We simulate a file.
         script.save_visualization(f)
-        f.seek(0) # So we can read this saved data.
+        f.seek(0)  # So we can read this saved data.
 
         # Remove existing scene.
         engine = script.engine
@@ -150,6 +149,7 @@ class TestGenericModule(TestCase):
         check(m)
 
         # If we have come this far, we are golden!
+
 
 if __name__ == "__main__":
     t = TestGenericModule()

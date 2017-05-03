@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """Script to run all the tests each in its own subprocess to ensure
 maximal correctness and minimal pain.  This does make running the tests
 quite slow but the tests will be run correctly -- which is the important
@@ -23,6 +22,7 @@ import optparse
 # Use nosetests when it is available
 USE_NOSE = False
 
+
 def get_test_runner():
     """Get a test runner for the tests.  Uses nose if available."""
     result = [sys.executable]
@@ -35,6 +35,7 @@ def get_test_runner():
             result = ['nosetests']
     return result
 
+
 def get_tests_in_dir(pth):
     """Get all tests in given directory `pth`."""
     files = []
@@ -45,6 +46,7 @@ def get_tests_in_dir(pth):
     files.extend(glob(join(pth, 'tests', 'test*.py')))
     files.extend(glob(join(pth, 'tests', '*_test_case.py')))
     return files
+
 
 def find_tests(tests):
     """Find test files given list of arguments which may be files,
@@ -77,6 +79,7 @@ def find_tests(tests):
                       'module. Ignoring.'%test
                 print(msg)
     return files
+
 
 def run(tests, verbose=1):
     """Run the given tests.  Each test file is run as a unittest in a
@@ -141,7 +144,7 @@ def run(tests, verbose=1):
         # Print output catching any errors.
         if verbose > 0:
             nsuccess = nt - nerr - nfail
-            res = '.'*nsuccess + 'F'*nfail + 'E'*nerr
+            res = '.' * nsuccess + 'F' * nfail + 'E' * nerr
             sys.stdout.write(res)
         if st != 0:
             errors.append([test, st, out, err, t2 - t1])
@@ -152,8 +155,8 @@ def run(tests, verbose=1):
         sys.stdout.flush()
         total_time += t2 - t1
 
-    print('\n' + '-'*70)
-    print("Ran %d tests in %.4g seconds\n"%(total, total_time))
+    print('\n' + '-' * 70)
+    print("Ran %d tests in %.4g seconds\n" % (total, total_time))
 
     errorcode = 0
     if len(errors) > 0:
@@ -169,20 +172,22 @@ def run(tests, verbose=1):
         print('OK')
     return errorcode
 
+
 def m2_tests(verbose=1):
     """Run all the TVTK and mayavi tests.
     """
     if verbose > 0:
-        print("-"*70)
+        print("-" * 70)
         print("Running TVTK tests.")
     tests = find_tests(['tvtk'])
     err = run(tests, verbose)
     if verbose > 0:
-        print("-"*70)
+        print("-" * 70)
         print("Running Mayavi tests.")
     tests = find_tests(['mayavi'])
     err += run(tests, verbose)
     return err
+
 
 def main():
     usage = """%prog [options] directories/files/modules
@@ -194,21 +199,27 @@ def main():
 
     """
     parser = optparse.OptionParser(usage)
-    parser.add_option("-v", "--verbose",
-                      action="store_true",
-                      default=False,
-                      dest="verbose",
-                      help="run tests in verbose mode")
-    parser.add_option("-q", "--quiet",
-                      action="store_true",
-                      default=False,
-                      dest="quiet",
-                      help="run tests in quiet mode")
-    parser.add_option("-n", "--nose",
-                      action="store_true",
-                      default=False,
-                      dest="nose",
-                      help="run tests using nose if it is available")
+    parser.add_option(
+        "-v",
+        "--verbose",
+        action="store_true",
+        default=False,
+        dest="verbose",
+        help="run tests in verbose mode")
+    parser.add_option(
+        "-q",
+        "--quiet",
+        action="store_true",
+        default=False,
+        dest="quiet",
+        help="run tests in quiet mode")
+    parser.add_option(
+        "-n",
+        "--nose",
+        action="store_true",
+        default=False,
+        dest="nose",
+        help="run tests using nose if it is available")
 
     options, args = parser.parse_args()
     verbose = 1
@@ -228,6 +239,7 @@ def main():
         if len(tests) > 0:
             status = run(tests, verbose=verbose)
     sys.exit(status)
+
 
 if __name__ == "__main__":
     main()

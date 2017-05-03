@@ -48,22 +48,23 @@ class TransformData(Filter):
     transform = Property
 
     # Update the data immediately or at the end of the interaction.
-    update_mode = Trait('semi-interactive',
-                        TraitMap({'interactive':'InteractionEvent',
-                                  'semi-interactive': 'EndInteractionEvent'}),
-                        desc='speed at which the data should be updated')
+    update_mode = Trait(
+        'semi-interactive',
+        TraitMap({
+            'interactive': 'InteractionEvent',
+            'semi-interactive': 'EndInteractionEvent'
+        }),
+        desc='speed at which the data should be updated')
 
-    input_info = PipelineInfo(datasets=['poly_data',
-                                        'structured_grid',
-                                        'unstructured_grid'],
-                              attribute_types=['any'],
-                              attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['poly_data', 'structured_grid', 'unstructured_grid'],
+        attribute_types=['any'],
+        attributes=['any'])
 
-    output_info = PipelineInfo(datasets=['poly_data',
-                                         'structured_grid',
-                                         'unstructured_grid'],
-                               attribute_types=['any'],
-                               attributes=['any'])
+    output_info = PipelineInfo(
+        datasets=['poly_data', 'structured_grid', 'unstructured_grid'],
+        attribute_types=['any'],
+        attributes=['any'])
 
     ########################################
     # View related code.
@@ -71,15 +72,15 @@ class TransformData(Filter):
     # Reset the transformation.
     reset = Button("Reset Transformation")
 
-    view = View(Group(Group(Item('update_mode'),
-                            ),
-                      Group(Item('reset'),
-                            Item(name='widget', style='custom', resizable=True),
-                            show_labels=False
-                            )
-                      ),
-                resizable=True
-                )
+    view = View(
+        Group(
+            Group(Item('update_mode'), ),
+            Group(
+                Item('reset'),
+                Item(
+                    name='widget', style='custom', resizable=True),
+                show_labels=False)),
+        resizable=True)
 
     ########################################
     # Private traits.
@@ -174,7 +175,7 @@ class TransformData(Filter):
                             %(name, state))
             recorder.record('%s.widget.set_transform(%s.transform)'\
                             %(name, name))
-            recorder.record('%s.filter.update()'%name)
+            recorder.record('%s.filter.update()' % name)
 
     def _widget_changed(self, old, new):
         if old is not None:

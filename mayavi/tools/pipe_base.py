@@ -66,8 +66,9 @@ class PipeFactory(HasPrivateTraits):
 
     figure = Instance(Scene)
 
-    _engine = Instance(Engine, help=('the figure on which the object '
-                'should be added'))
+    _engine = Instance(
+        Engine, help=('the figure on which the object '
+                      'should be added'))
 
     _target = Any
 
@@ -81,35 +82,35 @@ class PipeFactory(HasPrivateTraits):
         if parent is not None:
             module_manager = get_module_manager(parent)
             if (module_manager is not None and
-                        len(module_manager.children) > 0):
+                    len(module_manager.children) > 0):
                 scalar_lut = module_manager.scalar_lut_manager
                 vector_lut = module_manager.vector_lut_manager
                 if 'vmin' in kwargs:
                     if not scalar_lut.use_default_range and \
                             kwargs['vmin'] != scalar_lut.data_range[0]:
                         parent = self._engine.add_module(ModuleManager(),
-                                                        module_manager.parent)
+                                                         module_manager.parent)
                     elif not scalar_lut.use_default_range and \
                             kwargs['vmin'] != scalar_lut.data_range[0]:
                         parent = self._engine.add_module(ModuleManager(),
-                                                        module_manager.parent)
+                                                         module_manager.parent)
 
                 elif 'vmax' in kwargs:
                     if not scalar_lut.use_default_range and \
                             kwargs['vmax'] != scalar_lut.data_range[1]:
                         parent = self._engine.add_module(ModuleManager(),
-                                                        module_manager.parent)
+                                                         module_manager.parent)
                     elif not scalar_lut.use_default_range and \
                             kwargs['vmax'] != scalar_lut.data_range[1]:
                         parent = self._engine.add_module(ModuleManager(),
-                                                        module_manager.parent)
+                                                         module_manager.parent)
 
                 elif 'colormap' in kwargs:
                     cmap = kwargs['colormap']
-                    if (scalar_lut.lut_mode != cmap
-                                        or vector_lut.lut_mode != cmap):
+                    if (scalar_lut.lut_mode != cmap or
+                            vector_lut.lut_mode != cmap):
                         parent = self._engine.add_module(ModuleManager(),
-                                            module_manager.parent)
+                                                         module_manager.parent)
 
         self._engine.add_module(self._target, obj=parent)
 
@@ -155,8 +156,10 @@ class PipeFactory(HasPrivateTraits):
             self._target.mlab_source = ms
 
         traits = self.get(self.class_trait_names())
-        [traits.pop(key) for key in list(traits.keys())
-                                    if key[0] == '_' or key is None]
+        [
+            traits.pop(key) for key in list(traits.keys())
+            if key[0] == '_' or key is None
+        ]
         traits.update(kwargs)
         # Now calling the traits setter, so that traits handlers are
         # called
@@ -167,8 +170,9 @@ class PipeFactory(HasPrivateTraits):
     def set(self, trait_change_notify=True, **traits):
         """ Same as HasTraits.set except that notification is forced,
         unless trait_change_notify==False"""
-        HasPrivateTraits.set(self, trait_change_notify=trait_change_notify,
-                                    **traits)
+        HasPrivateTraits.set(self,
+                             trait_change_notify=trait_change_notify,
+                             **traits)
         if trait_change_notify == False:
             return
         for trait in traits:

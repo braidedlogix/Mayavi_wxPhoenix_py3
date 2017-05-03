@@ -9,6 +9,7 @@ import os.path
 
 from traits.api import HasTraits, Any, Event, Callable
 
+
 def fixpath(filename):
     """Given a relative file path it sets the path relative to this
     directory.  This allows us to run the tests from other directories
@@ -23,4 +24,3 @@ def get_example_data(fname):
     """
     p = os.path.join('data', fname)
     return os.path.abspath(fixpath(p))
-

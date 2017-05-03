@@ -13,11 +13,11 @@ from tvtk.api import tvtk
 from mayavi.core.source import Source
 from mayavi.core.pipeline_info import PipelineInfo
 
+
 ########################################################################
 # `ChacoReader` class
 ########################################################################
 class ChacoReader(Source):
-
     """A Chaco reader.
     """
 
@@ -27,8 +27,7 @@ class ChacoReader(Source):
     base_name = Str('', desc='basename of the Chaco files')
 
     # The VTK data file reader.
-    reader = Instance(tvtk.ChacoReader, args=(), allow_none=False,
-                      record=True)
+    reader = Instance(tvtk.ChacoReader, args=(), allow_none=False, record=True)
 
     # Information about what this object can produce.
     output_info = PipelineInfo(datasets=['unstructured_grid'])
@@ -36,10 +35,12 @@ class ChacoReader(Source):
     ########################################
     # View related code.
     # Our view.
-    view = View(Group(Item(name='reader', style='custom',
-                           resizable=True),
-                      show_labels=False),
-                resizable=True)
+    view = View(
+        Group(
+            Item(
+                name='reader', style='custom', resizable=True),
+            show_labels=False),
+        resizable=True)
 
     ######################################################################
     # `FileDataSource` interface

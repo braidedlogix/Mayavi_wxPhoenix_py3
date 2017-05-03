@@ -4,7 +4,6 @@
 # Copyright (c) 2005, Enthought, Inc.
 # License: BSD Style.
 
-
 # Enthought library imports.
 from apptools.preferences.api import get_default_preferences
 from tvtk.pyface.tvtk_scene import TVTKScene
@@ -12,16 +11,17 @@ from tvtk.pyface.api import DecoratedScene
 from pyface.workbench.api import Editor
 from traits.api import Instance
 
-
 #### Handy functions ##########################################################
+
 
 def _id_generator():
     """ Return an ever-increasing number useful for creating unique Ids. """
 
     n = 1
     while True:
-        yield(n)
+        yield (n)
         n += 1
+
 
 _id_generator = _id_generator()
 
@@ -100,5 +100,6 @@ class SceneEditor(Editor):
         scene.renderer.background = scene.background
 
         return scene
+
 
 #### EOF ######################################################################

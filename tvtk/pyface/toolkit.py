@@ -18,6 +18,7 @@ from traits.etsconfig.api import ETSConfig
 # This is set to the toolkit selection.
 _toolkit = None
 
+
 def _init_toolkit():
     """ Initialise the current toolkit. """
 
@@ -63,6 +64,7 @@ def _init_toolkit():
     global _toolkit
     _toolkit = tk
 
+
 # Do this once then disappear.
 _init_toolkit()
 del _init_toolkit
@@ -84,7 +86,8 @@ def toolkit_object(name):
         """
 
         def __init__(self, *args, **kwargs):
-            raise NotImplementedError("the %s pyface backend doesn't implement %s" % (be, oname))
+            raise NotImplementedError(
+                "the %s pyface backend doesn't implement %s" % (be, oname))
 
     be_obj = Unimplemented
 

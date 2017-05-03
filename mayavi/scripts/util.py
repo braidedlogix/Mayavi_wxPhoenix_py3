@@ -9,7 +9,8 @@ mayavi.
 import sys
 from os.path import join, abspath, dirname, isdir
 
-def get_data_dir( example_filename ):
+
+def get_data_dir(example_filename):
     """ Get the data directory while running an example script.
 
         Parameters:
@@ -31,5 +32,3 @@ def get_data_dir( example_filename ):
 
     else:
         return join(dirname(example_filename), 'data')
-
-

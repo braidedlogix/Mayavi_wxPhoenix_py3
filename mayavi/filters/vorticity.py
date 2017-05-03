@@ -34,13 +34,11 @@ class Vorticity(Optional):
     # This is used just for the UI.
     vorticity_component = Instance(Optional, record=True)
 
-    input_info = PipelineInfo(datasets=['any'],
-                              attribute_types=['any'],
-                              attributes=['vectors'])
+    input_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['vectors'])
 
-    output_info = PipelineInfo(datasets=['any'],
-                               attribute_types=['any'],
-                               attributes=['any'])
+    output_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])
 
     ######################################################################
     # `object` interface.
@@ -55,17 +53,18 @@ class Vorticity(Optional):
     # `HasTraits` interface.
     ######################################################################
     def default_traits_view(self):
-        view = View(Group(Group(Item(name='enabled',
-                               label='Compute Vorticity',
-                               )),
-                          Group(Item(name='vorticity_component',
-                                   style='custom',
-                                   resizable=True,
-                                   show_label=False),
-                              ))
-                        )
+        view = View(
+            Group(
+                Group(Item(
+                    name='enabled',
+                    label='Compute Vorticity', )),
+                Group(
+                    Item(
+                        name='vorticity_component',
+                        style='custom',
+                        resizable=True,
+                        show_label=False), )))
         return view
-
 
     ######################################################################
     # `Filter` interface.
@@ -77,9 +76,10 @@ class Vorticity(Optional):
         c2d = CellToPointData()
         evn = ExtractVectorNorm()
         evc = ExtractVectorComponents()
-        o = Optional(filter=evc, label_text='Extract Component of Vorticity',
-                     enabled=False)
+        o = Optional(
+            filter=evc,
+            label_text='Extract Component of Vorticity',
+            enabled=False)
         self.vorticity_component = o
         c = Collection(filters=[cd, c2d, evn, o], name='Vorticity')
         self.filter = c
-

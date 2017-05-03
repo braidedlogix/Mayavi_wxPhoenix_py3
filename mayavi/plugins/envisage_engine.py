@@ -22,6 +22,7 @@ from mayavi.core.engine import Engine
 
 logger = logging.getLogger()
 
+
 ######################################################################
 # `EnvisageEngine` class
 ######################################################################
@@ -41,7 +42,7 @@ class EnvisageEngine(Engine):
     ######################################################################
     def __get_pure_state__(self):
         d = super(EnvisageEngine, self).__get_pure_state__()
-        for x in ['window',]:
+        for x in ['window', ]:
             d.pop(x, None)
         return d
 
@@ -69,7 +70,7 @@ class EnvisageEngine(Engine):
         # Call the parent start method.
         super(EnvisageEngine, self).start()
 
-        logger.debug ('--------- EnvisageEngine started ----------')
+        logger.debug('--------- EnvisageEngine started ----------')
 
     def stop(self):
         # Call the parent stop method.
@@ -154,4 +155,3 @@ class EnvisageEngine(Engine):
                         editor.name = scene.name
                         scene.sync_trait('name', editor, 'name')
                         break
-

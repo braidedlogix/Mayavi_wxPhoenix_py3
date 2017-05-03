@@ -60,7 +60,6 @@ from twisted.python import log
 # `M2UDP` protocol.
 ###############################################################################
 class M2UDP(DatagramProtocol):
-
     """Implements a brain dead but supremely powerful UDP API.  Any data
     coming in is simply exec'd.  Meaning you can do pretty much anything
     you want.  The `engine`, `scene`, `camera` and `mlab` are all
@@ -97,7 +96,6 @@ class M2UDP(DatagramProtocol):
 # `M2TCP` protocol
 ###############################################################################
 class M2TCP(Protocol):
-
     """Implements a brain dead but suprememly powerful TCP API.  Any
     data coming in is simply exec'd.  Meaning you can do pretty much
     anything you want.  The `engine`, `scene`, `camera` and `mlab` are
@@ -293,6 +291,7 @@ def test_udp():
     from mayavi import mlab
     mlab.test_plot3d()
     serve_udp()
+
 
 if __name__ == '__main__':
     test_tcp()

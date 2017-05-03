@@ -11,8 +11,7 @@ from traits.api import List, Str
 # Local imports
 from mayavi.core.source import Source
 from mayavi.core.pipeline_base import PipelineBase
-from mayavi.core.pipeline_info import (PipelineInfo,
-        get_tvtk_dataset_name)
+from mayavi.core.pipeline_info import (PipelineInfo, get_tvtk_dataset_name)
 
 
 ######################################################################
@@ -159,11 +158,9 @@ class Filter(Source):
 
     def _setup_input_events(self, removed, added):
         for input in removed:
-            input.on_trait_event(self.update_pipeline, 'pipeline_changed',
-                                 remove=True)
-            input.on_trait_event(self.update_data, 'data_changed',
-                                 remove=True)
+            input.on_trait_event(
+                self.update_pipeline, 'pipeline_changed', remove=True)
+            input.on_trait_event(self.update_data, 'data_changed', remove=True)
         for input in added:
             input.on_trait_event(self.update_pipeline, 'pipeline_changed')
             input.on_trait_event(self.update_data, 'data_changed')
-

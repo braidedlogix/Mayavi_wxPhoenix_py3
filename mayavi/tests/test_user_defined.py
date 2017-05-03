@@ -13,7 +13,8 @@ import unittest
 from mayavi.core.null_engine import NullEngine
 from mayavi.filters.optional import Optional
 from mayavi.filters.user_defined import UserDefined
-from mayavi.filters.api import (CellToPointData, ExtractVectorNorm, ExtractVectorComponents)
+from mayavi.filters.api import (CellToPointData, ExtractVectorNorm,
+                                ExtractVectorComponents)
 from mayavi.modules.api import ScalarCutPlane
 from mayavi.sources.vtk_xml_file_reader import VTKXMLFileReader
 from tvtk.api import tvtk
@@ -21,8 +22,8 @@ from tvtk.api import tvtk
 # Local imports.
 from mayavi.tests.common import get_example_data
 
-class TestUserDefined(unittest.TestCase):
 
+class TestUserDefined(unittest.TestCase):
     def setUp(self):
         """Initial setting up of test fixture, automatically called by TestCase before any other test method is invoked"""
         e = NullEngine()
@@ -30,7 +31,7 @@ class TestUserDefined(unittest.TestCase):
         #e = Engine()
         e.start()
         e.new_scene()
-        self.e=e
+        self.e = e
 
         # Read a VTK (old style) data file.
         r = VTKXMLFileReader()
@@ -68,10 +69,11 @@ class TestUserDefined(unittest.TestCase):
         o = ud.children[0].children[0].children[0]
         mm = o.children[0]
 
-        assert src.get_output_dataset().point_data.scalars.name == 'temperature'
+        assert src.get_output_dataset(
+        ).point_data.scalars.name == 'temperature'
         assert src.get_output_dataset().point_data.vectors.name == 'velocity'
         expect = ['ScalarGradient', 'Vorticity']
-        expect1 = [x +'-y' for x in expect]
+        expect1 = [x + '-y' for x in expect]
         expect2 = [x + ' magnitude' for x in expect]
 
         o.enabled = True
@@ -86,7 +88,8 @@ class TestUserDefined(unittest.TestCase):
 
         # Compute the vorticity
         ud.filter.vector_mode = 'compute_vorticity'
-        assert o.get_output_dataset().point_data.scalars.name == 'Vorticity magnitude'
+        assert o.get_output_dataset(
+        ).point_data.scalars.name == 'Vorticity magnitude'
         assert o.get_output_dataset().point_data.vectors.name == 'Vorticity'
         assert mm.scalar_lut_manager.data_name == 'Vorticity magnitude'
         # Turn on extraction.
@@ -113,9 +116,9 @@ class TestUserDefined(unittest.TestCase):
 
         # Save visualization.
         f = BytesIO()
-        f.name = abspath('test.mv2') # We simulate a file.
+        f.name = abspath('test.mv2')  # We simulate a file.
         engine.save_visualization(f)
-        f.seek(0) # So we can read this saved data.
+        f.seek(0)  # So we can read this saved data.
 
         # Remove existing scene.
 
@@ -133,7 +136,7 @@ class TestUserDefined(unittest.TestCase):
         # Test if the MayaVi2 visualization can be deep-copied.
 
         # Pop the source object.
-        s =  self.scene
+        s = self.scene
         source = s.children.pop()
         # Add it back to see if that works without error.
         s.children.append(source)

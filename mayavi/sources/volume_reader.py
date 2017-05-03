@@ -17,7 +17,6 @@ from mayavi.core.pipeline_info import PipelineInfo
 # `VolumeReader` class
 ########################################################################
 class VolumeReader(Source):
-
     """A Volume reader.
     """
 
@@ -27,8 +26,8 @@ class VolumeReader(Source):
     file_prefix = Str('', desc='File prefix for the volume files')
 
     # The VTK data file reader.
-    reader = Instance(tvtk.Volume16Reader, args=(), allow_none=False,
-                      record=True)
+    reader = Instance(
+        tvtk.Volume16Reader, args=(), allow_none=False, record=True)
 
     # Information about what this object can produce.
     output_info = PipelineInfo(datasets=['image_data'])
@@ -36,10 +35,12 @@ class VolumeReader(Source):
     ########################################
     # View related code.
     # Our view.
-    view = View(Group(Item(name='reader', style='custom',
-                            resizable=True),
-                      show_labels=False),
-                resizable=True)
+    view = View(
+        Group(
+            Item(
+                name='reader', style='custom', resizable=True),
+            show_labels=False),
+        resizable=True)
 
     ######################################################################
     # `Source` interface
@@ -65,7 +66,7 @@ class VolumeReader(Source):
     def get_output_object(self):
         """ Return the reader output port."""
         return self.reader.output_port
-    
+
     ######################################################################
     # Non-public interface
     ######################################################################

@@ -73,8 +73,7 @@ def get_trait_def(value, **kwargs):
 
     type_ = type(value)
 
-    number_map = {int: 'traits.Int',
-                  float: 'traits.Float'}
+    number_map = {int: 'traits.Int', float: 'traits.Float'}
 
     # In Python 2 there is long type
     if PY_VER < 3:
@@ -94,7 +93,7 @@ def get_trait_def(value, **kwargs):
         return 'traits.Unicode', '{!r}'.format(value), kwargs_code
 
     elif type_ in (tuple, list):
-        shape = (len(value),)
+        shape = (len(value), )
         dtypes = set(type(element) for element in value)
         dtype = dtypes.pop().__name__ if len(dtypes) == 1 else None
         cols = len(value)
@@ -104,8 +103,10 @@ def get_trait_def(value, **kwargs):
 
         kwargs_code += ('shape={shape}, dtype={dtype}, '
                         'value={value!r}, cols={cols}').format(
-                            shape=shape, dtype=dtype,
-                            value=value, cols=min(3, len(value)))
+                            shape=shape,
+                            dtype=dtype,
+                            value=value,
+                            cols=min(3, len(value)))
 
         return 'traits.Array', '', kwargs_code
 
@@ -172,11 +173,7 @@ def patch_default(vtk_get_meth, vtk_set_meth, default):
 
         arg_formats.append(tuple(sig[1]))
 
-    default_mappings = {
-        'int' : 0,
-        'float': 0.0,
-        'string': ''
-        }
+    default_mappings = {'int': 0, 'float': 0.0, 'string': ''}
 
     for arg_format in arg_formats:
         try:
@@ -190,7 +187,7 @@ def patch_default(vtk_get_meth, vtk_set_meth, default):
             default = default_mappings[arg_format[0]]
 
             if len(arg_format) > 1:
-                return (default,)*len(arg_format)
+                return (default, ) * len(arg_format)
             else:
                 return default
     else:
@@ -201,10 +198,12 @@ def patch_default(vtk_get_meth, vtk_set_meth, default):
 # `WrapperGenerator` class.
 ######################################################################
 
+
 class WrapperGenerator:
     """Generates the wrapper code for all the TVTK classes.
 
     """
+
     def __init__(self):
         self.indent = indenter.Indent()
         self.parser = vtk_parser.VTKMethodParser()
@@ -302,14 +301,15 @@ class WrapperGenerator:
             if base_name != 'object':
                 # Import the base class.
                 base_fname = camel2enthought(base_name)
-                _imp = "from tvtk.tvtk_classes.%(base_fname)s import %(base_name)s"%locals()
+                _imp = "from tvtk.tvtk_classes.%(base_fname)s import %(base_name)s" % locals(
+                )
                 out.write(indent.format(_imp))
                 out.write('\n\n')
 
         # Write the class declaration.
         cdef = """
         class %(class_name)s(%(base_name)s):
-        """%locals()
+        """ % locals()
         out.write(indent.format(cdef))
 
         self.dm.write_class_doc(klass.__doc__, out, indent)
@@ -320,7 +320,7 @@ class WrapperGenerator:
         def __init__(self, obj=None, update=True, **traits):
             tvtk_base.TVTKBase.__init__(self, vtk.%(vtk_class_name)s, obj, update, **traits)
 
-        """%locals()
+        """ % locals()
         out.write(indent.format(decl))
 
         if 'vtk3DWidget' in [x.name for x in node.get_ancestors()]:
@@ -333,7 +333,7 @@ class WrapperGenerator:
                 tvtk_base._object_cache.setup_observers(self._vtk_obj,
                                               'EndInteractionEvent',
                                               self.update_traits)
-            '''%locals()
+            ''' % locals()
             out.write(indent.format(decl))
 
     def _gen_methods(self, node, out):
@@ -372,8 +372,12 @@ class WrapperGenerator:
         # time. This is the reason why the wrapper code for the
         # classes are generated in the reverse order of their depth in
         # the inheritance tree.
-        data = {'toggle':toggle, 'state':state, 'get_set':get_set,
-                'allow_update_failure': allow_update_failure}
+        data = {
+            'toggle': toggle,
+            'state': state,
+            'get_set': get_set,
+            'allow_update_failure': allow_update_failure
+        }
         if node.level != 0 and node.parents[0].name != 'object':
             pd = node.parents[0].data
             for i in data.keys():
@@ -387,14 +391,14 @@ class WrapperGenerator:
         for i in (data['toggle'], data['state'], data['get_set']):
             ut.update(i)
         junk = textwrap.fill(repr(tuple(ut.items())))
-        code = "\n_updateable_traits_ = \\" + "\n%s\n\n"%junk
+        code = "\n_updateable_traits_ = \\" + "\n%s\n\n" % junk
         out.write(self.indent.format(code))
 
         # ----------------------------------------
         # Write out the allow_update_failure traits, this is used by
         # the `update_traits` method.
         junk = textwrap.fill(repr(tuple(data['allow_update_failure'])))
-        code = "\n_allow_update_failure_ = \\" + "\n%s\n\n"%junk
+        code = "\n_allow_update_failure_ = \\" + "\n%s\n\n" % junk
         out.write(self.indent.format(code))
 
         # ----------------------------------------
@@ -423,7 +427,7 @@ class WrapperGenerator:
         _safe_remove(get_set, ['reference_count', 'progress'])
 
         class_name = get_tvtk_name(node.name)
-        title = 'Edit %s properties'%class_name
+        title = 'Edit %s properties' % class_name
 
         # Write the full_traits_view.
         # The full traits view displays all of the relevant traits in a table
@@ -435,7 +439,7 @@ class WrapperGenerator:
         gs_g = sorted(get_set.keys())
 
         junk = textwrap.fill("(%s)" % (t_g + s_g + gs_g))
-        code = "\n_full_traitnames_list_ = \\" + "\n%s\n\n"%junk
+        code = "\n_full_traitnames_list_ = \\" + "\n%s\n\n" % junk
         out.write(self.indent.format(code))
 
         # Start the trait_view() method.
@@ -453,9 +457,8 @@ class WrapperGenerator:
         code = "\nif name == 'full_traits_view':"
         out.write(self.indent.format(code))
         self.indent.incr()
-        item_contents = (
-              'Item("handler._full_traits_list",show_label=False)')
-        junk = 'View((%s),'% item_contents
+        item_contents = ('Item("handler._full_traits_list",show_label=False)')
+        junk = 'View((%s),' % item_contents
         code = "\nfull_traits_view = \\" + \
                "\n%s\ntitle=\'%s\', scrollable=True, resizable=True,"\
                "\nhandler=TVTKBaseHandler,"\
@@ -470,13 +473,14 @@ class WrapperGenerator:
         out.write(self.indent.format(code))
         self.indent.incr()
         _safe_remove(get_set, ['progress_text'])
-        _safe_remove(toggle, ['abort_execute', 'release_data_flag',
-                              'dragable', 'pickable',
-                              'debug', 'global_warning_display'])
+        _safe_remove(toggle, [
+            'abort_execute', 'release_data_flag', 'dragable', 'pickable',
+            'debug', 'global_warning_display'
+        ])
         t_g = sorted(toggle.keys())
         s_g = sorted(state.keys())
         gs_g = sorted(get_set.keys())
-        junk = textwrap.fill('View((%s, %s, %s),'%(t_g, s_g, gs_g))
+        junk = textwrap.fill('View((%s, %s, %s),' % (t_g, s_g, gs_g))
         code = "\nview = \\" + \
                "\n%s\ntitle=\'%s\', scrollable=True, resizable=True,"\
                "\nhandler=TVTKBaseHandler,"\
@@ -498,7 +502,7 @@ class WrapperGenerator:
             '\nItem("handler.info.object", ' +\
             'editor = InstanceEditor(view_name="handler.view"), ' +\
             'style = "custom", show_label=False)')
-        junk = 'View((%s, %s),'% (viewtype_contents, view_contents)
+        junk = 'View((%s, %s),' % (viewtype_contents, view_contents)
         code = "\ntraits_view = \\" + \
                "\n%s\ntitle=\'%s\', scrollable=True, resizable=True,"\
                "\nhandler=TVTKBaseHandler,"\
@@ -512,9 +516,11 @@ class WrapperGenerator:
     def _generate_delegates(self, node, n_data, out):
         """This method generates delegates for specific classes.  It
         modifies the n_data dictionary."""
-        prop_name = {'vtkActor': 'vtkProperty',
-                     'vtkActor2D': 'vtkProperty2D',
-                     'vtkVolume': 'vtkVolumeProperty'}
+        prop_name = {
+            'vtkActor': 'vtkProperty',
+            'vtkActor2D': 'vtkProperty2D',
+            'vtkVolume': 'vtkVolumeProperty'
+        }
         if node.name in prop_name:
             prop_node = self.get_tree().get_node(prop_name[node.name])
             prop_data = prop_node.data
@@ -526,7 +532,7 @@ class WrapperGenerator:
                 n_data[key].update(props)
                 # Write the delegates.
                 for p in props:
-                    code += '%s = tvtk_base.vtk_property_delegate\n'%p
+                    code += '%s = tvtk_base.vtk_property_delegate\n' % p
             code += '\n'
             out.write(self.indent.format(code))
 
@@ -545,11 +551,15 @@ class WrapperGenerator:
                 # Broken VTK API (4.2) where sometimes GetProp and
                 # PropOn/Off exist but no SetProp method is available.
                 vtk_get_meth = getattr(klass, 'Get' + m)
-                self._write_trait(out, name, t_def, vtk_get_meth,
-                                  mapped=True, broken_bool=True)
+                self._write_trait(
+                    out,
+                    name,
+                    t_def,
+                    vtk_get_meth,
+                    mapped=True,
+                    broken_bool=True)
             else:
-                self._write_trait(out, name, t_def, vtk_set_meth,
-                                  mapped=True)
+                self._write_trait(out, name, t_def, vtk_set_meth, mapped=True)
         return updateable_traits
 
     def _gen_state_methods(self, klass, out):
@@ -592,8 +602,9 @@ class WrapperGenerator:
                 # vtkExtentTranslator::SetSplitMode does not exist.
                 # In this case wrap it specially.
                 vtk_val = 1
-            if  vtk_val == 0 and m in ['DataScalarType', 'OutputScalarType',
-                                       'UpdateExtent']:
+            if vtk_val == 0 and m in [
+                    'DataScalarType', 'OutputScalarType', 'UpdateExtent'
+            ]:
                 vtk_val = 2
 
             # Sometimes, some methods have default values that are
@@ -632,8 +643,9 @@ class WrapperGenerator:
                 # vtkExtentTranslator::SetSplitMode does not exist.
                 # In this case wrap it specially.
                 vtk_val = 1
-            if  vtk_val == 0 and m in ['DataScalarType', 'OutputScalarType',
-                                       'UpdateExtent']:
+            if vtk_val == 0 and m in [
+                    'DataScalarType', 'OutputScalarType', 'UpdateExtent'
+            ]:
                 vtk_val = 2
 
             # Sometimes, some methods have default values that are
@@ -673,8 +685,7 @@ class WrapperGenerator:
                                        tvtk_base.TraitRevPrefixMap(%(d)s))"""\
                     %locals()
                 vtk_set_meth = getattr(klass, 'Set' + m)
-                self._write_trait(out, name, t_def, vtk_set_meth,
-                                  mapped=True)
+                self._write_trait(out, name, t_def, vtk_set_meth, mapped=True)
             else:
                 del updateable_traits[name]
                 vtk_meth = getattr(klass, 'Get' + m)
@@ -684,9 +695,9 @@ class WrapperGenerator:
                     self._write_tvtk_method(klass, out, vtk_meth)
                 for key, val in meths[m][1:]:
                     x = self._reform_name(key)
-                    vtk_meth = getattr(klass, 'Set%sTo%s'%(m, key))
-                    decl = 'def set_%s_to_%s(self):'%(name, x)
-                    body = 'self._vtk_obj.Set%(m)sTo%(key)s()\n'%locals()
+                    vtk_meth = getattr(klass, 'Set%sTo%s' % (m, key))
+                    decl = 'def set_%s_to_%s(self):' % (name, x)
+                    body = 'self._vtk_obj.Set%(m)sTo%(key)s()\n' % locals()
                     self._write_generic_method(out, decl, vtk_meth, body)
 
         return updateable_traits
@@ -697,7 +708,7 @@ class WrapperGenerator:
         updateable_traits = {}
         allow_update_failure = set()
 
-        for vtk_attr_name in meths:   # VTK Attribute name (e.g. PropColorValue)
+        for vtk_attr_name in meths:  # VTK Attribute name (e.g. PropColorValue)
             # trait name
             name = self._reform_name(vtk_attr_name)
             updateable_traits[name] = 'Get' + vtk_attr_name
@@ -746,8 +757,8 @@ class WrapperGenerator:
                 # that does not have a concrete subclass
                 # We patch the default using the get/set method
                 # while the below seems a hack, this is the best we could do
-                default, rng = (patch_default(vtk_get_meth, vtk_set_meth, None),
-                                None)
+                default, rng = (
+                    patch_default(vtk_get_meth, vtk_set_meth, None), None)
 
             # --------------------------------------------------------
             # Has a specified range of valid values.  Write and done
@@ -808,16 +819,18 @@ class WrapperGenerator:
                     # wrap it as such.
                     t_def = 'traits.Trait(None, None, '\
                             'traits.String(enter_set=True, auto_set=False))'
-                    self._write_trait(out, name, t_def, vtk_set_meth,
-                                      mapped=False)
+                    self._write_trait(
+                        out, name, t_def, vtk_set_meth, mapped=False)
                 else:
                     if (get_sig[0][1] is None) and (len(set_sig[0][1]) == 1):
                         # Get needs no args and Set needs one arg
                         self._write_property(out, name, vtk_get_meth,
                                              vtk_set_meth)
-                    else: # Get has args or Set needs many args.
-                        self._write_tvtk_method(klass, out, vtk_get_meth, get_sig)
-                        self._write_tvtk_method(klass, out, vtk_set_meth, set_sig)
+                    else:  # Get has args or Set needs many args.
+                        self._write_tvtk_method(klass, out, vtk_get_meth,
+                                                get_sig)
+                        self._write_tvtk_method(klass, out, vtk_set_meth,
+                                                set_sig)
 
                     # We cannot update the trait
                     del updateable_traits[name]
@@ -826,8 +839,8 @@ class WrapperGenerator:
             # This is a color, we want RGBEditor for the trait
             # ---------------------------------------------------------
             elif (isinstance(default, tuple) and len(default) == 3 and
-                      (name.find('color') > -1 or name.find('bond_color') > -1 or
-                       name.find('background') > -1)):
+                  (name.find('color') > -1 or name.find('bond_color') > -1 or
+                   name.find('background') > -1)):
                 # This is a color
                 force = 'False'
                 # 'vtkProperty' and 'vtkLight' are special because if you change
@@ -836,9 +849,15 @@ class WrapperGenerator:
                 if klass.__name__ in ['vtkProperty', 'vtkLight']:
                     force = 'True'
 
-                t_def = 'tvtk_base.vtk_color_trait({default})'.format(default=default)
-                self._write_trait(out, name, t_def, vtk_set_meth,
-                                  mapped=False, force_update=force)
+                t_def = 'tvtk_base.vtk_color_trait({default})'.format(
+                    default=default)
+                self._write_trait(
+                    out,
+                    name,
+                    t_def,
+                    vtk_set_meth,
+                    mapped=False,
+                    force_update=force)
 
             # ------------------------------------------------------
             # Try to get the trait type using the default
@@ -847,16 +866,15 @@ class WrapperGenerator:
                 try:
                     # That would give the trait definition as
                     # {trait_type}({default}, {kwargs})
-                    trait_type, default, kwargs = get_trait_def(default,
-                                                                enter_set=True,
-                                                                auto_set=False)
+                    trait_type, default, kwargs = get_trait_def(
+                        default, enter_set=True, auto_set=False)
                 except TypeError:
                     # ------------------------------------------
                     # Nothing works, print what we ignore
                     # ------------------------------------------
-                    print("%s:"%klass.__name__, end=' ')
-                    print("Ignoring method: Get/Set%s"%vtk_attr_name)
-                    print("default: %s, range: None"%default)
+                    print("%s:" % klass.__name__, end=' ')
+                    print("Ignoring method: Get/Set%s" % vtk_attr_name)
+                    print("default: %s, range: None" % default)
                     del updateable_traits[name]
                 else:
                     if default:
@@ -865,8 +883,8 @@ class WrapperGenerator:
                     else:
                         t_def = '{0}({1})'.format(trait_type, kwargs)
 
-                    self._write_trait(out, name, t_def, vtk_set_meth,
-                                      mapped=False)
+                    self._write_trait(
+                        out, name, t_def, vtk_set_meth, mapped=False)
 
         return updateable_traits, allow_update_failure
 
@@ -875,9 +893,9 @@ class WrapperGenerator:
         meths = parser.get_get_methods()
         for m in meths:
             vtk_get_meth = getattr(klass, m)
-            if m == 'GetOutput': # GetOutput is special.
+            if m == 'GetOutput':  # GetOutput is special.
                 self._write_get_output_method(klass, out, set=False)
-            elif m == 'GetInput': # GetInput is special.
+            elif m == 'GetInput':  # GetInput is special.
                 self._write_pure_get_input_method(klass, out)
             elif m == 'GetOutputPort':
                 # This method sometimes prints warnings so we handle
@@ -907,7 +925,6 @@ class WrapperGenerator:
         for m in meths:
             vtk_meth = getattr(klass, m)
             self._write_tvtk_method(klass, out, vtk_meth)
-
 
     #################################################################
     # Private utility methods.
@@ -1017,7 +1034,7 @@ class WrapperGenerator:
             output = traits.Property(_get_output, _set_output,
                                      help=\"%(doc)s\")
 
-            """%locals()
+            """ % locals()
         else:
             trait_def = """
             def _get_output(self):
@@ -1025,7 +1042,7 @@ class WrapperGenerator:
             output = traits.Property(_get_output,
                                      help=\"%(doc)s\")
 
-            """%locals()
+            """ % locals()
         out.write(self.indent.format(trait_def))
 
         # Now write the generic method.
@@ -1048,8 +1065,7 @@ class WrapperGenerator:
             body += "self._wrap_call(self._vtk_obj.SetOutput, deref_vtk(obj))\n"
             body += "self.trait_property_changed('output', old_val, obj)\n"
             vtk_set_meth = getattr(klass, 'SetOutput')
-            self._write_generic_method(out, decl,
-                                       vtk_set_meth, body)
+            self._write_generic_method(out, decl, vtk_set_meth, body)
 
     def _write_get_source_method(self, klass, out):
         """Write the set/get_source method.  This method needs special
@@ -1073,7 +1089,7 @@ class WrapperGenerator:
             source = traits.Property(_get_source, _set_source,
                                      help=\"%(doc)s\")
 
-            """%locals()
+            """ % locals()
             out.write(self.indent.format(trait_def))
             # Now wrap the set_source and get_source.
             self._write_tvtk_method(klass, out, vtk_get_meth)
@@ -1093,7 +1109,7 @@ class WrapperGenerator:
                 return wrap_vtk(self._vtk_obj.GetOutputPort())
             else:
                 return None
-        """%locals()
+        """ % locals()
         indent = self.indent
         out.write(indent.format(t_def))
         t_def = """output_port = traits.Property(_get_output_port, help=\\"""
@@ -1123,7 +1139,7 @@ class WrapperGenerator:
             input = traits.Property(_get_input,
                                     help=\"%(doc)s\")
 
-            """%locals()
+            """ % locals()
             out.write(self.indent.format(trait_def))
             # Now wrap the get_input with args.
             self._write_tvtk_method(klass, out, vtk_get_meth)
@@ -1155,7 +1171,7 @@ class WrapperGenerator:
             input = traits.Property(_get_input, _set_input,
                                     help=\"%(doc)s\")
 
-            """%locals()
+            """ % locals()
             out.write(self.indent.format(trait_def))
             # Now wrap the set_input and get_input.
             self._write_tvtk_method(klass, out, vtk_get_meth)
@@ -1187,7 +1203,7 @@ class WrapperGenerator:
                                            _set_input_connection,
                                            help=\"%(doc)s\")
 
-        """%locals()
+        """ % locals()
         out.write(self.indent.format(trait_def))
         # Now wrap the set_input_connection and get_input_connection.
         self._write_tvtk_method(klass, out, vtk_get_meth)
@@ -1227,14 +1243,14 @@ class WrapperGenerator:
         name = self._reform_name(vtk_m_name, method=True)
         if keyword.iskeyword(name):
             name = name + '_'
-        method_affects_input = vtk_m_name in ['AddInput', 'RemoveInput',
-                                              'RemoveAllInputs',
-                                              'SetInputByNumber']
+        method_affects_input = vtk_m_name in [
+            'AddInput', 'RemoveInput', 'RemoveAllInputs', 'SetInputByNumber'
+        ]
         method_needs_update = (vtk_m_name in ['InsertNextCell'] and
                                klass.__name__ in ['vtkCellArray'])
 
         if arg_type is None:
-            decl = 'def %s(self):'%name
+            decl = 'def %s(self):' % name
             body = ""
             if method_affects_input:
                 body += "old_val = self._get_input()\n"
@@ -1249,7 +1265,7 @@ class WrapperGenerator:
             body += "return ret\n\n"
 
         else:
-            decl = 'def %s(self, *args):'%name
+            decl = 'def %s(self, *args):' % name
             if arg_type == 'vtk':
                 body = ""
                 if method_affects_input:
@@ -1294,7 +1310,7 @@ class WrapperGenerator:
         """
         if type(vtk_doc_meth) is str:
             doc = vtk_doc_meth
-        else: # Must be a method so get the docstring.
+        else:  # Must be a method so get the docstring.
             doc = self.dm.get_method_doc(vtk_doc_meth.__doc__)
         indent = self.indent
         out.write(indent.format(decl))
@@ -1305,8 +1321,14 @@ class WrapperGenerator:
         out.write('\n')
         indent.decr()
 
-    def _write_trait(self, out, t_name, t_def, vtk_set_meth,
-                     mapped, force_update=None, broken_bool=False):
+    def _write_trait(self,
+                     out,
+                     t_name,
+                     t_def,
+                     vtk_set_meth,
+                     mapped,
+                     force_update=None,
+                     broken_bool=False):
         """Write out a complete trait definition to `out`.
 
         Parameters
@@ -1330,21 +1352,21 @@ class WrapperGenerator:
           vtk_set_meth points to the 'Get' method.
 
         """
-        changed = '_%s_changed'%t_name
+        changed = '_%s_changed' % t_name
         vtk_m_name = vtk_set_meth.__name__
         map_str = ''
         if mapped:
             map_str = '_'
         force_str = ''
         if force_update is not None:
-            force_str = ', %s'%force_update
+            force_str = ', %s' % force_update
 
         # Fixing the trait definition in order to handle the help trait.
         if t_def.endswith(')'):
             t_def = t_def[:-1] + ', help=\\'
         else:
             t_def += '(help=\\'
-        trait_def = '%(t_name)s = %(t_def)s'%locals()
+        trait_def = '%(t_name)s = %(t_def)s' % locals()
 
         if broken_bool:
             msg = "If broken_bool is true, make sure vtk_set_meth "\
@@ -1360,13 +1382,13 @@ class WrapperGenerator:
                     else:
                         obj.%(vtk_off_name)s()
                 self._do_change(_bool_change, self.%(t_name)s%(map_str)s%(force_str)s)
-            """%locals()
+            """ % locals()
         else:
             changed_def = """
             def %(changed)s(self, old_val, new_val):
                 self._do_change(self._vtk_obj.%(vtk_m_name)s,
                                 self.%(t_name)s%(map_str)s%(force_str)s)
-            """%locals()
+            """ % locals()
 
         indent = self.indent
         # First write the trait definition.
@@ -1381,7 +1403,11 @@ class WrapperGenerator:
         out.write(indent.format(changed_def))
         out.write('\n')
 
-    def _write_property(self, out, t_name, vtk_get_meth, vtk_set_meth,
+    def _write_property(self,
+                        out,
+                        t_name,
+                        vtk_get_meth,
+                        vtk_set_meth,
                         multi_arg=False):
         """Writes out a traited property to `out` given the trait
         name, `t_name`, the VTK get method, `vtk_get_meth` an optional
@@ -1391,7 +1417,7 @@ class WrapperGenerator:
         not the setter is treated as if it accepts a single parameter.
         """
         indent = self.indent
-        getter = '_get_%s'%t_name
+        getter = '_get_%s' % t_name
         vtk_get_name = vtk_get_meth.__name__
         sig = self.parser.get_method_signature(vtk_get_meth)
         ret_type = self._find_return_type(sig)
@@ -1400,16 +1426,16 @@ class WrapperGenerator:
             trait_def = """
             def %(getter)s(self):
                 return wrap_vtk(self._vtk_obj.%(vtk_get_name)s())
-            """%locals()
+            """ % locals()
         else:
             trait_def = """
             def %(getter)s(self):
                 return self._vtk_obj.%(vtk_get_name)s()
-            """%locals()
+            """ % locals()
         out.write(indent.format(trait_def))
 
         if vtk_set_meth:
-            setter = '_set_%s'%t_name
+            setter = '_set_%s' % t_name
             vtk_set_name = vtk_set_meth.__name__
             sig = self.parser.get_method_signature(vtk_set_meth)
             arg_type = self._find_arg_type(sig)
@@ -1422,7 +1448,7 @@ class WrapperGenerator:
                         self._wrap_call(self._vtk_obj.%(vtk_set_name)s,
                                         *my_args)
                         self.trait_property_changed('%(t_name)s', old_val, args)
-                    """%locals()
+                    """ % locals()
                 elif arg_type == 'array':
                     arr_sig = self._find_array_arg_sig(sig)
                     trait_def = """
@@ -1432,7 +1458,7 @@ class WrapperGenerator:
                         self._wrap_call(self._vtk_obj.%(vtk_set_name)s,
                                         *my_args)
                         self.trait_property_changed('%(t_name)s', old_val, args)
-                    """%locals()
+                    """ % locals()
 
                 else:
                     trait_def = """
@@ -1441,7 +1467,7 @@ class WrapperGenerator:
                         self._wrap_call(self._vtk_obj.%(vtk_set_name)s,
                                         *args)
                         self.trait_property_changed('%(t_name)s', old_val, args)
-                    """%locals()
+                    """ % locals()
             else:
                 if arg_type == 'vtk':
                     trait_def = """
@@ -1450,7 +1476,7 @@ class WrapperGenerator:
                         self._wrap_call(self._vtk_obj.%(vtk_set_name)s,
                                         deref_vtk(arg))
                         self.trait_property_changed('%(t_name)s', old_val, arg)
-                    """%locals()
+                    """ % locals()
                 elif arg_type == 'array':
                     arr_sig = self._find_array_arg_sig(sig)
                     trait_def = """
@@ -1460,7 +1486,7 @@ class WrapperGenerator:
                         self._wrap_call(self._vtk_obj.%(vtk_set_name)s,
                                         my_arg[0])
                         self.trait_property_changed('%(t_name)s', old_val, arg)
-                    """%locals()
+                    """ % locals()
 
                 else:
                     trait_def = """
@@ -1469,13 +1495,14 @@ class WrapperGenerator:
                         self._wrap_call(self._vtk_obj.%(vtk_set_name)s,
                                         arg)
                         self.trait_property_changed('%(t_name)s', old_val, arg)
-                    """%locals()
+                    """ % locals()
             out.write(indent.format(trait_def))
-            t_def = "traits.Property(%(getter)s, %(setter)s, help=\\"%locals()
+            t_def = "traits.Property(%(getter)s, %(setter)s, help=\\" % locals(
+            )
         else:
-            t_def = "traits.Property(%(getter)s, help=\\"%locals()
+            t_def = "traits.Property(%(getter)s, help=\\" % locals()
 
-        trait_def = """%(t_name)s = %(t_def)s"""%locals()
+        trait_def = """%(t_name)s = %(t_def)s""" % locals()
         out.write(indent.format(trait_def))
         doc = vtk_get_meth.__doc__
         self.dm.write_trait_doc(doc, out, indent)
@@ -1497,18 +1524,17 @@ class WrapperGenerator:
             # further information.  We will set the default as Undefined
             # or a tuple of Undefined
             if type(value_for_type) in (tuple, list):
-                default = "({})".format(", ".join(
-                    ("traits.Undefined",)*len(value_for_type)))
+                default = "({})".format(", ".join(("traits.Undefined", ) * len(
+                    value_for_type)))
             else:
                 default = "traits.Undefined"
 
             trait_type, _, kwargs = get_trait_def(value_for_type)
-            t_def = ('traits.Trait({default}, '    # traits.Undefined
-                     '{trait_type}({kwargs}), '    # the new default trait
-                     'enter_set=True, auto_set=False)').format(
-                         default=default,
-                         trait_type=trait_type,
-                         kwargs=kwargs)
+            t_def = (
+                'traits.Trait({default}, '  # traits.Undefined
+                '{trait_type}({kwargs}), '  # the new default trait
+                'enter_set=True, auto_set=False)').format(
+                    default=default, trait_type=trait_type, kwargs=kwargs)
             self._write_trait(out, name, t_def, vtk_set_meth, mapped=False)
         else:
             # we cannot determine the type
@@ -1537,9 +1563,7 @@ class WrapperGenerator:
 
         name = self._reform_name(vtk_attr_name)
         vtk_set_meth = getattr(klass, 'Set' + vtk_attr_name)
-        self._write_trait(out, name, t_def, vtk_set_meth,
-                          mapped=False)
-
+        self._write_trait(out, name, t_def, vtk_set_meth, mapped=False)
 
     # ------------------------------------------------------
     # Traits that need special handling
@@ -1564,30 +1588,25 @@ class WrapperGenerator:
     #         the code for this trait,
     #         i.e. getattr(self, name_of_method)(...)
     special_traits = {
-        '[a-zA-Z0-9]+\.Output$': (
-            False, False, '_write_any_output'),
-        '[a-zA-Z0-9]+\.Source$': (
-            False, False, '_write_any_source'),
-        '[a-zA-Z0-9]+\.ScalarType$': (
-            False, False, '_write_any_scalar_type'),
+        '[a-zA-Z0-9]+\.Output$': (False, False, '_write_any_output'),
+        '[a-zA-Z0-9]+\.Source$': (False, False, '_write_any_source'),
+        '[a-zA-Z0-9]+\.ScalarType$': (False, False, '_write_any_scalar_type'),
 
         # In VTK > 4.5, Set/GetInput have multiple signatures
-        '[a-zA-Z0-9]+\.Input$': (
-            False, False, '_write_any_input'),
-
-        '[a-zA-Z0-9]+\.InputConnection$': (
-            False, False, '_write_any_input_connection'),
-        '[a-zA-Z0-9\.]+FileName$': (
-            True, False, '_write_any_something_file_name'),
-        '[a-zA-Z0-9\.]+FilePrefix$': (
-            True, False, '_write_any_something_file_prefix'),
-        'vtkImageReader2.HeaderSize$': (
-            True, False, '_write_image_reader2_header_size'),
+        '[a-zA-Z0-9]+\.Input$': (False, False, '_write_any_input'),
+        '[a-zA-Z0-9]+\.InputConnection$': (False, False,
+                                           '_write_any_input_connection'),
+        '[a-zA-Z0-9\.]+FileName$': (True, False,
+                                    '_write_any_something_file_name'),
+        '[a-zA-Z0-9\.]+FilePrefix$': (True, False,
+                                      '_write_any_something_file_prefix'),
+        'vtkImageReader2.HeaderSize$': (True, False,
+                                        '_write_image_reader2_header_size'),
 
         # PropColorValue is not initialised, GetPropColorValue
         # gives random values as a tuple of float[3] that are
-        'vtkHardwareSelector.PropColorValue$': (
-            True, True, '_write_hardware_selector_prop_color_value'),
+        'vtkHardwareSelector.PropColorValue$':
+        (True, True, '_write_hardware_selector_prop_color_value'),
 
         # In VTK 5.8, tolerance is initialised as 0 while the range
         # is 1-100
@@ -1724,7 +1743,7 @@ class WrapperGenerator:
         name = self._reform_name(vtk_attr_name)
 
         # vtk set method
-        vtk_set_meth = getattr(klass, 'Set'+vtk_attr_name)
+        vtk_set_meth = getattr(klass, 'Set' + vtk_attr_name)
 
         self._write_trait(out, name, t_def, vtk_set_meth, mapped=False)
 
@@ -1737,17 +1756,16 @@ class WrapperGenerator:
 
         # FIXME: Don't we need to tell the vtk object that we set it
         # to some value?
-        t_def = ('tvtk_base.vtk_color_trait('
-                 '(1.0, 1.0, 1.0))')
+        t_def = ('tvtk_base.vtk_color_trait(' '(1.0, 1.0, 1.0))')
 
         # trait name
         name = self._reform_name(vtk_attr_name)
 
         # VTK set method
-        vtk_set_meth = getattr(klass, 'Set'+vtk_attr_name)
+        vtk_set_meth = getattr(klass, 'Set' + vtk_attr_name)
 
-        self._write_trait(out, name, t_def, vtk_set_meth, mapped=False,
-                               force_update='False')
+        self._write_trait(
+            out, name, t_def, vtk_set_meth, mapped=False, force_update='False')
 
     def _write_axes_transform_representation_tolerance(self, klass, out,
                                                        vtk_attr_name):
@@ -1765,8 +1783,8 @@ class WrapperGenerator:
             print(message)
             default = rng[0]
         t_def = ('traits.Trait({default}, traits.Range{rng}, '
-                 'enter_set=True, auto_set=False)').format(default=default,
-                                                           rng=rng)
+                 'enter_set=True, auto_set=False)').format(
+                     default=default, rng=rng)
         name = self._reform_name(vtk_attr_name)
         vtk_set_meth = getattr(klass, 'Set' + vtk_attr_name)
         self._write_trait(out, name, t_def, vtk_set_meth, mapped=False)

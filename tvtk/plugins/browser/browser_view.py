@@ -1,10 +1,8 @@
 """ The TVTK pipeline browser view. """
 
-
 # Author: Prabhu Ramachandran <prabhu_r@users.sf.net>
 # Copyright (c) 2005, Enthought, Inc.
 # License: BSD Style.
-
 
 # Enthought library imports.
 from pyface.workbench.api import View
@@ -32,8 +30,7 @@ class BrowserView(View):
 
     # The scene manager.
     scene_manager = Instance(
-        'tvtk.plugins.scene.i_scene_manager.ISceneManager'
-    )
+        'tvtk.plugins.scene.i_scene_manager.ISceneManager')
 
     ###########################################################################
     # 'IWorkbenchPart' interface.
@@ -90,5 +87,6 @@ class BrowserView(View):
             self.browser.root_object.remove(scene.render_window)
 
         return
+
 
 #### EOF ######################################################################

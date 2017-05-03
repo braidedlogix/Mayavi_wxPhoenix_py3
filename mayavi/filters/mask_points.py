@@ -15,7 +15,6 @@ from mayavi.core.pipeline_info import PipelineInfo
 # `MaskPoints` class.
 ######################################################################
 class MaskPoints(FilterBase):
-
     """Selectively passes the input points downstream.  This can be
     used to subsample the input points.  Note that this does not pass
     geometry data, this means all grid information is lost.
@@ -27,13 +26,11 @@ class MaskPoints(FilterBase):
     # The actual TVTK filter that this class manages.
     filter = Instance(tvtk.MaskPoints, args=(), allow_none=False, record=True)
 
-    input_info = PipelineInfo(datasets=['any'],
-                              attribute_types=['any'],
-                              attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])
 
-    output_info = PipelineInfo(datasets=['poly_data'],
-                               attribute_types=['any'],
-                               attributes=['any'])
+    output_info = PipelineInfo(
+        datasets=['poly_data'], attribute_types=['any'], attributes=['any'])
 
     ######################################################################
     # `Filter` interface.

@@ -13,6 +13,7 @@ import copy
 from common import TestCase, get_example_data
 from test_vtk_data_source import TestVTKDataSource
 
+
 class TestVTKXMLReader(TestVTKDataSource):
     def make_data(self):
         script = self.script
@@ -29,6 +30,7 @@ class TestVTKXMLReader(TestVTKDataSource):
 
     def test(self):
         self.main()
+
 
 if __name__ == "__main__":
     t = TestVTKXMLReader()

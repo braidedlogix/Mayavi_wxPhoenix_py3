@@ -5,7 +5,6 @@
 # Copyright (c) 2005, Enthought, Inc.
 # License: BSD Style.
 
-
 # Enthought library imports.
 from traits.api import Instance
 from traitsui.api import View, Group, Item
@@ -31,21 +30,23 @@ class Glyph(Module):
     # The Glyph component.
     actor = Instance(Actor, allow_none=False, record=True)
 
-    input_info = PipelineInfo(datasets=['any'],
-                              attribute_types=['any'],
-                              attributes=['any'])
+    input_info = PipelineInfo(
+        datasets=['any'], attribute_types=['any'], attributes=['any'])
 
     ########################################
     # View related traits.
 
-    view = View(Group(Item(name='glyph', style='custom',
-                           resizable=True),
-                      label='Glyph',
-                      show_labels=False),
-                Group(Item(name='actor', style='custom'),
-                      label='Actor',
-                      show_labels=False),
-                )
+    view = View(
+        Group(
+            Item(
+                name='glyph', style='custom', resizable=True),
+            label='Glyph',
+            show_labels=False),
+        Group(
+            Item(
+                name='actor', style='custom'),
+            label='Actor',
+            show_labels=False), )
 
     ######################################################################
     # `Module` interface
@@ -63,9 +64,10 @@ class Glyph(Module):
         set the `actors` attribute up at this point.
         """
         # Setup the glyphs.
-        self.glyph = glyph.Glyph(scale_mode='scale_by_scalar',
-                                 color_mode='color_by_scalar',
-                                 show_scale_mode=True)
+        self.glyph = glyph.Glyph(
+            scale_mode='scale_by_scalar',
+            color_mode='color_by_scalar',
+            show_scale_mode=True)
 
         # Create the components
         actor = self.actor = Actor()
@@ -127,9 +129,8 @@ class Glyph(Module):
     def _glyph_changed(self, old, new):
         # Hookup a callback to set the lut appropriately.
         if old is not None:
-            old.on_trait_change(self._color_mode_changed,
-                                'color_mode',
-                                remove=True)
+            old.on_trait_change(
+                self._color_mode_changed, 'color_mode', remove=True)
         new.on_trait_change(self._color_mode_changed, 'color_mode')
 
         # Set the glyph's module attribute -- this is important!
@@ -148,5 +149,3 @@ class Glyph(Module):
         if g is not None:
             new.inputs = [g]
         self._change_components(old, new)
-
-

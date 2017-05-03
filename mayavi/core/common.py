@@ -59,7 +59,7 @@ def exception(msg='Exception', parent=None):
     try:
         type, value, tb = sys.exc_info()
         info = traceback.extract_tb(tb)
-        filename, lineno, function, text = info[-1] # last line only
+        filename, lineno, function, text = info[-1]  # last line only
         exc_msg = "%s\nIn %s:%d\n%s: %s (in %s)" %\
                   (msg, filename, lineno, type.__name__, str(value),
                    function)
@@ -68,7 +68,7 @@ def exception(msg='Exception', parent=None):
         if pyface is not None:
             pyface.error(parent, exc_msg, title='Exception')
     finally:
-        type = value = tb = None # clean up
+        type = value = tb = None  # clean up
 
 
 def process_ui_events():
@@ -108,6 +108,7 @@ def get_object_path(object, parent, path='engine'):
     """Given a mayavi object on the tree view, this should find its
     "path" with respect to the parent object that contains it.
     """
+
     def _get_child_trait(obj):
         if hasattr(obj, 'scenes'):
             return 'scenes'
@@ -123,7 +124,7 @@ def get_object_path(object, parent, path='engine'):
             if child_t == '':
                 return ''
             for i, o in enumerate(getattr(obj, child_t)):
-                pth = _finder(o, to_find, '%s.%s[%d]'%(path, child_t, i))
+                pth = _finder(o, to_find, '%s.%s[%d]' % (path, child_t, i))
                 if len(pth) > 0:
                     return pth
         return ''
@@ -141,7 +142,7 @@ def handle_children_state(children, kids):
     # each time.
     m_children = list(children)
 
-    n_child, n_kid = len(m_children),  len(kids)
+    n_child, n_kid = len(m_children), len(kids)
     # Remove extra children we have.
     for i in range(n_child - n_kid):
         m_children.pop()
