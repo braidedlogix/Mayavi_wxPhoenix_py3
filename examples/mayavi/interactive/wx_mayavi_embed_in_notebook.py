@@ -11,8 +11,6 @@ In this example, we embed one single Mayavi scene in a Wx notebook, with
 
 # First thing, we need to make sure that we are importing a
 # recent-enough version of wx
-import wxversion
-wxversion.ensureMinimal('2.8')
 
 from numpy import ogrid, sin
 
@@ -48,15 +46,16 @@ class MayaviView(HasTraits):
 #-------------------------------------------------------------------------------
 # Wx Code
 import wx
+import wx.aui as aui
 
 
 class MainWindow(wx.Frame):
     def __init__(self, parent, id):
         wx.Frame.__init__(self, parent, id, 'Mayavi in a Wx notebook')
-        self.notebook = wx.aui.AuiNotebook(
+        self.notebook = aui.AuiNotebook(
             self,
             id=-1,
-            style=wx.aui.AUI_NB_TAB_SPLIT | wx.aui.AUI_NB_CLOSE_ON_ALL_TABS |
+            style=aui.AUI_NB_TAB_SPLIT | aui.AUI_NB_CLOSE_ON_ALL_TABS |
             wx.aui.AUI_NB_LEFT)
 
         self.mayavi_view = MayaviView()

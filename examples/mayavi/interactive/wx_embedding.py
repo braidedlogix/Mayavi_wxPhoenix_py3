@@ -62,6 +62,6 @@ class MainWindow(wx.Frame):
         self.Show(True)
 
 
-app = wx.PySimpleApp()
+app = wx.App()
 frame = MainWindow(None, wx.ID_ANY)
 app.MainLoop()
