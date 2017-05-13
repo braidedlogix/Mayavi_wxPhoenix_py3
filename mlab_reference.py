@@ -237,7 +237,7 @@ from mayavi.mlab import *
             if not (name[:5] == 'test_' or name[0] == '_') and callable(func)
         ])
 
-        outfile = file(os.sep.join([self.out_dir, self.filename]), 'w')
+        outfile = open(os.sep.join([self.out_dir, self.filename]), 'w')
 
         outfile.write(self.header)
 

@@ -1004,7 +1004,7 @@ class TestTVTKModule(unittest.TestCase):
                 "from tvtk.api import tvtk; p = tvtk.Property()"
             ],
             stderr=STDOUT)
-        output = output.decode('ascii')
+        output = output#.decode('ascii')
         self.assertFalse('QtCore' in output)
         self.assertFalse('wx' in output)
 

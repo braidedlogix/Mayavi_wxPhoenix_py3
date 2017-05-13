@@ -176,7 +176,7 @@ class VTKDataSource(Source):
         z = state.data
         if z is not None:
             if sys.version_info[0] > 2:
-                d = gunzip_string(z).decode('ascii')
+                d = gunzip_string(z)#.decode('ascii')
             else:
                 d = gunzip_string(z)
             r = tvtk.DataSetReader(read_from_input_string=1, input_string=d)
