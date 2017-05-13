@@ -293,7 +293,7 @@ from mayavi.mlab import *
             submodule. If submodule is none, all the non-processed
             functions are processed.
         """
-        outfile = file(os.sep.join([self.out_dir, filename]), 'w')
+        outfile = open(os.sep.join([self.out_dir, filename]), 'w')
 
         if header is not None:
             outfile.write(header)
