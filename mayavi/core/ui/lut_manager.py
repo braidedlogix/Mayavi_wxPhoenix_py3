@@ -20,6 +20,7 @@ from mayavi.core.lut_manager import lut_mode_list, \
 
 
 def _number_of_lut_cols():
+    from traits.etsconfig.api import ETSConfig
     return 1 if ETSConfig.toolkit == 'qt4' else 6
 
 
