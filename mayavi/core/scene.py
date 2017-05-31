@@ -47,8 +47,8 @@ class Scene(Base):
     type = Str(' scene')
 
     # The objects view.
-    view = View(Group(Item(name='scene', style='custom'), show_labels=False))
-
+    view = View(Group(Item(name='scene', style='custom'), show_labels=False), 
+                resizable=True)
     # The adder node dialog class
     _adder_node_class = SourceAdderNode
 

@@ -140,7 +140,7 @@ class Text(Module):
                       ),
                 Group(Item(name='_property', style='custom', resizable=True),
                       label='TextProperty',
-                      show_labels=False),
+                      show_labels=False), resizable=True
                 )
 
     ########################################

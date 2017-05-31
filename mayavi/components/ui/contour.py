@@ -38,4 +38,4 @@ view = View(
                 name='_data_min', label='Data minimum'),
             Item(
                 name='_data_max', label='Data maximum'),
-            visible_when='not auto_update_range', )))
+            visible_when='not auto_update_range', )), resizable=True)

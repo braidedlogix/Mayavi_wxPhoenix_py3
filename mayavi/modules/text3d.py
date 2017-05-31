@@ -96,7 +96,7 @@ class Text3D(Module):
         Group(
             Item(
                 name='actor', style='custom', show_label=False),
-            label='Actor'), )
+            label='Actor'), resizable=True)
 
     ######################################################################
     # `Module` interface

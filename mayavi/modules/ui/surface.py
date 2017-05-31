@@ -42,4 +42,4 @@ view = View(
             style='custom',
             editor=InstanceEditor(view=texture_view)),
         label='Texturing',
-        show_labels=False, ), )
+        show_labels=False, ), resizable=True)

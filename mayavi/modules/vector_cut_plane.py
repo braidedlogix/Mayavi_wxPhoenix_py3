@@ -62,7 +62,7 @@ class VectorCutPlane(Module):
             Item(
                 name='actor', style='custom'),
             label='Actor',
-            show_labels=False), )
+            show_labels=False), resizable=True )
 
     ######################################################################
     # `Module` interface

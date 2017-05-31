@@ -56,7 +56,7 @@ class ContourGridPlane(Module):
             Item(
                 name='actor', style='custom'),
             show_labels=False)
-    ])
+    ], resizable=True)
 
     ######################################################################
     # `Module` interface

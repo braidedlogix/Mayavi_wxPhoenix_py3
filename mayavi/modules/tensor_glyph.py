@@ -45,7 +45,7 @@ class TensorGlyph(Module):
                 name='glyph', style='custom', resizable=True),
             label='Tensor Glyph',
             selected=True,
-            show_labels=False))
+            show_labels=False), resizable=True)
 
     ######################################################################
     # `Module` interface

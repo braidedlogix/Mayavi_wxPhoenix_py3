@@ -87,7 +87,7 @@ class OrientationAxes(Module):
             Item(
                 name='_text_property', style='custom', resizable=True),
             label='Text Property',
-            show_labels=False), )
+            show_labels=False), resizable=True )
 
     ######################################################################
     # `object` interface
