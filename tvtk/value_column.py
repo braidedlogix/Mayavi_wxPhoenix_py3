@@ -1,7 +1,7 @@
 """Used by tvtk_base_handler to create a UI.
 """
 from traitsui.table_column import ObjectColumn
-
+from traits.trait_base import xgetattr
 
 class ValueColumn(ObjectColumn):
     """ Column to display the trait value for each trait of a tvtk object.
