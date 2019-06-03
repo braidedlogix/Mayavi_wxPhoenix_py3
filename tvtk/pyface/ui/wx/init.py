@@ -9,23 +9,28 @@
 #  is also available online at http://www.enthought.com/licenses/BSD.txt
 #
 #------------------------------------------------------------------------------
+try:
+    from pyface.base_toolkit import Toolkit
+
+    toolkit_object = Toolkit('tvtk', 'wx', 'tvtk.pyface.ui.wx')
 
 # Major package imports.
-import wx
+except:
+    import wx
 
-# Check the version number is late enough.
-if wx.VERSION < (2, 6):
-    raise RuntimeError("Need wx version 2.6 or higher, but got %s" %
-                       str(wx.VERSION))
+    # Check the version number is late enough.
+    if wx.VERSION < (2, 6):
+        raise RuntimeError("Need wx version 2.6 or higher, but got %s" %
+                           str(wx.VERSION))
 
-# It's possible that it has already been initialised.
-_app = wx.GetApp()
+    # It's possible that it has already been initialised.
+    _app = wx.GetApp()
 
-if _app is None:
-    _app = wx.PySimpleApp()
+    if _app is None:
+        _app = wx.PySimpleApp()
 
-    # Before we can load any images we have to initialize wxPython's image
-    # handlers.
-    wx.InitAllImageHandlers()
+        # Before we can load any images we have to initialize wxPython's image
+        # handlers.
+        wx.InitAllImageHandlers()
 
-#### EOF ######################################################################
+    #### EOF ######################################################################

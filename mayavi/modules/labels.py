@@ -3,6 +3,7 @@
 # License: BSD Style.
 
 # Standard library imports.
+from vtk.numpy_interface import dataset_adapter as dsa
 
 # Enthought library imports.
 from traits.api import Int, Instance, Str, TraitError
@@ -26,6 +27,7 @@ from mayavi.core.common import handle_children_state
 # `Labels` class.
 ################################################################################
 class Labels(Module):
+
     """
     Allows a user to label the current dataset or the current actor of
     the active module.
@@ -38,15 +40,11 @@ class Labels(Module):
     object = Instance(PipelineBase, record=False)
 
     # The label format string.
-    label_format = Str('',
-                       enter_set=True,
-                       auto_set=False,
+    label_format = Str('', enter_set=True, auto_set=False,
                        desc='the label format string')
 
     # Number of points to label.
-    number_of_labels = Int(25,
-                           enter_set=True,
-                           auto_set=False,
+    number_of_labels = Int(25, enter_set=True, auto_set=False,
                            desc='the number of points to label')
 
     # The filter used for masking of the points.
@@ -64,8 +62,9 @@ class Labels(Module):
     # The mapper for the labels.
     mapper = Instance(tvtk.LabeledDataMapper, args=(), record=True)
 
-    input_info = PipelineInfo(
-        datasets=['any'], attribute_types=['any'], attributes=['any'])
+    input_info = PipelineInfo(datasets=['any'],
+                              attribute_types=['any'],
+                              attributes=['any'])
 
     ########################################
     # Private traits.
@@ -77,36 +76,35 @@ class Labels(Module):
     # persistence.
     object_id = Int(-2)
 
+
     ########################################
     # View related traits.
 
-    view = View(
-        Group(
-            Item(name='number_of_labels'),
-            Item(name='label_format'),
-            Item(
-                name='mapper',
-                style='custom',
-                show_label=False,
-                resizable=True),
-            Item(
-                name='mask', style='custom', resizable=True, show_label=False),
-            label='Labels'),
-        Group(
-            Item(
-                name='visible_points',
-                style='custom',
-                resizable=True,
-                show_label=False),
-            label='VisiblePoints'),
-        Group(
-            Item(
-                name='property',
-                style='custom',
-                show_label=False,
-                resizable=True),
-            label='TextProperty'),
-        resizable=True)
+    view = View(Group(Item(name='number_of_labels'),
+                      Item(name='label_format'),
+                      Item(name='mapper',
+                           style='custom',
+                           show_label=False,
+                           resizable=True),
+                      Item(name='mask',
+                           style='custom',
+                           resizable=True,
+                           show_label=False),
+                      label='Labels'
+                      ),
+                Group(
+                      Item(name='visible_points',
+                           style='custom',
+                           resizable=True,
+                           show_label=False),
+                      label='VisiblePoints'
+                      ),
+                Group(Item(name='property',
+                           style='custom',
+                           show_label=False,
+                           resizable=True),
+                      label='TextProperty'),
+                resizable=True)
 
     ######################################################################
     # `object` interface.
@@ -130,10 +128,10 @@ class Labels(Module):
     ######################################################################
     def setup_pipeline(self):
         mask = MaskPoints()
-        mask.filter.set(generate_vertices=True, random_mode=True)
+        mask.filter.trait_set(generate_vertices=True, random_mode=True)
         self.mask = mask
-        v = UserDefined(
-            filter=tvtk.SelectVisiblePoints(), name='VisiblePoints')
+        v = UserDefined(filter=tvtk.SelectVisiblePoints(),
+                        name='VisiblePoints')
         self.visible_points = Optional(filter=v, enabled=False)
         mapper = tvtk.LabeledDataMapper()
         self.mapper = mapper
@@ -147,7 +145,7 @@ class Labels(Module):
         if mm is None:
             return
 
-        self._find_input()  # Calculates self.input
+        self._find_input() # Calculates self.input
         self.mask.inputs = [self.input]
         self.visible_points.inputs = [self.mask]
         self.actor.inputs = [self.visible_points]
@@ -165,7 +163,7 @@ class Labels(Module):
             elif self.object_id > -1:
                 obj = mm.children[self.object_id]
                 if hasattr(obj, 'actor'):
-                    self.set(object=obj, trait_change_notify=False)
+                    self.trait_set(object=obj, trait_change_notify=False)
                     self.input = obj.actor.inputs[0]
                 else:
                     self.input = mm.source
@@ -190,11 +188,10 @@ class Labels(Module):
             return
         f = self.mask.filter
         inp = self.input.get_output_dataset()
-        if hasattr(inp, 'update'):
-            inp.update()
-        npts = inp.number_of_points
+        data_obj = dsa.WrapDataObject(tvtk.to_vtk(inp))
+        npts = data_obj.GetNumberOfPoints()
         typ = type(f.on_ratio)
-        f.on_ratio = typ(max(npts / value, 1))
+        f.on_ratio = typ(max(npts/value, 1))
         if self.mask.running:
             f.update()
             self.mask.data_changed = True

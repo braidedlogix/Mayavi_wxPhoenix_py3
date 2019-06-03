@@ -10,11 +10,14 @@ The general purpose tools to manipulate the pipeline with the mlab interface.
 # Standard library imports.
 import numpy
 
+import vtk
+
 # Enthought library imports.
 from tvtk.api import tvtk
 
 # MayaVi related imports.
 from mayavi.sources.vtk_data_source import VTKDataSource
+from mayavi.sources.vtk_object_source import VTKObjectSource
 from mayavi.core.module_manager import ModuleManager
 from mayavi.core.source import Source
 from mayavi.core.filter import Filter
@@ -26,13 +29,31 @@ from .figure import gcf
 # Utility functions.
 
 
+def _get_engine_from_kwarg(kwargs):
+    engine = None
+    if 'figure' not in kwargs:
+        # No figure has been specified, retrieve the default one.
+        gcf()
+        engine = get_engine()
+    elif kwargs['figure'] is False:
+        # Get a null engine that we can use.
+        engine = get_null_engine()
+    elif kwargs['figure'] is not None:
+        figure = kwargs['figure']
+        engine = engine_manager.find_figure_engine(figure)
+        engine.current_scene = figure
+
+    return engine
+
+
 def add_dataset(dataset, name='', **kwargs):
     """Add a dataset object to the Mayavi pipeline.
 
     **Parameters**
 
-    :dataset: a tvtk dataset, or a Mayavi source.
-              The dataset added to the Mayavi pipeline
+    :dataset: a tvtk/vtk dataset/tvtk/VTK Algorithm, or a Mayavi source. The
+              dataset added to the Mayavi pipeline
+
     :figure: a figure identifier number or string, None or False, optionnal.
 
             If no `figure` keyword argument is given, the data
@@ -50,31 +71,30 @@ def add_dataset(dataset, name='', **kwargs):
     **Returns**
 
     The corresponding Mayavi source is returned.
+
     """
-    if isinstance(dataset, tvtk.Object):
+    if isinstance(dataset, (tvtk.DataSet, vtk.vtkDataSet)):
         d = VTKDataSource()
-        d.data = dataset
+        d.data = tvtk.to_tvtk(dataset)
+    elif isinstance(dataset, (tvtk.DataObject, vtk.vtkDataObject)):
+        d = VTKObjectSource()
+        tp = tvtk.TrivialProducer()
+        tp.set_output(tvtk.to_tvtk(dataset))
+        d.object = tp
+    elif isinstance(dataset, (tvtk.Object, vtk.vtkObject)):
+        d = VTKObjectSource()
+        d.object = tvtk.to_tvtk(dataset)
     elif isinstance(dataset, Source):
         d = dataset
     else:
         raise TypeError(
-              "first argument should be either a TVTK object"\
+              "first argument should be either a TVTK object"
               " or a mayavi source")
 
     if len(name) > 0:
         d.name = name
-    if not 'figure' in kwargs:
-        # No figure has been specified, retrieve the default one.
-        gcf()
-        engine = get_engine()
-    elif kwargs['figure'] is False:
-        # Get a null engine that we can use.
-        engine = get_null_engine()
-    elif kwargs['figure'] is not None:
-        figure = kwargs['figure']
-        engine = engine_manager.find_figure_engine(figure)
-        engine.current_scene = figure
-    else:
+    engine = _get_engine_from_kwarg(kwargs)
+    if engine is None:
         # Return early, as we don't want to add the source to an engine.
         return d
     engine.add_source(d)
@@ -139,10 +159,10 @@ def get_vtk_src(mayavi_object, stop_at_filter=True):
             return [mayavi_object]
         elif hasattr(mayavi_object, 'output'):
             return [mayavi_object.output]
-    if not (hasattr(mayavi_object, 'parent') or
-            isinstance(mayavi_object, Source)):
-        raise TypeError('Cannot find data source for given object %s' %
-                        (mayavi_object))
+    if not (hasattr(mayavi_object, 'parent')
+            or isinstance(mayavi_object, Source)):
+        raise TypeError('Cannot find data source for given object %s' % (
+                                            mayavi_object))
     while True:
         # XXX: If the pipeline is not a DAG, this is an infinite loop
         if isinstance(mayavi_object, Source):
@@ -210,10 +230,10 @@ def _find_module_manager(object=None, data_type=None):
                 return object
     else:
         if hasattr(object, 'module_manager'):
-            if ((data_type == 'scalar' and _has_scalar_data(object)) or
-                (data_type == 'vector' and _has_vector_data(object)) or
-                (data_type == 'tensor' and _has_tensor_data(object)) or
-                    data_type is None):
+            if ((data_type == 'scalar' and _has_scalar_data(object))
+               or (data_type == 'vector' and _has_vector_data(object))
+               or (data_type == 'tensor' and _has_tensor_data(object))
+                or data_type is None):
                 return object.module_manager
             else:
                 print("This object has no %s data" % data_type)
@@ -228,9 +248,9 @@ def _typical_distance(data_obj):
         by the cubic root of the number of points.
     """
     x_min, x_max, y_min, y_max, z_min, z_max = data_obj.bounds
-    distance = numpy.sqrt(((x_max - x_min)**2 + (y_max - y_min)**2 +
-                           (z_max - z_min)**2) / (4 * data_obj.number_of_points
-                                                  **(0.33)))
+    distance = numpy.sqrt(((x_max - x_min) ** 2 + (y_max - y_min) ** 2 +
+                           (z_max - z_min) ** 2) / (4 *
+                           data_obj.number_of_points ** (0.33)))
     if distance == 0:
         return 1
     else:
@@ -242,9 +262,10 @@ def _min_distance(x, y, z):
         This is done by brute force calculation of all the distances
         between particle couples.
     """
-    distances = numpy.sqrt((x.reshape((-1, )) - x.reshape((1, -1)))**2 + (
-        y.reshape((-1, )) - y.reshape((1, -1)))**2 + (z.reshape((-1, )) -
-                                                      z.reshape((1, -1)))**2)
+    distances = numpy.sqrt((x.reshape((-1,)) - x.reshape((1, -1))) ** 2
+                           + (y.reshape((-1,)) - y.reshape((1, -1))) ** 2
+                           + (z.reshape((-1,)) - z.reshape((1, -1))) ** 2
+                          )
     return distances[distances != 0].min()
 
 
@@ -254,14 +275,12 @@ def _min_axis_distance(x, y, z):
         This is done by brute force calculation of all the distances with
         norm infinity between particle couples.
     """
-
     def axis_min(a):
-        a = numpy.abs(a.reshape((-1, )) - a.reshape((-1, 1)))
+        a = numpy.abs(a.reshape((-1,)) - a.reshape((-1, 1)))
         a = a[a > 0]
         if a.size == 0:
             return numpy.inf
         return a.min()
-
     distances = min(axis_min(x), axis_min(y), axis_min(z))
     if distances == numpy.inf:
         return 1
@@ -336,9 +355,10 @@ def set_extent(module, extents):
     ycenter = 0.5 * (ymax + ymin)
     zcenter = 0.5 * (zmax + zmin)
     # Center the object
-    actor.origin = (0., 0., 0.)
+    actor.origin = (0.,  0.,  0.)
     xpos, ypos, zpos = actor.position
-    actor.position = (xpos + xo - xcenter, ypos + yo - ycenter,
+    actor.position = (xpos + xo - xcenter,
+                      ypos + yo - ycenter,
                       zpos + zo - zcenter)
 
 

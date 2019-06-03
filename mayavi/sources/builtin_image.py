@@ -24,40 +24,38 @@ class BuiltinImage(Source):
     __version__ = 0
 
     # Flag to set the image data type.
-    source = Enum(
-        'ellipsoid',
-        'gaussian',
-        'grid',
-        'mandelbrot',
-        'noise',
-        'sinusoid',
-        'rt_analytic',
-        desc='which image data source to be used')
+    source = Enum('ellipsoid','gaussian','grid','mandelbrot','noise',
+                  'sinusoid','rt_analytic',
+                  desc='which image data source to be used')
 
     # Define the trait 'data_source' whose value must be an instance of
     # type ImageAlgorithm
-    data_source = Instance(tvtk.ImageAlgorithm, allow_none=False, record=True)
+    data_source = Instance(tvtk.ImageAlgorithm, allow_none=False,
+                                     record=True)
+
 
     # Information about what this object can produce.
-    output_info = PipelineInfo(
-        datasets=['image_data'], attribute_types=['any'], attributes=['any'])
+    output_info = PipelineInfo(datasets=['image_data'],
+                               attribute_types=['any'],
+                               attributes=['any'])
 
     # Create the UI for the traits.
-    view = View(
-        Group(
-            Item(name='source'),
-            Item(
-                name='data_source', style='custom', resizable=True),
-            label='Image Source',
-            show_labels=False),
-        resizable=True)
+    view = View(Group(Item(name='source'),
+                  Item(name='data_source',
+                       style='custom',
+                       resizable=True),
+                   label='Image Source',
+                    show_labels=False),
+             resizable=True)
 
     ########################################
     # Private traits.
 
     # A dictionary that maps the source names to instances of the
     # image data objects.
-    _source_dict = Dict(Str, Instance(tvtk.ImageAlgorithm, allow_none=False))
+    _source_dict = Dict(Str,
+                          Instance(tvtk.ImageAlgorithm,
+                                   allow_none=False))
 
     ######################################################################
     # `object` interface
@@ -96,7 +94,7 @@ class BuiltinImage(Source):
         """This method is invoked (automatically) when the
         image data source is changed ."""
 
-        self.outputs = [self.data_source.output]
+        self.outputs = [self.data_source]
 
         if old is not None:
             old.on_trait_change(self.render, remove=True)
@@ -105,13 +103,13 @@ class BuiltinImage(Source):
     def __source_dict_default(self):
         """The default _source_dict trait."""
         sd = {
-            'ellipsoid': tvtk.ImageEllipsoidSource(),
-            'gaussian': tvtk.ImageGaussianSource(),
-            'grid': tvtk.ImageGridSource(),
-            'mandelbrot': tvtk.ImageMandelbrotSource(),
-            'noise': tvtk.ImageNoiseSource(),
-            'sinusoid': tvtk.ImageSinusoidSource(),
-        }
+              'ellipsoid':tvtk.ImageEllipsoidSource(),
+              'gaussian':tvtk.ImageGaussianSource(),
+              'grid':tvtk.ImageGridSource(),
+              'mandelbrot':tvtk.ImageMandelbrotSource(),
+              'noise':tvtk.ImageNoiseSource(),
+              'sinusoid':tvtk.ImageSinusoidSource(),
+             }
         if hasattr(tvtk, 'RTAnalyticSource'):
             sd['rt_analytic'] = tvtk.RTAnalyticSource()
         else:

@@ -28,16 +28,15 @@ from pyface.api import GUI
 def make_data(dims=(128, 128, 128)):
     """Creates some simple array data of the given dimensions to test
     with."""
-    np = dims[0] * dims[1] * dims[2]
+    np = dims[0]*dims[1]*dims[2]
 
     # Create some scalars to render.
-    x, y, z = numpy.ogrid[-5:5:dims[0] * 1j, -5:5:dims[1] * 1j, -5:5:dims[2] *
-                          1j]
+    x, y, z = numpy.ogrid[-5:5:dims[0]*1j,-5:5:dims[1]*1j,-5:5:dims[2]*1j]
     x = x.astype('f')
     y = y.astype('f')
     z = z.astype('f')
 
-    scalars = (numpy.sin(x * y * z) / (x * y * z))
+    scalars = (numpy.sin(x*y*z)/(x*y*z))
     # The copy makes the data contiguous and the transpose makes it
     # suitable for display via tvtk.  Please note that we assume here
     # that the ArraySource is configured to not transpose the data.
@@ -56,12 +55,10 @@ class ThreadedAction(Thread):
         self.data = data
 
     def run(self):
-        print(
-            "Performing expensive calculation in %s..." % self.getName(),
-            end=' ')
+        print("Performing expensive calculation in %s..."%self.getName(), end=' ')
         sleep(3)
         sd = self.data.scalar_data
-        sd += numpy.sin(numpy.random.rand(*sd.shape) * 2.0 * numpy.pi)
+        sd += numpy.sin(numpy.random.rand(*sd.shape)*2.0*numpy.pi)
         GUI.invoke_later(self.data.update)
         print('done.')
 

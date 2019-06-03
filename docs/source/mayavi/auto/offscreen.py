@@ -40,8 +40,8 @@ def main():
 
     # Now setup a normal MayaVi pipeline.
     src = VTKXMLFileReader()
-    src.initialize(
-        join(get_data_dir(dirname(abspath(__file__))), 'fire_ug.vtu'))
+    src.initialize(join(get_data_dir(dirname(abspath(__file__))),
+                        'fire_ug.vtu'))
     e.add_source(src)
     e.add_module(Outline())
     e.add_module(ScalarCutPlane())

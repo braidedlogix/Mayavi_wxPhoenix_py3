@@ -5,16 +5,14 @@ from numpy.testing import assert_allclose
 
 from tvtk.tools import visual
 
-
 def get_bounds(pos, sz):
     pos = np.asarray(pos)
     sz = np.asarray(sz)
-    diff = sz * 0.5
+    diff = sz*0.5
     bounds = np.zeros(6, dtype=float)
     bounds[::2] = pos - diff
     bounds[1::2] = pos + diff
     return bounds
-
 
 class DummyScene:
     def __init__(self):
@@ -74,15 +72,13 @@ class TestVisual(unittest.TestCase):
         # When
         r = visual.ring(axis=(0., 1., 0.))
         # Then
-        assert_allclose(
-            r.polydata.bounds, (-0.5, 0.5, 0.0, 0.0, -0.5, 0.5),
-            atol=1e-8,
-            rtol=0)
+        assert_allclose(r.polydata.bounds, (-0.5, 0.5, 0.0, 0.0, -0.5, 0.5),
+                        atol=1e-8, rtol=0)
         self.assertEqual(r.radius, 0.5)
         self.assertEqual(r.tube.radius, 0.01)
 
         # When
-        r.axis = 1, 0, 0
+        r.axis = 1,0,0
         assert_allclose(r.polydata.bounds, (0.0, 0.0, -0.5, 0.5, -0.5, 0.5))
 
     def test_cone(self):
@@ -90,8 +86,9 @@ class TestVisual(unittest.TestCase):
         c = visual.cone()
 
         # Then
-        z = np.sqrt(3) / 4
-        assert_allclose(c.polydata.bounds, (-0.5, 0.5, -0.5, 0.5, -z, z))
+        z = np.sqrt(3)/4
+        assert_allclose(c.polydata.bounds,
+                        (-0.5, 0.5, -0.5, 0.5, -z, z))
         self.assertEqual(c.radius, 0.5)
         self.assertEqual(c.height, 1.0)
 
@@ -99,14 +96,16 @@ class TestVisual(unittest.TestCase):
         c = visual.cone(pos=(1.0, 1.0, 1.0))
 
         # Then
-        z = np.sqrt(3) / 4
-        assert_allclose(c.polydata.bounds, (0.5, 1.5, 0.5, 1.5, 1 - z, 1 + z))
+        z = np.sqrt(3)/4
+        assert_allclose(c.polydata.bounds,
+                        (0.5, 1.5, 0.5, 1.5, 1-z, 1+z))
 
         # When
         c = visual.cone(axis=(0, 1, 0), height=2.0)
         # Then
-        z = np.sqrt(3) / 4
-        assert_allclose(c.polydata.bounds, (-0.5, 0.5, -1, 1., -z, z))
+        z = np.sqrt(3)/4
+        assert_allclose(c.polydata.bounds,
+                        (-0.5, 0.5, -1, 1., -z, z))
 
     def test_sphere(self):
         # When
@@ -116,36 +115,38 @@ class TestVisual(unittest.TestCase):
 
         # The discrete representation of the sphere makes the bounds a bit
         # smaller than one would expect.
-        assert_allclose(
-            s.polydata.bounds, (-0.5, 0.5, -0.5, 0.5, -0.5, 0.5), rtol=1e-2)
+        assert_allclose(s.polydata.bounds,
+                        (-0.5, 0.5, -0.5, 0.5, -0.5, 0.5), rtol=1e-2)
         self.assertEqual(s.radius, 0.5)
 
         # When
         s = visual.sphere(pos=(1.0, 1.0, 1.0))
         # Then
-        assert_allclose(
-            s.polydata.bounds, (0.5, 1.5, 0.5, 1.5, 0.5, 1.5), rtol=1e-2)
+        assert_allclose(s.polydata.bounds,
+                        (0.5, 1.5, 0.5, 1.5, 0.5, 1.5), rtol=1e-2)
 
         # When
         s = visual.sphere(x=1.0)
         # Then
-        assert_allclose(
-            s.polydata.bounds, (0.5, 1.5, -0.5, 0.5, -0.5, 0.5), rtol=1e-2)
+        assert_allclose(s.polydata.bounds,
+                        (0.5, 1.5, -0.5, 0.5, -0.5, 0.5), rtol=1e-2)
 
     def test_cylinder(self):
         # When
-        c = visual.cylinder(radius=0.5, length=2, pos=(1, 1, 1))
+        c = visual.cylinder(radius=0.5, length=2, pos=(1., 1, 1))
 
         # Then
         assert_allclose(
-            c.polydata.bounds, (1.0, 3.0, 0.5, 1.5, 0.5, 1.5), rtol=1e-2)
+            c.polydata.bounds, (1.0, 3.0, 0.5, 1.5, 0.5, 1.5), rtol=1e-2
+         )
 
         # When
         c = visual.cylinder(radius=0.5, length=2, x=1.0)
 
         # Then
         assert_allclose(
-            c.polydata.bounds, (1.0, 3.0, -0.5, 0.5, -0.5, 0.5), rtol=5e-2)
+            c.polydata.bounds, (1.0, 3.0, -0.5, 0.5, -0.5, 0.5), rtol=5e-2
+         )
 
     def test_box(self):
         # When
@@ -162,14 +163,14 @@ class TestVisual(unittest.TestCase):
         orig_bounds = (-0.5, 0.5, -0.5, 0.5, -0.5, 0.5)
         assert_allclose(b.polydata.bounds, orig_bounds)
         # When
-        b.axis = 1, 1, 0
+        b.axis = 1,1,0
         # Then
         x = np.sqrt(2)
-        bounds = get_bounds((0., 0, 0), (x, x, 1.0))
+        bounds = get_bounds((0.,0,0), (x, x, 1.0))
         assert_allclose(b.polydata.bounds, bounds)
 
         # When
-        b.axis = 1, 0, 0
+        b.axis = 1,0,0
         assert_allclose(b.polydata.bounds, orig_bounds)
 
     def test_arrow(self):
@@ -189,15 +190,15 @@ class TestVisual(unittest.TestCase):
         assert_allclose(a.polydata.bounds, bounds, atol=1e-3, rtol=0)
 
         # Given
-        a = visual.arrow(pos=(1, 1, 1))
+        a = visual.arrow(pos=(1.0, 1.0, 1.0))
         # Then
         bounds = get_bounds((1.5, 1.0, 1.0), (1.0, 0.16, 0.14))
-        assert_allclose(a.pos, (1, 1, 1))
+        assert_allclose(a.pos, (1., 1., 1.))
         assert_allclose(a.polydata.bounds, bounds, atol=1e-3, rtol=0)
 
     def test_ellipsoid(self):
         # When
-        s = visual.ellipsoid(size=(1.0, 1.0, 1.0), pos=(1, 1, 1))
+        s = visual.ellipsoid(size=(1.0, 1.0, 1.0), pos=(1., 1., 1.))
 
         # Then
 
@@ -230,28 +231,28 @@ class TestVisual(unittest.TestCase):
 
     def test_curve(self):
         # Given/When
-        c = visual.curve(points=[[0, 0, 0], [1, 1, 1]], pos=(1, 1, 1))
+        c = visual.curve(points=[[0.,0.,0.],[1.,1.,1.]], pos=(1.,1.,1.))
 
         # Then
         bounds = get_bounds((1.5, 1.5, 1.5), (1.0, 1.0, 1.0))
         assert_allclose(c.polydata.bounds, bounds)
 
         # When
-        c = visual.curve(points=[[0, 0, 0], [1, 1, 1]], axis=(0, 1, 0))
+        c = visual.curve(points=[[0.,0,0],[1.,1,1]], axis=(0., 1, 0))
         # Then
         bounds = get_bounds((-0.5, 0.5, 0.5), (1.0, 1.0, 1.0))
         assert_allclose(c.polydata.bounds, bounds)
 
     def test_helix(self):
         # Given/When
-        h = visual.helix(pos=(1, 1, 1))
+        h = visual.helix(pos=(1., 1.,1.))
 
         # Then
         bounds = get_bounds((1.5, 1.0, 1.0), (1.0, 0.4, 0.4))
         assert_allclose(h.polydata.bounds, bounds, atol=3e-2, rtol=0)
 
         # Given/When
-        h.axis = 0, 1, 0
+        h.axis = 0., 1., 0.
         # Then
         bounds = get_bounds((1.0, 1.5, 1.0), (0.4, 1.0, 0.4))
         assert_allclose(h.polydata.bounds, bounds, atol=3e-2, rtol=0)
@@ -291,7 +292,6 @@ class TestVisual(unittest.TestCase):
         assert_allclose(s.pos, pos, rtol=0, atol=1e-15)
         assert_allclose(a.pos, pos, rtol=0, atol=1e-15)
         assert_allclose(f.pos, pos, rtol=0, atol=1e-15)
-
 
 if __name__ == '__main__':
     unittest.main()

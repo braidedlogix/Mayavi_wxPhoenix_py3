@@ -20,25 +20,24 @@ from mayavi.modules.outline import Outline
 
 
 class TestPlot3dMbReader(unittest.TestCase):
+
     def setUp(self):
-        """Initial setting up of test fixture, automatically called by TestCase before any other test method is invoked"""
         e = NullEngine()
         # Uncomment to see visualization for debugging etc.
-        #e = Engine()
+        # e = Engine()
         e.start()
         e.new_scene()
         self.e = e
 
         # Read the multi-block plot3d file.
         r = PLOT3DReader()
-        r.reader.set(has_byte_count=True,
-                     multi_grid=True,
-                     byte_order='little_endian')
-        r.initialize(
-            get_example_data('tiny.xyz'),
-            get_example_data('tiny.q'),
-            configure=False)
+        r.reader.trait_set(has_byte_count=True, multi_grid=True,
+                           byte_order='little_endian')
+        r.initialize(get_example_data('tiny.xyz'),
+                     get_example_data('tiny.q'),
+                     configure=False)
         e.add_source(r)
+
         # Add the filter.
         f = SelectOutput()
         e.add_filter(f)
@@ -54,23 +53,19 @@ class TestPlot3dMbReader(unittest.TestCase):
         return
 
     def tearDown(self):
-        """For necessary clean up, automatically called by TestCase after the test methods have been invoked"""
         self.e.stop()
         return
 
     def test_plot3d_mb_reader(self):
-        "Test if the test fixture works"
-        s = self.scene
         o = self.o
-        #Check the bounds of the outline.
+        # Check the bounds of the outline.
         self.assertEqual(o.outline_filter.output.bounds,
                          (1.0, 2.0, 1.0, 2.0, 1.0, 2.0))
 
-        #from mayavi.tools.show import show
-        #show()
+        # from mayavi.tools.show import show
+        # show()
 
     def test_save_and_restore(self):
-        """Test if saving a visualization and restoring it works."""
         engine = self.e
         scene = self.scene
 
@@ -93,9 +88,6 @@ class TestPlot3dMbReader(unittest.TestCase):
                          (1.0, 2.0, 1.0, 2.0, 1.0, 2.0))
 
     def test_deepcopied(self):
-        """Test if the MayaVi2 visualization can be deep-copied.
-           XXX: The plot 3d reader and multi block version are broken in
-                vtk 5.10.1. This will be fixed in next Mayavi release."""
         ############################################################
         # Copy the reader to see if it does not pop up the UI.
 

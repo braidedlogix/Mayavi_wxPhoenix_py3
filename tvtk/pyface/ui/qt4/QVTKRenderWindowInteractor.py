@@ -43,31 +43,72 @@ Changes by Fabian Wenzel, Jan. 2016
 import sys
 
 from pyface.qt import qt_api
-if qt_api == 'pyqt4':
+if qt_api == 'pyqt':
     PyQtImpl = "PyQt4"
-elif qt_api == 'pyside':
-    PyQtImpl = "PySide"
-else:
+elif qt_api == 'pyqt5':
     PyQtImpl = "PyQt5"
+elif qt_api == 'pyside2':
+    PyQtImpl = "PySide2"
+else:
+    PyQtImpl = "PySide"
 
 import vtk
 
 from tvtk import messenger
 
+# Check whether a specific QVTKRenderWindowInteractor base
+# class was chosen, can be set to "QGLWidget"
+QVTKRWIBase = "QWidget"
+try:
+    import vtk.qt
+    QVTKRWIBase = vtk.qt.QVTKRWIBase
+except (ImportError, AttributeError):
+    pass
+
 if PyQtImpl == "PyQt5":
+    if QVTKRWIBase == "QGLWidget":
+        try:
+            from PyQt5.QtWidgets import QOpenGLWidget as QGLWidget
+        except:
+            from PyQt5.QtOpenGL import QGLWidget
     from PyQt5.QtWidgets import QWidget, QSizePolicy, QApplication
     from PyQt5.QtGui import QWheelEvent
     from PyQt5.QtCore import Qt, QTimer, QObject, QSize, QEvent
 elif PyQtImpl == "PyQt4":
+    if QVTKRWIBase == "QGLWidget":
+        from PyQt4.QtOpenGL import QGLWidget
     from PyQt4.QtGui import QWidget, QSizePolicy, QApplication, QWheelEvent
     from PyQt4.QtCore import Qt, QTimer, QObject, QSize, QEvent
 elif PyQtImpl == "PySide":
+    if QVTKRWIBase == "QGLWidget":
+        from PySide.QtOpenGL import QGLWidget
     from PySide.QtGui import QWidget, QSizePolicy, QApplication, QWheelEvent
     from PySide.QtCore import Qt, QTimer, QObject, QSize, QEvent
+elif PyQtImpl == "PySide2":
+    if QVTKRWIBase == "QGLWidget":
+        try:
+            from PySide2.QtWidgets import QOpenGLWidget as QGLWidget
+        except:
+            from PySide2.QtOpenGL import QGLWidget
+    from PySide2.QtWidgets import QWidget, QSizePolicy, QApplication
+    from PySide2.QtGui import QWheelEvent
+    from PySide2.QtCore import Qt, QTimer, QObject, QSize, QEvent
 else:
     raise ImportError("Unknown PyQt implementation " + repr(PyQtImpl))
 
-class QVTKRenderWindowInteractor(QWidget):
+
+# Define types for base class, based on string
+if QVTKRWIBase == "QWidget":
+    QVTKRWIBaseClass = QWidget
+elif QVTKRWIBase == "QGLWidget":
+    QVTKRWIBaseClass = QGLWidget
+else:
+    raise ImportError(
+        "Unknown base class for QVTKRenderWindowInteractor " + QVTKRWIBase
+    )
+
+
+class QVTKRenderWindowInteractor(QVTKRWIBaseClass):
 
     """ A QVTKRenderWindowInteractor for Python and Qt.  Uses a
     vtkGenericRenderWindowInteractor to handle the interactions.  Use
@@ -151,16 +192,16 @@ class QVTKRenderWindowInteractor(QWidget):
         10: Qt.CrossCursor,          # VTK_CURSOR_CROSSHAIR
     }
 
-    def __init__(self, parent=None, wflags=Qt.WindowFlags(), **kw):
+    def __init__(self, parent=None, **kw):
         # the current button
         self._ActiveButton = Qt.NoButton
 
         # private attributes
-        self.__oldFocus = None
         self.__saveX = 0
         self.__saveY = 0
         self.__saveModifiers = Qt.NoModifier
         self.__saveButtons = Qt.NoButton
+        self.__wheelDelta = 0
 
         # do special handling of some keywords:
         # stereo, rw
@@ -176,9 +217,16 @@ class QVTKRenderWindowInteractor(QWidget):
             rw = None
 
         # create qt-level widget
-        QWidget.__init__(self, parent, wflags|Qt.MSWindowsOwnDC)
+        if QVTKRWIBase == "QWidget":
+            if "wflags" in kw:
+                wflags = kw['wflags']
+            else:
+                wflags = Qt.WindowFlags()
+            QWidget.__init__(self, parent, wflags | Qt.MSWindowsOwnDC)
+        elif QVTKRWIBase == "QGLWidget":
+            QGLWidget.__init__(self, parent)
 
-        if rw: # user-supplied render window
+        if rw:  # user-supplied render window
             self._RenderWindow = rw
         else:
             self._RenderWindow = vtk.vtkRenderWindow()
@@ -188,7 +236,7 @@ class QVTKRenderWindowInteractor(QWidget):
 
         self._should_set_parent_info = (sys.platform == 'win32')
 
-        if stereo: # stereo mode
+        if stereo:  # stereo mode
             self._RenderWindow.StereoCapableWindowOn()
             self._RenderWindow.SetStereoTypeToCrystalEyes()
 
@@ -198,6 +246,11 @@ class QVTKRenderWindowInteractor(QWidget):
             self._Iren = vtk.vtkGenericRenderWindowInteractor()
 
         self._Iren.SetRenderWindow(self._RenderWindow)
+
+        if hasattr(self, 'devicePixelRatio'):
+            self._pixel_ratio = self.devicePixelRatio()
+        else:
+            self._pixel_ratio = 1.0
 
         # do all the necessary qt setup
         self.setAttribute(Qt.WA_OpaquePaintEvent)
@@ -210,12 +263,13 @@ class QVTKRenderWindowInteractor(QWidget):
         self._Timer.timeout.connect(self.TimerEvent)
 
         # add wheel timer to fix scrolling issue with trackpad
-        self.wheel_timer = QTimer()
-        self.wheel_timer.setSingleShot(True)
-        self.wheel_timer.setInterval(25)
-        self.wheel_timer.timeout.connect(self._emit_wheel_event)
-        self.wheel_accumulator = 0
-        self._saved_wheel_event_info = ()
+        self.wheel_timer = None
+        if PyQtImpl != 'PyQt5':
+            self.wheel_timer = QTimer()
+            self.wheel_timer.setSingleShot(True)
+            self.wheel_timer.setInterval(25)
+            self.wheel_timer.timeout.connect(self._emit_wheel_event)
+            self._saved_wheel_event_info = ()
 
         self._Iren.AddObserver('CreateTimerEvent', messenger.send)
         messenger.connect(self._Iren, 'CreateTimerEvent', self.CreateTimer)
@@ -329,8 +383,9 @@ class QVTKRenderWindowInteractor(QWidget):
             else:
                 self._RenderWindow.SetParentInfo('')
 
-        w = self.width()
-        h = self.height()
+        pxr = self._pixel_ratio
+        w = int(self.width()*pxr)
+        h = int(self.height()*pxr)
 
         vtk.vtkRenderWindow.SetSize(self._RenderWindow, w, h)
         self._Iren.SetSize(w, h)
@@ -354,20 +409,12 @@ class QVTKRenderWindowInteractor(QWidget):
         return ctrl, shift
 
     def enterEvent(self, ev):
-        if not self.hasFocus():
-            self.__oldFocus = self.focusWidget()
-            self.setFocus()
-
         ctrl, shift = self._GetCtrlShift(ev)
         self._Iren.SetEventInformationFlipY(self.__saveX, self.__saveY,
                                             ctrl, shift, chr(0), 0, None)
         self._Iren.EnterEvent()
 
     def leaveEvent(self, ev):
-        if self.__saveButtons == Qt.NoButton and self.__oldFocus:
-            self.__oldFocus.setFocus()
-            self.__oldFocus = None
-
         ctrl, shift = self._GetCtrlShift(ev)
         self._Iren.SetEventInformationFlipY(self.__saveX, self.__saveY,
                                             ctrl, shift, chr(0), 0, None)
@@ -378,7 +425,9 @@ class QVTKRenderWindowInteractor(QWidget):
         repeat = 0
         if ev.type() == QEvent.MouseButtonDblClick:
             repeat = 1
-        self._Iren.SetEventInformationFlipY(ev.x(), ev.y(),
+
+        pxr = self._pixel_ratio
+        self._Iren.SetEventInformationFlipY(int(ev.x()*pxr), int(ev.y()*pxr),
                                             ctrl, shift, chr(0), repeat, None)
 
         self._ActiveButton = ev.button()
@@ -392,7 +441,8 @@ class QVTKRenderWindowInteractor(QWidget):
 
     def mouseReleaseEvent(self, ev):
         ctrl, shift = self._GetCtrlShift(ev)
-        self._Iren.SetEventInformationFlipY(ev.x(), ev.y(),
+        pxr = self._pixel_ratio
+        self._Iren.SetEventInformationFlipY(int(ev.x()*pxr), int(ev.y()*pxr),
                                             ctrl, shift, chr(0), 0, None)
 
         if self._ActiveButton == Qt.LeftButton:
@@ -405,11 +455,12 @@ class QVTKRenderWindowInteractor(QWidget):
     def mouseMoveEvent(self, ev):
         self.__saveModifiers = ev.modifiers()
         self.__saveButtons = ev.buttons()
-        self.__saveX = ev.x()
-        self.__saveY = ev.y()
+        pxr = self._pixel_ratio
+        self.__saveX = int(ev.x()*pxr)
+        self.__saveY = int(ev.y()*pxr)
 
         ctrl, shift = self._GetCtrlShift(ev)
-        self._Iren.SetEventInformationFlipY(ev.x(), ev.y(),
+        self._Iren.SetEventInformationFlipY(int(ev.x()*pxr), int(ev.y()*pxr),
                                             ctrl, shift, chr(0), 0, None)
         self._Iren.MouseMoveEvent()
 
@@ -470,18 +521,27 @@ class QVTKRenderWindowInteractor(QWidget):
         are not handled, since they seem to be too much of a corner case to be
         worth handling.
         """
-        self.wheel_accumulator += ev.delta()
-        self._saved_wheel_event_info = (
-                                        ev.pos(),
-                                        ev.globalPos(),
-                                        self.wheel_accumulator,
-                                        ev.buttons(),
-                                        ev.modifiers(),
-                                        ev.orientation()
-                                    )
-        ev.setAccepted(True)
+        if hasattr(ev, 'delta'):
+            self.__wheelDelta += ev.delta()
+            self._saved_wheel_event_info = (
+                ev.pos(),
+                ev.globalPos(),
+                self.__wheelDelta,
+                ev.buttons(),
+                ev.modifiers(),
+                ev.orientation()
+            )
+        else:
+            self.__wheelDelta += ev.angleDelta().y()
+            if self.__wheelDelta >= 60:
+                self._Iren.MouseWheelForwardEvent()
+                self.__wheelDelta = 0
+            elif self.__wheelDelta <= -60:
+                self._Iren.MouseWheelBackwardEvent()
+                self.__wheelDelta = 0
 
-        if not self.wheel_timer.isActive():
+        if self.wheel_timer and not self.wheel_timer.isActive():
+            ev.setAccepted(True)
             self.wheel_timer.start()
 
     def _emit_wheel_event(self):
@@ -491,7 +551,7 @@ class QVTKRenderWindowInteractor(QWidget):
         else:
             self._Iren.MouseWheelBackwardEvent()
         self.wheel_timer.stop()
-        self.wheel_accumulator = 0
+        self.__wheelDelta = 0
 
     def GetRenderWindow(self):
         return self._RenderWindow
@@ -628,6 +688,7 @@ _keysyms = {
     Qt.Key_ScrollLock: 'Scroll_Lock',
     }
 
+
 def _qt_key_to_key_sym(key):
     """ Convert a Qt key into a vtk keysym.
 
@@ -636,7 +697,7 @@ def _qt_key_to_key_sym(key):
     """
 
     if key not in _keysyms:
-        return None
+        return 'None'
 
     return _keysyms[key]
 

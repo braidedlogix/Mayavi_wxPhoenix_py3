@@ -6,7 +6,7 @@ array as ImageData.  This supports both scalar and vector data.
 # License: BSD Style.
 
 # Standard library imports.
-import numpy
+import numpy as np
 from vtk.util import vtkConstants
 
 # Enthought library imports
@@ -14,8 +14,9 @@ from traits.api import (Instance, Trait, Str, Bool, Button, DelegatesTo, List,
                         Int)
 from traitsui.api import View, Group, Item
 from tvtk.api import tvtk
-from tvtk import array_handler
+from tvtk.array_handler import array2vtk, get_vtk_array_type
 from tvtk.common import is_old_pipeline
+from tvtk.vtk_module import VTK_MAJOR_VERSION
 
 # Local imports
 from mayavi.core.source import Source
@@ -26,14 +27,14 @@ def _check_scalar_array(obj, name, value):
     """Validates a scalar array passed to the object."""
     if value is None:
         return None
-    arr = numpy.asarray(value)
+    arr = np.asarray(value)
     assert len(arr.shape) in [2, 3], "Scalar array must be 2 or 3 dimensional"
     vd = obj.vector_data
     if vd is not None:
         assert vd.shape[:-1] == arr.shape, \
                "Scalar array must match already set vector data.\n"\
-               "vector_data.shape = %s, given array shape = %s"%(vd.shape,
-                                                                 arr.shape)
+               "vector_data.shape = %s, given array shape = %s" % (vd.shape,
+                                                                   arr.shape)
     return arr
 
 
@@ -44,16 +45,16 @@ def _check_vector_array(obj, name, value):
     """Validates a vector array passed to the object."""
     if value is None:
         return None
-    arr = numpy.asarray(value)
+    arr = np.asarray(value)
     assert len(arr.shape) in [3, 4], "Vector array must be 3 or 4 dimensional"
     assert arr.shape[-1] == 3, \
-           "The vectors must be three dimensional with `array.shape[-1] == 3`"
+        "The vectors must be three dimensional with `array.shape[-1] == 3`"
     sd = obj.scalar_data
     if sd is not None:
         assert arr.shape[:-1] == sd.shape, \
                "Vector array must match already set scalar data.\n"\
-               "scalar_data.shape = %s, given array shape = %s"%(sd.shape,
-                                                                 arr.shape)
+               "scalar_data.shape = %s, given array shape = %s" % (sd.shape,
+                                                                   arr.shape)
     return arr
 
 
@@ -64,6 +65,7 @@ _check_vector_array.info = 'a 3D or 4D numpy array with shape[-1] = 3'
 # 'ArraySource' class.
 ######################################################################
 class ArraySource(Source):
+
     """A simple source that allows one to view a suitably shaped numpy
     array as ImageData.  This supports both scalar and vector data.
     """
@@ -81,16 +83,12 @@ class ArraySource(Source):
     vector_name = Str('vector')
 
     # The spacing of the points in the array.
-    spacing = DelegatesTo(
-        'change_information_filter',
-        'output_spacing',
-        desc='the spacing between points in array')
+    spacing = DelegatesTo('change_information_filter', 'output_spacing',
+                          desc='the spacing between points in array')
 
     # The origin of the points in the array.
-    origin = DelegatesTo(
-        'change_information_filter',
-        'output_origin',
-        desc='the origin of the points in array')
+    origin = DelegatesTo('change_information_filter', 'output_origin',
+                         desc='the origin of the points in array')
 
     # Fire an event to update the spacing and origin. This
     # is here for backwards compatability. Firing this is no
@@ -102,13 +100,9 @@ class ArraySource(Source):
 
     # Use an ImageChangeInformation filter to reliably set the
     # spacing and origin on the output
-    change_information_filter = Instance(
-        tvtk.ImageChangeInformation,
-        args=(),
-        kw={
-            'output_spacing': (1.0, 1.0, 1.0),
-            'output_origin': (0.0, 0.0, 0.0)
-        })
+    change_information_filter = Instance(tvtk.ImageChangeInformation, args=(),
+                                         kw={'output_spacing': (1.0, 1.0, 1.0),
+                                             'output_origin': (0.0, 0.0, 0.0)})
 
     # Should we transpose the input data or not.  Transposing is
     # necessary to make the numpy array compatible with the way VTK
@@ -119,7 +113,8 @@ class ArraySource(Source):
     # formatted by the user.
     transpose_input_array = Bool(
         True,
-        desc='if input array should be transposed (if on VTK will copy the input data)'
+        desc='if input array should be transposed (if True '
+        'VTK will copy the input data)'
     )
 
     # Information about what this object can produce.
@@ -129,14 +124,13 @@ class ArraySource(Source):
     dimensions_order = List(Int, [0, 1, 2])
 
     # Our view.
-    view = View(
-        Group(
-            Item(name='transpose_input_array'),
-            Item(name='scalar_name'),
-            Item(name='vector_name'),
-            Item(name='spacing'),
-            Item(name='origin'),
-            show_labels=True))
+    view = View(Group(Item(name='transpose_input_array'),
+                      Item(name='scalar_name'),
+                      Item(name='vector_name'),
+                      Item(name='spacing'),
+                      Item(name='origin'),
+                      show_labels=True)
+                )
 
     ######################################################################
     # `object` interface.
@@ -156,7 +150,7 @@ class ArraySource(Source):
         if vd is not None:
             self.vector_data = vd
 
-        self.outputs = [self.change_information_filter.output]
+        self.outputs = [self.change_information_filter]
         self.on_trait_change(self._information_changed, 'spacing,origin')
 
     def __get_pure_state__(self):
@@ -180,6 +174,50 @@ class ArraySource(Source):
         self.change_information_filter.update()
         self.data_changed = True
 
+    def add_attribute(self, array, name, category='point'):
+        """Add an attribute to the dataset to specified category ('point' or
+        'cell').
+
+        One may add a scalar, vector (3/4 components) or a tensor (9
+        components).
+
+        Note that it is the user's responsibility to set the correct size of
+        the arrays. Also no automatic transposing of the data is done.
+
+        Parameters
+        ----------
+
+        array: numpy array/list : array data to add.
+
+        name: str: name of the array.
+
+        category: 'point'/'cell': the category of the attribute data.
+
+        """
+        array = np.asarray(array)
+        assert len(array.shape) <= 2, "Only 2D arrays can be added."
+        data = getattr(self.image_data, '%s_data' % category)
+        if len(array.shape) == 2:
+            assert array.shape[1] in [1, 3, 4, 9], \
+                    "Only N x m arrays where (m in [1,3,4,9]) are supported"
+        va = tvtk.to_tvtk(array2vtk(array))
+        va.name = name
+        data.add_array(va)
+
+    def remove_attribute(self, name, category='point'):
+        """Remove an attribute by its name and optional category (point and
+        cell).  Returns the removed array.
+        """
+        data = getattr(self.image_data, '%s_data' % category)
+        data.remove_array(name)
+
+    def rename_attribute(self, name1, name2, category='point'):
+        """Rename a particular attribute from `name1` to `name2`.
+        """
+        data = getattr(self.image_data, '%s_data' % category)
+        arr = data.get_array(name1)
+        arr.name = name2
+
     ######################################################################
     # Non-public interface.
     ######################################################################
@@ -202,32 +240,27 @@ class ArraySource(Source):
 
         img_data.origin = tuple(self.origin)
         img_data.dimensions = tuple(dims)
-        img_data.extent = 0, dims[dim0] - 1, 0, dims[dim1] - 1, 0, dims[
-            dim2] - 1
-        if is_old_pipeline():
-            img_data.update_extent = 0, dims[dim0] - 1, 0, dims[
-                dim1] - 1, 0, dims[dim2] - 1
-        else:
-            update_extent = [
-                0, dims[dim0] - 1, 0, dims[dim1] - 1, 0, dims[dim2] - 1
-            ]
-            self.change_information_filter.set_update_extent(update_extent)
+        img_data.extent = 0, dims[dim0]-1, 0, dims[dim1]-1, 0, dims[dim2]-1
+        if VTK_MAJOR_VERSION <= 7:
+            if is_old_pipeline():
+                img_data.update_extent = 0, dims[dim0]-1, 0, dims[dim1]-1, 0, dims[dim2]-1
+            else:
+                update_extent = [0, dims[dim0]-1, 0, dims[dim1]-1, 0, dims[dim2]-1]
+                self.change_information_filter.set_update_extent(update_extent)
         if self.transpose_input_array:
-            img_data.point_data.scalars = numpy.ravel(numpy.transpose(data))
+            img_data.point_data.scalars = np.ravel(np.transpose(data))
         else:
-            img_data.point_data.scalars = numpy.ravel(data)
+            img_data.point_data.scalars = np.ravel(data)
         img_data.point_data.scalars.name = self.scalar_name
         # This is very important and if not done can lead to a segfault!
         typecode = data.dtype
         if is_old_pipeline():
-            img_data.scalar_type = array_handler.get_vtk_array_type(typecode)
-            img_data.update()  # This sets up the extents correctly.
+            img_data.scalar_type = get_vtk_array_type(typecode)
+            img_data.update() # This sets up the extents correctly.
         else:
-            filter_out_info = self.change_information_filter.get_output_information(
-                0)
-            img_data.set_point_data_active_scalar_info(
-                filter_out_info,
-                array_handler.get_vtk_array_type(typecode), -1)
+            filter_out_info = self.change_information_filter.get_output_information(0)
+            img_data.set_point_data_active_scalar_info(filter_out_info,
+                                                       get_vtk_array_type(typecode), -1)
             img_data.modified()
         img_data.update_traits()
         self.change_information_filter.update()
@@ -244,27 +277,27 @@ class ArraySource(Source):
         dims = list(data.shape)
         if len(dims) == 3:
             dims.insert(2, 1)
-            data = numpy.reshape(data, dims)
+            data = np.reshape(data, dims)
 
         img_data.origin = tuple(self.origin)
         img_data.dimensions = tuple(dims[:-1])
-        img_data.extent = 0, dims[0] - 1, 0, dims[1] - 1, 0, dims[2] - 1
-        if is_old_pipeline():
-            img_data.update_extent = 0, dims[0] - 1, 0, dims[1] - 1, 0, dims[
-                2] - 1
-        else:
-            self.change_information_filter.update_information()
-            update_extent = [0, dims[0] - 1, 0, dims[1] - 1, 0, dims[2] - 1]
-            self.change_information_filter.set_update_extent(update_extent)
-        sz = numpy.size(data)
+        img_data.extent = 0, dims[0]-1, 0, dims[1]-1, 0, dims[2]-1
+        if VTK_MAJOR_VERSION <= 7:
+            if is_old_pipeline():
+                img_data.update_extent = 0, dims[0]-1, 0, dims[1]-1, 0, dims[2]-1
+            else:
+                self.change_information_filter.update_information()
+                update_extent = [0, dims[0]-1, 0, dims[1]-1, 0, dims[2]-1]
+                self.change_information_filter.set_update_extent(update_extent)
+        sz = np.size(data)
         if self.transpose_input_array:
-            data_t = numpy.transpose(data, (2, 1, 0, 3))
+            data_t = np.transpose(data, (2, 1, 0, 3))
         else:
             data_t = data
-        img_data.point_data.vectors = numpy.reshape(data_t, (sz / 3, 3))
+        img_data.point_data.vectors = np.reshape(data_t, (sz//3, 3))
         img_data.point_data.vectors.name = self.vector_name
         if is_old_pipeline():
-            img_data.update()  # This sets up the extents correctly.
+            img_data.update() # This sets up the extents correctly.
         else:
             img_data.modified()
         img_data.update_traits()

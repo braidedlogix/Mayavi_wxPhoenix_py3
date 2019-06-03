@@ -37,13 +37,13 @@ def main():
 
     # Now setup a normal MayaVi pipeline.
     src = VTKXMLFileReader()
-    src.initialize(join(get_data_dir(abspath(__file__)), 'fire_ug.vtu'))
+    src.initialize(join(get_data_dir(abspath(__file__)),
+                        'fire_ug.vtu'))
     e.add_source(src)
     e.add_module(Outline())
     e.add_module(ScalarCutPlane())
     e.add_module(Streamline())
     return e, ui
-
 
 if __name__ == '__main__':
     # When main returns the ui to go out of scope and be gc'd causing the view
@@ -53,3 +53,4 @@ if __name__ == '__main__':
     # main can be run from IPython -wthread if needed.
     gui = GUI()
     gui.start_event_loop()
+

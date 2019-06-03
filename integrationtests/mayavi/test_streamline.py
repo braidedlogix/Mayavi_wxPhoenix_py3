@@ -14,7 +14,8 @@ from os.path import abspath
 from io import BytesIO
 import copy
 import numpy
-import sys
+
+from pyface.api import GUI
 
 # Local imports.
 from common import TestCase, is_running_with_nose
@@ -37,7 +38,8 @@ class TestStreamline(TestCase):
         if is_running_with_nose():
             import unittest
             raise unittest.SkipTest(
-                'This test Segfaults after passing or fails.')
+                'This test Segfaults after passing or fails.'
+            )
         self.main()
 
     def do(self):
@@ -67,23 +69,22 @@ class TestStreamline(TestCase):
         st = Streamline()
         script.add_module(st)
         widget = st.seed.widget
-        widget.set(radius=1.0,
-                   center=(-4.0, -4.0, -4.0),
-                   theta_resolution=4,
-                   phi_resolution=4)
+        widget.trait_set(radius=1.0, center=(-4.0, -4.0, -4.0),
+                         theta_resolution=4, phi_resolution=4)
 
         st = Streamline(streamline_type='ribbon')
         seed = st.seed
         seed.widget = seed.widget_list[1]
         script.add_module(st)
-        seed.widget.set(point1=(-5.0, -4.5, -4.0), point2=(-5.0, -4.5, 4.0))
+        seed.widget.trait_set(point1=(-5.0, -4.5, -4.0),
+                              point2=(-5.0, -4.5, 4.0))
         st.ribbon_filter.width = 0.25
 
         st = Streamline(streamline_type='tube')
         seed = st.seed
         seed.widget = seed.widget_list[2]
         script.add_module(st)
-        seed.widget.set(center=(-5.0, 1.5, -2.5))
+        seed.widget.trait_set(center=(-5.0, 1.5, -2.5))
         st.tube_filter.radius = 0.15
 
         st = Streamline(streamline_type='tube')
@@ -137,7 +138,7 @@ class TestStreamline(TestCase):
         f = BytesIO()
         f.name = abspath('test.mv2')  # We simulate a file.
         script.save_visualization(f)
-        f.seek(0)  # So we can read this saved data.
+        f.seek(0)
 
         # Remove existing scene.
         engine = script.engine
@@ -154,6 +155,13 @@ class TestStreamline(TestCase):
         c.elevation(30)
         s.render()
         s.scene.background = bg
+
+        # For some reason this seems necessary.  Basically, the ribbons
+        # from the line widget do not seem to update.  Flushing the pipeline
+        # helps here.  Our attempt to save/load a pipeline is largely
+        # a convenience so we work around this for now.
+        s.children[0].pipeline_changed = True
+        GUI.process_events()
 
         # Now compare the image.
         self.compare_image(s, 'images/test_streamline.png')

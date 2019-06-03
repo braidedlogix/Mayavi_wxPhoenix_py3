@@ -112,6 +112,7 @@ def user_outline():
 # The WorkerPlugin exposes the service offer and shows the view of this
 # worker.
 
+import numpy as np
 import numpy
 
 from traits.api import HasTraits, Range, Button, Instance, List

@@ -14,3 +14,5 @@ from vtk.util import colors
 
 # Some miscellaneous functionality.
 from tvtk.misc import write_data
+
+from tvtk.tvtk_base import global_disable_update

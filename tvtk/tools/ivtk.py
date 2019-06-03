@@ -44,7 +44,6 @@ from tvtk.api import tvtk
 
 from tvtk.pipeline.browser import PipelineBrowser
 
-
 ######################################################################
 # The scene icon.
 ######################################################################
@@ -52,16 +51,13 @@ def mk_scene_icon():
     icon_path = os.path.join(resource_path(), 'images', 'scene.ico')
     return ImageResource(icon_path)
 
-
 scene_icon = mk_scene_icon()
-
 
 ######################################################################
 # `ExitAction` class.
 ######################################################################
 class ExitAction(Action):
     """ Exits the application. """
-
     def __init__(self, window):
         """ Creates a new action. """
         self._window = window
@@ -77,33 +73,29 @@ class ExitAction(Action):
 ######################################################################
 class SaveImageAction(Action):
     """Saves the rendered scene to an image."""
-
     def __init__(self, window):
         self._window = window
         self.name = "S&ave Scene"
 
     def perform(self):
         """Pops up a dialog used to save the scene to an image."""
-        extensions = [
-            '*.png', '*.jpg', '*.tiff', '*.bmp', '*.ps', '*.eps', '*.pdf',
-            '*.tex', '*.rib', '*.wrl', '*.oogl', '*.vrml', '*.obj', '*.iv',
-            '*.pov', '*.x3d'
-        ]
-        descriptions = [
-            "PNG", "JPG", "TIFF", "Bitmap", "PostScript", "EPS", "PDF", "Tex",
-            "RIB", "WRL", "Geomview", "VRML", "Wavefront", "Open Inventor",
-            "Povray", "X3D"
-        ]
+        extensions = ['*.png', '*.jpg', '*.tiff', '*.bmp', '*.ps',
+                      '*.eps', '*.pdf', '*.tex', '*.rib', '*.wrl',
+                      '*.oogl', '*.vrml', '*.obj', '*.iv', '*.pov',
+                      '*.x3d']
+        descriptions = ["PNG", "JPG", "TIFF", "Bitmap", "PostScript",
+                        "EPS", "PDF", "Tex", "RIB", "WRL",
+                        "Geomview", "VRML", "Wavefront", "Open Inventor",
+                        "Povray", "X3D"]
         wildcard = ""
         for description, extension in zip(descriptions, extensions):
-            wildcard += "{} ({})|{}|".format(description, extension, extension)
+            wildcard += "{} ({})|{}|".format(description,
+                                             extension,
+                                             extension)
         wildcard += "Determine by extension (*.*)|(*.*)"
 
-        dlg = FileDialog(
-            parent=self._window.control,
-            action='save as',
-            wildcard=wildcard,
-            title="Save scene to image")
+        dlg = FileDialog(parent=self._window.control, action='save as',
+                wildcard=wildcard, title="Save scene to image")
         if dlg.open() == OK:
             self._window.scene.save(dlg.path)
 
@@ -113,7 +105,6 @@ class SaveImageAction(Action):
 ######################################################################
 class SaveToClipboardAction(Action):
     """ Saves rendered scene to the Clipboard. """
-
     def __init__(self, window):
         """ Creates a new action. """
         self._window = window
@@ -129,7 +120,6 @@ class SaveToClipboardAction(Action):
 ######################################################################
 class SpecialViewAction(Action):
     """Sets the scene to a particular view."""
-
     def __init__(self, window, name, view):
         """ Creates a new action. """
         self._window = window
@@ -158,25 +148,26 @@ def create_ivtk_menu(obj):
     """
 
     menu_bar_manager = MenuBarManager(
-        MenuManager(
-            SaveImageAction(obj),
-            Separator(),
-            ExitAction(obj),
-            name='&File', ),
-        MenuManager(
-            SaveToClipboardAction(obj),
-            name='&Edit', ),
-        MenuManager(
-            SpecialViewAction(obj, "&Reset Zoom", 'reset_zoom'),
-            Separator(),
-            SpecialViewAction(obj, "&Isometric", 'isometric_view'),
-            SpecialViewAction(obj, "&X positive", 'x_plus_view'),
-            SpecialViewAction(obj, "X negative", 'x_minus_view'),
-            SpecialViewAction(obj, "&Y positive", 'y_plus_view'),
-            SpecialViewAction(obj, "Y negative", 'y_minus_view'),
-            SpecialViewAction(obj, "&Z positive", 'z_plus_view'),
-            SpecialViewAction(obj, "Z negative", 'z_minus_view'),
-            name='&View', ))
+        MenuManager(SaveImageAction(obj),
+                    Separator(),
+                    ExitAction(obj),
+                    name = '&File',
+                    ),
+        MenuManager(SaveToClipboardAction(obj),
+                    name = '&Edit',
+                    ),
+        MenuManager(SpecialViewAction(obj, "&Reset Zoom", 'reset_zoom'),
+                    Separator(),
+                    SpecialViewAction(obj, "&Isometric", 'isometric_view'),
+                    SpecialViewAction(obj, "&X positive", 'x_plus_view'),
+                    SpecialViewAction(obj, "X negative", 'x_minus_view'),
+                    SpecialViewAction(obj, "&Y positive", 'y_plus_view'),
+                    SpecialViewAction(obj, "Y negative", 'y_minus_view'),
+                    SpecialViewAction(obj, "&Z positive", 'z_plus_view'),
+                    SpecialViewAction(obj, "Z negative", 'z_minus_view'),
+                    name = '&View',
+                    )
+        )
     return menu_bar_manager
 
 
@@ -214,8 +205,10 @@ class SceneWithBrowser(SplitPanel):
         """ Creates the left hand side or top depending on the style. """
         self._create_scene(parent)
         self.browser = PipelineBrowser(self.scene)
+        if parent is not None:
+            parent.show()
         self.browser.show(parent=parent)
-        return self.browser.ui.control
+        return self.browser._ui.control
 
     def _create_rhs(self, parent):
         """ Creates the right hand side or bottom depending on the
@@ -414,7 +407,6 @@ class IVTK(ApplicationWindow):
 
         return self.scene.control
 
-
 ######################################################################
 # `IVTKWithBrowser` class.
 ######################################################################
@@ -493,9 +485,9 @@ def viewer(browser=True, instantiate_gui=False):
     if instantiate_gui:
         gui = GUI()
     if browser:
-        v = IVTKWithBrowser(size=(600, 600))
+        v = IVTKWithBrowser(size=(600,600))
     else:
-        v = IVTK(size=(600, 600))
+        v = IVTK(size=(600,600))
     v.open()
     return v
 
@@ -504,7 +496,7 @@ def main():
     # Create the GUI.
     gui = GUI()
     # Create and open an application window.
-    window = IVTKWithCrustAndBrowser(size=(800, 600))
+    window = IVTKWithCrustAndBrowser(size=(800,600))
     window.open()
     # Start the GUI event loop!
     gui.start_event_loop()

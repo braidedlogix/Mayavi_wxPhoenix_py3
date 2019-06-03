@@ -15,10 +15,10 @@ import vtk
 from . import indenter
 from .common import get_tvtk_name
 
+
 ######################################################################
 # `SpecialGenerator` class.
 ######################################################################
-
 
 class SpecialGenerator:
     """Generates special code for some of the TVTK classes.
@@ -56,7 +56,7 @@ class SpecialGenerator:
 
         """
         tname = get_tvtk_name(name)
-        writer = '_write_%s' % tname
+        writer = '_write_%s'%tname
         if hasattr(self, writer):
             getattr(self, writer)(out)
 
@@ -458,11 +458,9 @@ class SpecialGenerator:
         """
         out.write(self.indent.format(code))
 
-
 ######################################################################
 # `HelperGenerator` class.
 ######################################################################
-
 
 class HelperGenerator:
     """Writes out the tvtk_helper.py file that makes it easy to use
@@ -515,6 +513,17 @@ class HelperGenerator:
                 mod = __import__('tvtk.tvtk_classes.%%s'%%fname, globals(), locals(), [fname])
             return mod
 
+        def get_nearest_base_class(obj):
+            base = None
+            cls = obj.__class__.__bases__[0]
+            while base is None:
+                try:
+                    tvtk_name = get_tvtk_name(cls.__name__)
+                    base = get_class(tvtk_name)
+                except ImportError:
+                    cls = cls.__bases__[0]
+            return base
+
         def get_class(name):
             if name in _cache:
                 return _cache[name]
@@ -534,7 +543,10 @@ class HelperGenerator:
                 if cached_obj is not None:
                     return cached_obj
                 cname = get_tvtk_name(obj.__class__.__name__)
-                tvtk_class = get_class(cname)
+                try:
+                    tvtk_class = get_class(cname)
+                except ImportError:
+                    tvtk_class = get_nearest_base_class(obj)
                 return tvtk_class(obj)
             else:
                 return obj
@@ -544,7 +556,7 @@ class HelperGenerator:
             to_tvtk = staticmethod(wrap_vtk)
             to_vtk = staticmethod(tvtk_base.deref_vtk)
 
-        """ % locals()
+        """%locals()
         out.write(indent.format(code))
         indent.incr()
 
@@ -554,5 +566,5 @@ class HelperGenerator:
         """
         code = """
         %(name)s = property(lambda self: get_class('%(name)s'))
-        """ % locals()
+        """%locals()
         out.write(self.indent.format(code))

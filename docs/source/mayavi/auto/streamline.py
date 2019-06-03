@@ -17,7 +17,6 @@ from mayavi.modules.outline import Outline
 from mayavi.modules.streamline import Streamline
 from mayavi.modules.iso_surface import IsoSurface
 
-
 def setup_data(fname):
     """Given a VTK XML file name `fname`, this creates a mayavi2
     reader for it and adds it to the pipeline.  It returns the reader
@@ -28,7 +27,6 @@ def setup_data(fname):
     mayavi.add_source(r)
     return r
 
-
 def show_vrml(fname):
     """Given a VRML file name it imports it into the scene.
     """
@@ -36,7 +34,6 @@ def show_vrml(fname):
     r.initialize(fname)
     mayavi.add_source(r)
     return r
-
 
 def streamline():
     """Sets up the mayavi pipeline for the visualization.
@@ -55,7 +52,6 @@ def streamline():
     mayavi.add_module(i)
     i.contour.contours[0] = 550
     i.actor.property.opacity = 0.5
-
 
 @mayavi2.standalone
 def main():

@@ -19,7 +19,6 @@ from mayavi.core.module import Module
 from mayavi.core.pipeline_info import PipelineInfo
 from mayavi.components.actor import Actor
 
-
 ######################################################################
 # `HyperStreamline` class.
 ######################################################################
@@ -28,44 +27,35 @@ class HyperStreamline(Module):
     __version__ = 0
 
     # The hyper streamline object.
-    streamline = Instance(tvtk.HyperStreamline, allow_none=False, record=True)
+    streamline = Instance(tvtk.HyperStreamline, allow_none=False,
+                          record=True)
 
     # The actor for the streamlines.
     actor = Instance(Actor, allow_none=False, record=True)
 
     # A point widget
-    widget = Instance(
-        tvtk.PointWidget,
-        args=(),
-        kw={
-            'outline': False,
-            'x_shadows': False,
-            'y_shadows': False,
-            'z_shadows': False
-        },
-        allow_none=False)
+    widget = Instance(tvtk.PointWidget, args=(),
+                      kw={'outline': False, 'x_shadows': False,
+                      'y_shadows': False, 'z_shadows': False},
+                      allow_none=False)
 
-    input_info = PipelineInfo(
-        datasets=['any'], attribute_types=['any'], attributes=['tensors'])
+    input_info = PipelineInfo(datasets=['any'],
+                              attribute_types=['any'],
+                              attributes=['tensors'])
 
     # Create the UI for the traits.
-    view = View(
-        Group(
-            Item(
-                name='actor', style='custom'),
-            show_labels=False,
-            label='Actor'),
-        Group(
-            Item(
-                name='widget', style='custom', resizable=True),
-            show_labels=False,
-            label='PointWidget'),
-        Group(
-            Item(
-                name='streamline', style='custom', resizable=True),
-            label='Streamline',
-            show_labels=False),
-        resizable=True)
+    view = View(Group(Item(name='actor', style='custom'),
+                      show_labels=False,
+                      label='Actor'),
+                Group(Item(name='widget', style='custom', resizable=True),
+                      show_labels=False,
+                      label='PointWidget'),
+                Group(Item(name='streamline', style='custom',
+                           resizable=True),
+                      label='Streamline',
+                      show_labels=False),
+               resizable=True
+               )
 
     ######################################################################
     # `Module` interface
@@ -88,11 +78,11 @@ class HyperStreamline(Module):
         self.streamline.start_position = self.widget.position
         self.streamline.integrate_minor_eigenvector()
         self.streamline.maximum_propagation_distance = 10.0
-        self.streamline.integration_step_length = 0.1
+        self.streamline.integration_step_length =0.1
         self.streamline.step_length = 0.01
         self.streamline.radius = 0.25
         self.streamline.number_of_sides = 18
-        self.streamline.integration_direction = 2  #integrate both direction
+        self.streamline.integration_direction = 2 #integrate both direction
 
         self.streamline.on_trait_change(self.render)
         self.actor = Actor()
@@ -116,7 +106,7 @@ class HyperStreamline(Module):
         if old_inp is None or src != old_inp:
             w.place_widget()
         self.streamline.update()
-        self.outputs = [self.streamline.output]
+        self.outputs = [self.streamline]
         self.pipeline_changed = True
 
     def update_data(self):
@@ -141,7 +131,7 @@ class HyperStreamline(Module):
             self.configure_connection(new, mm.source)
         # A default output so there are no pipeline errors.  The
         # update_pipeline call corrects this if needed.
-        self.outputs = [new.output]
+        self.outputs = [new]
         self.update_pipeline()
 
     def _start_position_changed(self, value):

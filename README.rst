@@ -9,9 +9,13 @@ TVTK docs: http://docs.enthought.com/mayavi/tvtk
    :target: https://travis-ci.org/enthought/mayavi
    :alt: Build status
 
+.. image:: https://ci.appveyor.com/api/projects/status/lnb24gj70yidfnrl/branch/master
+   :target: https://ci.appveyor.com/project/EnthoughtOSS/mayavi
+   :alt: Appveyor build status
+
 .. image:: http://codecov.io/github/enthought/mayavi/coverage.svg?branch=master
    :target: http://codecov.io/github/enthought/mayavi?branch=master
-
+   :alt: Code coverage status
 
 Vision
 ======
@@ -69,52 +73,127 @@ visualization engine for any application.
 Quick start
 ===========
 
-If you are new to mayavi it is a good idea to read the users guide which should
-introduce you to how to install and use it.  The user guide is available in the
-`docs` directory and also available from the mayavi home page.
+If you are new to mayavi it is a good idea to read the `online user manual`_
+which should introduce you to how to install and use it.
 
-If you have installed `mayavi` as described in the previous section
-you should be able to launch the `mayavi2` application and also run any of the
-examples in the examples directory.
+If you have installed `mayavi` as described in the next section, you should be
+able to launch the `mayavi2` application and also run any of the examples in
+the examples directory.
 
 
-Getting the package
-===================
+.. _online user manual: http://docs.enthought.com/mayavi/mayavi/
 
-The mayavi codebase can be found in github:
+Installation
+=============
 
-https://github.com/enthought/mayavi
+By itself Mayavi is not a difficult package to install but its dependencies
+are unfortunately rather heavy. However, many of these dependencies are now
+available as wheels on PyPI.  The two critical dependencies are,
 
-General Build and Installation instructions are available `here
+  1. VTK_
+  2. A GUI toolkit, either PyQt4_, PySide_, PySide2_, PyQt5_ or wxPython_.
+
+The latest VTK wheels are available on all the major platforms (Windows,
+MacOS, and Linux), but only for 64 bit machines. Python 3.x is fully supported
+on all these operating systems and Python 2.7.x on MacOS and Linux. If you are
+out of luck, and your platform is not supported then you will need to install
+VTK yourself using your particular distribution as discussed in the `General
+Build and Installation instructions
 <http://docs.enthought.com/mayavi/mayavi/installation.html#installing-ready-made-distributions>`_
 
-Source tarballs for necessary stable ETS packages are available through pypi
+On Python 3.x you will need to install PyQt5_ and wheels are available for
+this. On 2.7.x you have more options, and can use PySide_, PyQt4_, and
+wxPython_. These can be installed from pip or from your package manager.
 
-- `traits <https://pypi.python.org/pypi/traits>`_
-- `traitsui <https://pypi.python.org/pypi/traitsui>`_
-- `pyface <https://pypi.python.org/pypi/pyface>`_
-- `apptools <https://pypi.python.org/pypi/apptools>`_
-- `envisage <https://pypi.python.org/pypi/envisage>`_
-- `mayavi <https://pypi.python.org/pypi/mayavi>`_
+Currently, Mayavi itself should work with the new wxPython 4.x. However,
+traitsui_, pyface_, and other ETS packages do not yet support it so the UI
+will not work correctly. Older versions should work. PyQt/PySide/PySide2
+should work largely out of the box.
 
-Development versions exist in the github `Enthought organization <https://github.com/enthought>`_
 
+.. _PyQt5: https://pypi.org/project/PyQt5/
+.. _PySide: https://pypi.org/project/PySide
+.. _PySide2: https://wiki.qt.io/Qt_for_Python
+.. _PyQt4: https://pypi.org/project/PyQt4/
+.. _wxPython: https://pypi.org/project/wxPython/
+.. _VTK: https://www.vtk.org
+.. _traitsui: https://github.com/enthought/traitsui
+.. _pyface: https://github.com/enthought/pyface
+
+Latest stable release
+-----------------------
+
+As of the latest release, i.e. 4.6.0 and above, if you are using Python 3.x
+and are on a 64 bit machine, installation via pip_ is the easiest and is as
+follows::
+
+  $ pip install mayavi
+
+  $ pip install PyQt5
+
+Thats it!
+
+If you are unable to do this, read the documentation above and find a way to
+install VTK and a suitable UI toolkit and then repeat the above.
+
+If you are interested in the jupyter notebook support as well, do the
+following (after ensuring that you have jupyter installed of course)::
+
+  $ jupyter nbextension install --py mayavi --user
+  $ jupyter nbextension enable --py mayavi --user
+
+You will also need to have ipywidgets_ and ipyevents_ installed. These can be
+installed via pip_ or your favorite package manager.
+
+.. _pip: https://pip.pypa.io/en/stable/
+.. _ipywidgets: https://ipywidgets.readthedocs.io
+.. _ipyevents: https://github.com/mwcraig/ipyevents
+
+Bleeding edge
+--------------
+
+If you want to install the latest version of Mayavi from github, you can
+simply do the following::
+
+  $ git clone https://github.com/enthought/mayavi.git
+  $ cd mayavi
+  $ pip install -r requirements.txt
+  $ pip install PyQt5  # replace this with any supported toolkit
+  $ python setup.py install  # or develop
+
+Add the jupyter nbextensions using the instructions in the section above and
+you should be good to go.
 
 Documentation
 ==============
 
-More documentation is available in the `online user manual
-<http://docs.enthought.com/mayavi/mayavi/>`_ or in ``docs`` directory
-of the sources.  This includes a man page for the ``mayavi2``
-application, a users guide in HTML and PDF format and documentation
-for `mlab`.
+More documentation is available in the `online user manual`_ or in ``docs``
+directory of the sources. This includes a man page for the ``mayavi2``
+application, a users guide in HTML and PDF format and documentation for
+`mlab`.
+
+More documentation in the form of workshop/tutorial material is available
+here:
+
+- https://github.com/prabhuramachandran/mayavi-tutorial
+- https://github.com/prabhuramachandran/mayavi-workshop
+
+Tutorial Videos
+===============
+
+Here are some tutorial videos that you can watch to learn Mayavi:
+
+- SciPy 2018 Mayavi tutorial (3 hrs):
+
+  - Video: https://www.youtube.com/watch?v=r6OD07Qq2mw
+  - Material: https://github.com/prabhuramachandran/mayavi-tutorial
 
 
 Examples
 ========
 
-Examples are all in the ``examples`` directory of the source or the SVN checkout.
-The docs and examples do not ship with the binary eggs.  The examples directory
+Examples are all in the ``examples`` directory of the source or the git clone.
+The docs and examples do not ship with the binary eggs. The examples directory
 also contains some sample data.
 
 
@@ -135,7 +214,18 @@ The integration tests::
 Bug tracker, mailing list etc.
 ==============================
 
-The bug tracker is available in `github <https://github.com/enthought/mayavi/issues>`_ Please provide info and details on platform, python, vtk and gui backends and their versions. If possible, a small example replicating the the problem.
+The bug tracker is available in `github
+<https://github.com/enthought/mayavi/issues>`_ Please provide info and details
+on platform, python, vtk and gui backends and their versions. If possible, a
+small example replicating the the problem.
+
+If you have questions you could ask on the `Mayavi-users mailing list
+<https://sourceforge.net/p/mayavi/mailman/mayavi-users/>`_. This is used by
+some folks and is not too active. Another mailing list that may be of use is
+the `ETS Users mailing list
+<https://groups.google.com/forum/#!forum/ets-users>`_. This is a more general
+list where a lot of folks experienced with the Enthought Tool Suite are
+available.
 
 Authors and Contributors
 ========================
@@ -143,6 +233,8 @@ Authors and Contributors
 * Core contributors:
 
   Prabhu Ramachandran: primary author.
+
+* Previous contributors:
 
   Gaël Varoquaux: mlab, icons, many general improvements and maintenance.
 

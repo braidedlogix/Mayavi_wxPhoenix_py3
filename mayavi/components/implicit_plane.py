@@ -5,12 +5,13 @@
 # License: BSD Style.
 
 # Enthought library imports.
-from traits.api import Instance, Bool, Property
+from traits.api import Instance, Bool, Property, Any
 from traitsui.api import View, Group, Item, InstanceEditor
 from tvtk.api import tvtk
 
 # Local imports.
 from mayavi.core.component import Component
+from mayavi.core.utils import DataSetHelper
 
 VTK_VER = tvtk.Version().vtk_version
 
@@ -23,25 +24,19 @@ class ImplicitPlane(Component):
     __version__ = 0
 
     # The widget that controls the plane.
-    widget = Instance(
-        tvtk.ImplicitPlaneWidget,
-        args=(),
-        kw={
-            'key_press_activation': False,
-            'place_factor': 1.2,
-            'draw_plane': False,
-            'outline_translation': False
-        },
-        record=True)
+    widget = Instance(tvtk.ImplicitPlaneWidget, args=(),
+                      kw={'key_press_activation': False,
+                          'place_factor':1.2,
+                          'draw_plane':False,
+                          'outline_translation':False},
+                      record=True)
 
     # The plane that the widget controls.  Do not change the
     # attributes of the plane, do it via the widget.
-    plane = Instance(
-        tvtk.Plane,
-        args=(),
-        kw={'origin': (0.0, 0.0, 0.0),
-            'normal': (0, 0, 1)},
-        record=True)
+    plane = Instance(tvtk.Plane, args=(),
+                     kw={'origin':(0.0, 0.0, 0.0),
+                         'normal':(0,0,1)},
+                     record=True)
 
     # Convenience property for the normal delegated to the widget.
     normal = Property
@@ -54,41 +49,39 @@ class ImplicitPlane(Component):
 
     _first = Bool(True)
     _busy = Bool(False)
+    _bounds = Any
 
     ########################################
     # View related traits.
 
     if VTK_VER[:3] in ['4.2', '4.4']:
-        _widget_group = Group(
-            Item(name='enabled'),
-            Item(name='normal_to_x_axis'),
-            Item(name='normal_to_y_axis'),
-            Item(name='normal_to_z_axis'),
-            Item(name='outline_translation'),
-            Item(name='tubing'),
-            Item(name='draw_plane'),
-            Item(name='normal'),
-            Item(name='origin'))
+        _widget_group = Group(Item(name='enabled'),
+                              Item(name='normal_to_x_axis'),
+                              Item(name='normal_to_y_axis'),
+                              Item(name='normal_to_z_axis'),
+                              Item(name='outline_translation'),
+                              Item(name='tubing'),
+                              Item(name='draw_plane'),
+                              Item(name='normal'),
+                              Item(name='origin')
+                              )
     else:
-        _widget_group = Group(
-            Item(name='enabled'),
-            Item(name='normal_to_x_axis'),
-            Item(name='normal_to_y_axis'),
-            Item(name='normal_to_z_axis'),
-            Item(name='outline_translation'),
-            Item(name='scale_enabled'),
-            Item(name='tubing'),
-            Item(name='draw_plane'),
-            Item(name='normal'),
-            Item(name='origin'))
+        _widget_group = Group(Item(name='enabled'),
+                              Item(name='normal_to_x_axis'),
+                              Item(name='normal_to_y_axis'),
+                              Item(name='normal_to_z_axis'),
+                              Item(name='outline_translation'),
+                              Item(name='scale_enabled'),
+                              Item(name='tubing'),
+                              Item(name='draw_plane'),
+                              Item(name='normal'),
+                              Item(name='origin')
+                              )
 
-    view = View(
-        Group(
-            Item(
-                name='widget',
-                style='custom',
-                editor=InstanceEditor(view=View(_widget_group))),
-            show_labels=False))
+    view = View(Group(Item(name='widget', style='custom',
+                           editor=InstanceEditor(view=View(_widget_group))),
+                      show_labels=False)
+                )
 
     ######################################################################
     # `Component` interface
@@ -121,8 +114,10 @@ class ImplicitPlane(Component):
         w = self.widget
         self.configure_input(w, inp)
         if self._first:
-            w.place_widget()
-            self.origin = self.inputs[0].get_output_dataset().center
+            dsh = DataSetHelper(self.inputs[0].outputs[0])
+            self._bounds = dsh.get_bounds()
+            w.place_widget(*self._bounds)
+            self.origin = dsh.get_center()
             self._first = False
         else:
             n = self.normal
@@ -169,7 +164,6 @@ class ImplicitPlane(Component):
 
     def _get_origin(self):
         return self.widget.origin
-
     def _set_origin(self, value):
         # Ugly, but needed.
         w = tvtk.to_vtk(self.widget)
@@ -186,13 +180,14 @@ class ImplicitPlane(Component):
 
     def _on_normal_set(self):
         w = self.widget
-        w.place_widget()
+        w.place_widget(*self._bounds)
         w.update_traits()
 
     def _connect(self):
         """Wires up all the event handlers."""
         w = self.widget
-        w.add_observer('InteractionEvent', self._on_interaction_event)
+        w.add_observer('InteractionEvent',
+                       self._on_interaction_event)
         w.on_trait_change(self._on_normal_set, 'normal_to_x_axis')
         w.on_trait_change(self._on_normal_set, 'normal_to_y_axis')
         w.on_trait_change(self._on_normal_set, 'normal_to_z_axis')

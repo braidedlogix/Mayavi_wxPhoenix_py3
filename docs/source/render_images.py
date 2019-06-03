@@ -8,15 +8,15 @@ This scipts requires image magic to be installed.
 # Copyright (c) 2007, Enthought, Inc.
 # License: BSD Style.
 
+
 import os
 from mayavi import mlab
 from mayavi.scripts import mayavi2
 
 from inspect import getmembers
 
-IMAGE_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), 'mayavi', 'generated_images')
-
+IMAGE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    'mayavi', 'generated_images')
 
 #############################################################################
 def capture_image(func, filename):
@@ -27,7 +27,7 @@ def capture_image(func, filename):
     func()
     if not filename[-4:] in ('.jpg', '.png'):
         filename = '%s.jpg' % filename
-    mlab.savefig(filename, size=(400, 400))
+    mlab.savefig(filename , size=(400, 400) )
     os.system('convert %s -trim %s' % (filename, filename))
 
 
@@ -45,7 +45,6 @@ def illustrate_module(module, directory=IMAGE_DIR):
                         + '_' + name[5:]
         capture_image(func, filename=filename)
 
-
 #############################################################################
 # Entry point
 @mlab.show
@@ -60,6 +59,6 @@ def main():
     render_examples(render_images=True)
     print("Done generating the example pages")
 
-
 if __name__ == '__main__':
     main()
+

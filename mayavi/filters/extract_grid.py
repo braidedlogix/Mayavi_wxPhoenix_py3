@@ -12,6 +12,7 @@ from traits.api import Instance, Int, Range
 from traitsui.api import View, Group, Item
 
 from tvtk.api import tvtk
+from tvtk.vtk_module import VTK_MAJOR_VERSION
 
 # Local imports
 from mayavi.core.common import error
@@ -169,11 +170,10 @@ class ExtractGrid(FilterBase):
         fil = self.filter
         self.configure_connection(fil, inputs[0])
         self._update_limits()
-        self._set_outputs([fil])
-        self._update_limits()
         self._update_voi()
         self._update_sample_rate()
         fil.update()
+        self._set_outputs([fil])
 
     def update_data(self):
         """This method is invoked (automatically) when any of the
@@ -192,17 +192,17 @@ class ExtractGrid(FilterBase):
     def _update_limits(self):
         if is_old_pipeline():
             extents = self.filter.input.whole_extent
-        else:
+        elif VTK_MAJOR_VERSION <= 7:
             extents = self.filter.get_update_extent()
+        else:
+            extents = self.filter.input.extent
 
-        if((extents[0]>extents[1]) or 
-           (extents[2]>extents[3]) or 
-           (extents[4]>extents[5])):
+        if (extents[0]>extents[1] or extents[2]>extents[3] or
+                extents[4]>extents[5]):
             dims = self.inputs[0].get_output_dataset().dimensions
             e = extents
-            extents = [e[0], dims[0]-1, e[2], 
-                       dims[1] -1, e[4], dims[2] -1]
-        
+            extents = [e[0], dims[0]-1, e[2], dims[1] -1, e[4], dims[2] -1]
+
         self._x_low, self._x_high = extents[:2]
         self._y_low, self._y_high = extents[2:4]
         self._z_low, self._z_high = extents[4:]

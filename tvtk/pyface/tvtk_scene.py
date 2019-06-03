@@ -7,8 +7,9 @@ functionality. See the class docs for more details.
 
 """
 # Author: Prabhu Ramachandran <prabhu@enthought.com>
-# Copyright (c) 2007-2016, Enthought, Inc.
+# Copyright (c) 2007-2018, Enthought, Inc.
 # License: BSD Style.
+
 
 from __future__ import print_function
 
@@ -26,7 +27,15 @@ from traits.api import HasPrivateTraits, HasTraits, Any, Int, \
 
 from tvtk.pyface import light_manager
 
+
 VTK_VER = tvtk.Version().vtk_version
+
+
+def set_magnification(w2if, magnification):
+    if hasattr(w2if, 'magnification'):
+        w2if.magnification = magnification
+    else:
+        w2if.scale = magnification, magnification
 
 
 ######################################################################
@@ -86,8 +95,7 @@ class TVTKScene(HasPrivateTraits):
 
     # Enable parallel projection.  This trait is synchronized with
     # that of the camera.
-    parallel_projection = Bool(
-        False, desc='if the camera uses parallel projection')
+    parallel_projection = Bool(False, desc='if the camera uses parallel projection')
 
     # Disable rendering.
     disable_render = Bool(False, desc='if rendering is to be disabled')
@@ -99,30 +107,24 @@ class TVTKScene(HasPrivateTraits):
     # scripts and the like.  This works under Win32.  Under Mac OS X
     # and Linux it requires a recent VTK version (later than Oct 2005
     # and ideally later than March 2006) to work correctly.
-    off_screen_rendering = Bool(
-        False, desc='if off-screen rendering is enabled')
+    off_screen_rendering = Bool(False, desc='if off-screen rendering is enabled')
 
     # The background color of the window.  This is really a shadow
     # trait of the renderer's background.  Delegation does not seem to
     # work nicely for this.
-    background = Trait(
-        vtk_color_trait((0.5, 0.5, 0.5)),
-        desc='the background color of the window')
+    background = Trait(vtk_color_trait((0.5, 0.5, 0.5)),
+                       desc='the background color of the window')
 
     # The default foreground color of any actors.  This basically
     # saves the preference and actors will listen to changes --
     # the scene itself does not use this.
-    foreground = Trait(
-        vtk_color_trait((1.0, 1.0, 1.0)),
-        desc='the default foreground color of actors')
+    foreground = Trait(vtk_color_trait((1.0, 1.0, 1.0)),
+                       desc='the default foreground color of actors')
 
     # The magnification to use when generating images from the render
     # window.
-    magnification = Range(
-        1,
-        2048,
-        1,
-        desc='the magnification used when the screen is saved to an image')
+    magnification = Range(1, 2048, 1,
+                          desc='the magnification used when the screen is saved to an image')
 
     # Specifies the number of frames to use for anti-aliasing when
     # saving a scene.  This basically increases
@@ -130,18 +132,15 @@ class TVTKScene(HasPrivateTraits):
     # figures when a scene is saved to an image.  It then restores the
     # `aa_frames` in order to get interactive rendering rates.
     anti_aliasing_frames = Range(
-        0,
-        20,
-        8,
-        desc='number of frames to use for anti-aliasing when saving a scene')
+        0, 20, 8,
+        desc='number of frames to use for anti-aliasing when saving a scene'
+    )
 
     # Default JPEG quality.
-    jpeg_quality = Range(
-        10, 100, 95, desc='the quality of the JPEG image to produce')
+    jpeg_quality = Range(10, 100, 95, desc='the quality of the JPEG image to produce')
 
     # Default JPEG progressive setting.
-    jpeg_progressive = Bool(
-        True, desc='if the generated JPEG should be progressive')
+    jpeg_progressive = Bool(True, desc='if the generated JPEG should be progressive')
 
     # The light manager.
     light_manager = Instance(light_manager.LightManager, record=True)
@@ -197,6 +196,11 @@ class TVTKScene(HasPrivateTraits):
     _camera_observer_id = Int(transient=True)
     _script_id = Str(transient=True)
 
+    # Saved light_manager settings while loading a scene.  The light manager
+    # may not be created at the time a scene is loaded from disk, so if it
+    # is saved here, when it is created the state is set.
+    _saved_light_manager_state = Any(transient=True)
+
     # The renderer instance.
     _renderer = Instance(tvtk.Renderer)
     _renwin = Instance(tvtk.RenderWindow)
@@ -215,7 +219,6 @@ class TVTKScene(HasPrivateTraits):
 
         # Used to set the view of the scene.
         self._def_pos = 1
-
         self.control = self._create_control(parent)
         self._renwin.update_traits()
 
@@ -224,11 +227,11 @@ class TVTKScene(HasPrivateTraits):
         # The control attribute is not picklable since it is a VTK
         # object so we remove it.
         d = self.__dict__.copy()
-        for x in [
-                'control', '_renwin', '_interactor', '_camera', '_busy_count',
-                '__sync_trait__', 'recorder', '_last_camera_state',
-                '_camera_observer_id', '_script_id', '__traits_listener__'
-        ]:
+        for x in ['control', '_renwin', '_interactor', '_camera',
+                  '_busy_count', '__sync_trait__', 'recorder',
+                  '_last_camera_state', '_camera_observer_id',
+                  '_saved_light_manager_state',
+                  '_script_id', '__traits_listener__']:
             d.pop(x, None)
         # Additionally pickle these.
         d['camera'] = self.camera
@@ -266,8 +269,7 @@ class TVTKScene(HasPrivateTraits):
         """ Adds a single actor or a tuple or list of actors to the
         renderer."""
         # Reset the zoom if this is the first actor.
-        reset_zoom = (len(self._renderer.actors) == 0 and
-                      len(self._renderer.volumes) == 0)
+        reset_zoom = (len(self._renderer.actors) == 0 and len(self._renderer.volumes)==0)
         if hasattr(actors, '__iter__'):
             for actor in actors:
                 self._renderer.add_actor(actor)
@@ -384,7 +386,8 @@ class TVTKScene(HasPrivateTraits):
 
     def isometric_view(self):
         """Set the view to an iso-metric view. """
-        self._update_view(self._def_pos, self._def_pos, self._def_pos, 0, 0, 1)
+        self._update_view(self._def_pos, self._def_pos, self._def_pos,
+                          0, 0, 1)
         self._record_methods('isometric_view()')
 
     def reset_zoom(self):
@@ -408,48 +411,32 @@ class TVTKScene(HasPrivateTraits):
         image format's save method.
         """
         ext = os.path.splitext(file_name)[1]
-        meth_map = {
-            '.ps': 'ps',
-            '.bmp': 'bmp',
-            '.tiff': 'tiff',
-            '.png': 'png',
-            '.jpg': 'jpg',
-            '.jpeg': 'jpg',
-            '.iv': 'iv',
-            '.wrl': 'vrml',
-            '.vrml': 'vrml',
-            '.oogl': 'oogl',
-            '.rib': 'rib',
-            '.obj': 'wavefront',
-            '.eps': 'gl2ps',
-            '.pdf': 'gl2ps',
-            '.tex': 'gl2ps',
-            '.x3d': 'x3d',
-            '.pov': 'povray'
-        }
+        meth_map = {'.ps': 'ps', '.bmp': 'bmp', '.tiff': 'tiff',
+                    '.png': 'png', '.jpg': 'jpg', '.jpeg': 'jpg',
+                    '.iv': 'iv', '.wrl': 'vrml', '.vrml':'vrml',
+                    '.oogl': 'oogl', '.rib': 'rib', '.obj': 'wavefront',
+                    '.eps': 'gl2ps', '.pdf':'gl2ps', '.tex': 'gl2ps',
+                    '.x3d': 'x3d', '.pov': 'povray'}
         if ext.lower() not in meth_map:
             raise ValueError(
-                'Unable to find suitable image type for given file extension.')
-        meth = getattr(self, 'save_' + meth_map[ext])
+                'Unable to find suitable image type for given file extension.'
+            )
+        meth = getattr(self, 'save_' + meth_map[ext.lower()])
         if size is not None:
             orig_size = self.get_size()
             self.set_size(size)
             meth(file_name, **kw_args)
             self.set_size(orig_size)
-            self._record_methods('save(%r, %r)' % (file_name, size))
+            self._record_methods('save(%r, %r)'%(file_name, size))
         else:
             meth(file_name, **kw_args)
-            self._record_methods('save(%r)' % (file_name))
+            self._record_methods('save(%r)'%(file_name))
 
     def save_ps(self, file_name):
         """Saves the rendered scene to a rasterized PostScript image.
         For vector graphics use the save_gl2ps method."""
         if len(file_name) != 0:
-            w2if = tvtk.WindowToImageFilter(
-                read_front_buffer=not self.off_screen_rendering)
-            w2if.magnification = self.magnification
-            self._lift()
-            w2if.input = self._renwin
+            w2if = self._get_window_to_image()
             ex = tvtk.PostScriptWriter()
             ex.file_name = file_name
             configure_input(ex, w2if)
@@ -458,11 +445,7 @@ class TVTKScene(HasPrivateTraits):
     def save_bmp(self, file_name):
         """Save to a BMP image file."""
         if len(file_name) != 0:
-            w2if = tvtk.WindowToImageFilter(
-                read_front_buffer=not self.off_screen_rendering)
-            w2if.magnification = self.magnification
-            self._lift()
-            w2if.input = self._renwin
+            w2if = self._get_window_to_image()
             ex = tvtk.BMPWriter()
             ex.file_name = file_name
             configure_input(ex, w2if)
@@ -471,11 +454,7 @@ class TVTKScene(HasPrivateTraits):
     def save_tiff(self, file_name):
         """Save to a TIFF image file."""
         if len(file_name) != 0:
-            w2if = tvtk.WindowToImageFilter(
-                read_front_buffer=not self.off_screen_rendering)
-            w2if.magnification = self.magnification
-            self._lift()
-            w2if.input = self._renwin
+            w2if = self._get_window_to_image()
             ex = tvtk.TIFFWriter()
             ex.file_name = file_name
             configure_input(ex, w2if)
@@ -484,11 +463,7 @@ class TVTKScene(HasPrivateTraits):
     def save_png(self, file_name):
         """Save to a PNG image file."""
         if len(file_name) != 0:
-            w2if = tvtk.WindowToImageFilter(
-                read_front_buffer=not self.off_screen_rendering)
-            w2if.magnification = self.magnification
-            self._lift()
-            w2if.input = self._renwin
+            w2if = self._get_window_to_image()
             ex = tvtk.PNGWriter()
             ex.file_name = file_name
             configure_input(ex, w2if)
@@ -501,11 +476,7 @@ class TVTKScene(HasPrivateTraits):
         if len(file_name) != 0:
             if not quality and not progressive:
                 quality, progressive = self.jpeg_quality, self.jpeg_progressive
-            w2if = tvtk.WindowToImageFilter(
-                read_front_buffer=not self.off_screen_rendering)
-            w2if.magnification = self.magnification
-            self._lift()
-            w2if.input = self._renwin
+            w2if = self._get_window_to_image()
             ex = tvtk.JPEGWriter()
             ex.quality = quality
             ex.progressive = progressive
@@ -566,15 +537,15 @@ class TVTKScene(HasPrivateTraits):
                 Nx, Ny = resolution
             except TypeError:
                 raise TypeError(
-                    "Resolution (%s) should be a sequence with two elements" %
-                    resolution)
+                    "Resolution (%s) should be a sequence with two elements"%resolution
+                )
 
         if len(file_name) == 0:
             return
 
         f_pref = os.path.splitext(file_name)[0]
         ex = tvtk.RIBExporter()
-        ex.size = int(resfactor * Nx), int(resfactor * Ny)
+        ex.size = int(resfactor*Nx), int(resfactor*Ny)
         ex.file_prefix = f_pref
         ex.texture_prefix = f_pref + "_tex"
         self._lift()
@@ -591,8 +562,7 @@ class TVTKScene(HasPrivateTraits):
             # Internal functions
             def x3to4(x):
                 # convert 3-vector to 4-vector (w=1 -> point in space)
-                return (x[0], x[1], x[2], 1.0)
-
+                return (x[0], x[1], x[2], 1.0 )
             def x4to3(x):
                 # convert 4-vector to 3-vector
                 return (x[0], x[1], x[2])
@@ -606,7 +576,6 @@ class TVTKScene(HasPrivateTraits):
                 light.position = x4to3(neworigin)
                 light.focal_point = x4to3(newfocus)
                 light.light_type = light_type
-
             ########################################
 
             save_lights_type = []
@@ -638,7 +607,7 @@ class TVTKScene(HasPrivateTraits):
     def save_wavefront(self, file_name):
         """Save scene to a Wavefront OBJ file.  Two files are
         generated.  One with a .obj extension and another with a .mtl
-        extension which contains the material proerties.
+        extension which contains the material properties.
 
         Keyword Arguments:
 
@@ -736,7 +705,7 @@ class TVTKScene(HasPrivateTraits):
             ex.write()
 
     def save_povray(self, file_name):
-        """Save scene to a POVRAY (Persistance of Vision Raytracer),
+        """Save scene to a POVRAY (Persistence of Vision Raytracer),
         file (http://www.povray.org).
 
         Keyword Arguments:
@@ -769,12 +738,19 @@ class TVTKScene(HasPrivateTraits):
         self._interactor.size = size
         self._renwin.size = size
 
+
     ###########################################################################
     # Properties.
     ###########################################################################
     def _get_interactor(self):
         """Returns the vtkRenderWindowInteractor of the parent class"""
         return self._interactor
+
+    def _set_interactor(self, iren):
+        if self._interactor is not None:
+            self._interactor.render_window = None
+        self._interactor = iren
+        iren.render_window = self._renwin
 
     def _get_render_window(self):
         """Returns the scene's render window."""
@@ -820,20 +796,33 @@ class TVTKScene(HasPrivateTraits):
     def _create_control(self, parent):
         """ Create the toolkit-specific control that represents the widget. """
 
-        # Create the renderwindow.
-        renwin = self._renwin = tvtk.RenderWindow()
-        # If we are doing offscreen rendering we set the window size to
-        # (1,1) so the window does not appear at all
         if self.off_screen_rendering:
-            renwin.size = (1, 1)
+            if hasattr(tvtk, 'EGLRenderWindow'):
+                renwin = tvtk.EGLRenderWindow()
+            elif hasattr(tvtk, 'OSOpenGLRenderWindow'):
+                renwin = tvtk.OSOpenGLRenderWindow()
+            else:
+                renwin = tvtk.RenderWindow()
+                # If we are doing offscreen rendering we set the window size to
+                # (1,1) so the window does not appear at all
+                renwin.size = (1, 1)
 
-        renwin.set(point_smoothing=self.point_smoothing,
-                   line_smoothing=self.line_smoothing,
-                   polygon_smoothing=self.polygon_smoothing)
+            self._renwin = renwin
+            self._interactor = tvtk.GenericRenderWindowInteractor(
+                render_window=renwin
+            )
+        else:
+            renwin = self._renwin = tvtk.RenderWindow()
+            self._interactor = tvtk.RenderWindowInteractor(
+                render_window=renwin
+            )
+
+        renwin.trait_set(point_smoothing=self.point_smoothing,
+                         line_smoothing=self.line_smoothing,
+                         polygon_smoothing=self.polygon_smoothing)
         # Create a renderer and add it to the renderwindow
         self._renderer = tvtk.Renderer()
         renwin.add_renderer(self._renderer)
-        self._interactor = tvtk.RenderWindowInteractor(render_window=renwin)
         # Save a reference to our camera so it is not GC'd -- needed for
         # the sync_traits to work.
         self._camera = self.camera
@@ -854,7 +843,6 @@ class TVTKScene(HasPrivateTraits):
         self._interactor.initialize()
         self._interactor.render()
         self.light_manager = light_manager.LightManager(self)
-
         if self.off_screen_rendering:
             # We want the default size to be the normal (300, 300).
             # Setting the size now should not resize the window if
@@ -862,6 +850,15 @@ class TVTKScene(HasPrivateTraits):
             renwin.size = (300, 300)
 
         return self._interactor
+
+    def _get_window_to_image(self):
+        w2if = tvtk.WindowToImageFilter(
+            read_front_buffer=not self.off_screen_rendering
+        )
+        set_magnification(w2if, self.magnification)
+        self._lift()
+        w2if.input = self._renwin
+        return w2if
 
     def _lift(self):
         """Lift the window to the top. Useful when saving screen to an
@@ -873,13 +870,20 @@ class TVTKScene(HasPrivateTraits):
         # Bumps up the anti-aliasing frames when the image is saved so
         # that the saved picture looks nicer.
         rw = self.render_window
-        aa_frames = rw.aa_frames
-        rw.aa_frames = self.anti_aliasing_frames
+        if hasattr(rw, 'aa_frames'):
+            aa_frames = rw.aa_frames
+            rw.aa_frames = self.anti_aliasing_frames
+        else:
+            aa_frames = rw.multi_samples
+            rw.multi_samples = self.anti_aliasing_frames
         rw.render()
         ex.update()
         ex.write()
         # Set the frames back to original setting.
-        rw.aa_frames = aa_frames
+        if hasattr(rw, 'aa_frames'):
+            rw.aa_frames = aa_frames
+        else:
+            rw.multi_samples = aa_frames
         rw.render()
 
     def _update_view(self, x, y, z, vx, vy, vz):
@@ -905,7 +909,7 @@ class TVTKScene(HasPrivateTraits):
         if r is not None:
             sid = self._script_id
             for call in calls.split('\n'):
-                r.record('%s.%s' % (sid, call))
+                r.record('%s.%s'%(sid, call))
 
     def _record_camera_position(self, vtk_obj=None, event=None):
         """Callback to record the camera position."""
@@ -917,9 +921,9 @@ class TVTKScene(HasPrivateTraits):
                 self._last_camera_state = state
                 sid = self._script_id
                 for key, value in state:
-                    r.record('%s.camera.%s = %r' % (sid, key, value))
-                r.record('%s.camera.compute_view_plane_normal()' % sid)
-                r.record('%s.render()' % sid)
+                    r.record('%s.camera.%s = %r'%(sid, key, value))
+                r.record('%s.camera.compute_view_plane_normal()'%sid)
+                r.record('%s.render()'%sid)
 
     def _get_camera_state(self):
         c = self.camera
@@ -938,7 +942,8 @@ class TVTKScene(HasPrivateTraits):
         iren = self._interactor
         if r is not None:
             self._script_id = r.get_script_id(self)
-            id = iren.add_observer('EndInteractionEvent', messenger.send)
+            id = iren.add_observer('EndInteractionEvent',
+                                   messenger.send)
             self._camera_observer_id = id
             i_vtk = tvtk.to_vtk(iren)
             messenger.connect(i_vtk, 'EndInteractionEvent',
@@ -949,6 +954,12 @@ class TVTKScene(HasPrivateTraits):
             i_vtk = tvtk.to_vtk(iren)
             messenger.disconnect(i_vtk, 'EndInteractionEvent',
                                  self._record_camera_position)
+
+    def _light_manager_changed(self, lm):
+        if lm is not None:
+            if self._saved_light_manager_state is not None:
+                lm.__set_pure_state__(self._saved_light_manager_state)
+                self._saved_light_manager_state = None
 
     def _movie_maker_default(self):
         from tvtk.pyface.movie_maker import MovieMaker
@@ -969,7 +980,6 @@ class TVTKWindow(HasTraits):
 
     closing = Event
     activated = Event
-
     def __init__(self, **traits):
         """All the keyword arguments are passed on to the `TVTKScene`
         instance created."""

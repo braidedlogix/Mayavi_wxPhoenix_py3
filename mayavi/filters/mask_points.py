@@ -5,6 +5,7 @@
 # Enthought library imports.
 from traits.api import Instance
 from tvtk.api import tvtk
+from vtk.numpy_interface import dataset_adapter as dsa
 
 # Local imports
 from mayavi.filters.filter_base import FilterBase
@@ -15,6 +16,7 @@ from mayavi.core.pipeline_info import PipelineInfo
 # `MaskPoints` class.
 ######################################################################
 class MaskPoints(FilterBase):
+
     """Selectively passes the input points downstream.  This can be
     used to subsample the input points.  Note that this does not pass
     geometry data, this means all grid information is lost.
@@ -26,11 +28,13 @@ class MaskPoints(FilterBase):
     # The actual TVTK filter that this class manages.
     filter = Instance(tvtk.MaskPoints, args=(), allow_none=False, record=True)
 
-    input_info = PipelineInfo(
-        datasets=['any'], attribute_types=['any'], attributes=['any'])
+    input_info = PipelineInfo(datasets=['any'],
+                              attribute_types=['any'],
+                              attributes=['any'])
 
-    output_info = PipelineInfo(
-        datasets=['poly_data'], attribute_types=['any'], attributes=['any'])
+    output_info = PipelineInfo(datasets=['poly_data'],
+                               attribute_types=['any'],
+                               attributes=['any'])
 
     ######################################################################
     # `Filter` interface.
@@ -48,8 +52,6 @@ class MaskPoints(FilterBase):
     # Non-public interface.
     ######################################################################
     def _find_number_of_points_in_input(self):
-        inp = self.inputs[0].outputs[0]
-        if hasattr(inp, 'update'):
-            inp.update()
         inp = self.inputs[0].get_output_dataset()
-        return inp.number_of_points
+        o = dsa.WrapDataObject(tvtk.to_vtk(inp))
+        return o.GetNumberOfPoints()

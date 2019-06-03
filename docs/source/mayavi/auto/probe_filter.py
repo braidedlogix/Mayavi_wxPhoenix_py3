@@ -49,7 +49,7 @@ from tvtk.common import configure_source_data, configure_input
 
 # The angular par of the spherical harmonic (3, 2)
 x, y, z = np.mgrid[-.5:.5:100j, -.5:.5:100j, -.5:.5:100j]
-Phi = np.angle((x + y * 1j)**2 * z)
+Phi = np.angle((x+y*1j)**2*z)
 
 field = mlab.pipeline.scalar_field(x, y, z, Phi)
 ipw = mlab.pipeline.image_plane_widget(field)
@@ -79,3 +79,4 @@ browser = PipelineBrowser(fig.scene)
 browser.show()
 
 mlab.show()
+

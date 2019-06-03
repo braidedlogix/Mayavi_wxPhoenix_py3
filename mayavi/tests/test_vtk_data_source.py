@@ -23,11 +23,11 @@ from mayavi.tests import datasets
 
 
 class TestVTKDataSource(unittest.TestCase):
+
     def setUp(self):
-        """Initial setting up of test fixture, automatically called by TestCase before any other test method is invoked"""
         e = NullEngine()
         # Uncomment to see visualization for debugging etc.
-        #e = Engine()
+        # e = Engine()
         e.start()
         e.new_scene()
         self.e = e
@@ -72,15 +72,11 @@ class TestVTKDataSource(unittest.TestCase):
         self.cgp2 = cgp2
         self.iso = iso
         self.cp = cp
-        return
 
     def tearDown(self):
-        """For necessary clean up, automatically called by TestCase after the test methods have been invoked"""
         self.e.stop()
-        return
 
     def check(self):
-        """Do the actual testing."""
         scene = self.scene
         src = scene.children[0]
         mm = src.children[0]
@@ -100,6 +96,7 @@ class TestVTKDataSource(unittest.TestCase):
         self.assertEqual(rng[0], 5.0)
         self.assertEqual(rng[1], 5.0)
 
+
         cp = mm.children[4]
         ip = cp.implicit_plane
         self.assertAlmostEqual(numpy.sum(ip.normal - (0, 0, 1)), 1e-16)
@@ -107,12 +104,11 @@ class TestVTKDataSource(unittest.TestCase):
         self.assertEqual(ip.widget.enabled, False)
 
     def test_vtk_data_source(self):
-        "Test if the test fixture works"
-        #Now test.
+
         self.check()
 
-        #from mayavi.tools.show import show
-        #show()
+        # from mayavi.tools.show import show
+        # show()
 
     def test_save_and_restore(self):
         """Test if saving a visualization and restoring it works."""
@@ -136,7 +132,6 @@ class TestVTKDataSource(unittest.TestCase):
         self.check()
 
     def test_deepcopied(self):
-        """Test if the MayaVi2 visualization can be deep-copied."""
         ############################################################
         # Test if the MayaVi2 visualization can be deep-copied.
 
@@ -165,6 +160,135 @@ class TestVTKDataSource(unittest.TestCase):
         src = self.e.scenes[0].children[0]
         new_src = VTKDataSource(data=tvtk.PolyData())
         src.add_child(new_src)
+
+
+class TestVTKDataSourceAttributes(unittest.TestCase):
+    def setUp(self):
+        sgrid = tvtk.StructuredPoints(
+            dimensions=(2, 2, 1), spacing=(1, 1, 1), origin=(0, 0, 0)
+        )
+        self.sgrid = sgrid
+
+    def test_add_attribute_works_for_point_data(self):
+        # Given
+        sgrid = self.sgrid
+        s1 = numpy.ones(4)
+        sgrid.point_data.scalars = s1
+        sgrid.point_data.scalars.name = 's1'
+        src = VTKDataSource(data=sgrid)
+        self.assertEqual(src.point_scalars_name, 's1')
+        self.assertEqual(sorted(src._point_scalars_list), ['', 's1'])
+
+        # When
+        s2 = s1 + 1.0
+        src.add_attribute(s2, 's2')
+        v1 = numpy.ones((4, 3))
+        src.add_attribute(v1, 'v1')
+        t1 = numpy.ones((4, 9))
+        src.add_attribute(t1, 't1')
+
+        # Then
+        self.assertEqual(src._point_scalars_list, ['', 's1', 's2'])
+        self.assertTrue(
+            numpy.allclose(src.data.point_data.get_array('s2').to_array(), s2)
+        )
+        self.assertEqual(src._point_vectors_list, ['', 'v1'])
+        self.assertTrue(
+            numpy.allclose(src.data.point_data.get_array('v1').to_array(), v1)
+        )
+        self.assertEqual(src._point_tensors_list, ['', 't1'])
+        self.assertTrue(
+            numpy.allclose(src.data.point_data.get_array('t1').to_array(), t1)
+        )
+
+    def test_add_attribute_works_for_cell_data(self):
+        # Given
+        sgrid = self.sgrid
+        s1 = numpy.ones(4)
+        sgrid.cell_data.scalars = s1
+        sgrid.cell_data.scalars.name = 's1'
+        src = VTKDataSource(data=sgrid)
+        self.assertEqual(src.cell_scalars_name, 's1')
+        self.assertEqual(sorted(src._cell_scalars_list), ['', 's1'])
+
+        # When
+        s2 = s1 + 1.0
+        src.add_attribute(s2, 's2', category='cell')
+        v1 = numpy.ones((4, 3))
+        src.add_attribute(v1, 'v1', category='cell')
+        t1 = numpy.ones((4, 9))
+        src.add_attribute(t1, 't1', category='cell')
+
+        # Then
+        self.assertEqual(src._cell_scalars_list, ['', 's1', 's2'])
+        self.assertTrue(
+            numpy.allclose(src.data.cell_data.get_array('s2').to_array(), s2)
+        )
+        self.assertEqual(src._cell_vectors_list, ['', 'v1'])
+        self.assertTrue(
+            numpy.allclose(src.data.cell_data.get_array('v1').to_array(), v1)
+        )
+        self.assertEqual(src._cell_tensors_list, ['', 't1'])
+        self.assertTrue(
+            numpy.allclose(src.data.cell_data.get_array('t1').to_array(), t1)
+        )
+
+    def test_add_attribute_raises_errors(self):
+        # Given
+        sgrid = self.sgrid
+        s1 = numpy.ones(4)
+        sgrid.point_data.scalars = s1
+        sgrid.point_data.scalars.name = 's1'
+        src = VTKDataSource(data=sgrid)
+
+        # When/Then
+        data = numpy.ones((4, 3, 3))
+        self.assertRaises(AssertionError, src.add_attribute, data, 's2')
+
+        data = numpy.ones((4, 5))
+        self.assertRaises(AssertionError, src.add_attribute, data, 's2')
+
+    def test_remove_attribute(self):
+        # Given
+        sgrid = self.sgrid
+        s1 = numpy.ones(4)
+        sgrid.point_data.scalars = s1
+        sgrid.point_data.scalars.name = 's1'
+        src = VTKDataSource(data=sgrid)
+        self.assertEqual(src.point_scalars_name, 's1')
+        self.assertEqual(sorted(src._point_scalars_list), ['', 's1'])
+
+        # When
+        s2 = s1 + 1.0
+        src.add_attribute(s2, 's2')
+
+        # Then
+        self.assertEqual(sorted(src._point_scalars_list), ['', 's1', 's2'])
+
+        # When
+        src.remove_attribute('s2')
+
+        # Then
+        self.assertEqual(sorted(src._point_scalars_list), ['', 's1'])
+        self.assertEqual(src.data.point_data.get_array('s2'), None)
+
+    def test_rename_attribute(self):
+        # Given
+        sgrid = self.sgrid
+        s1 = numpy.ones(4)
+        sgrid.point_data.scalars = s1
+        sgrid.point_data.scalars.name = 's1'
+        src = VTKDataSource(data=sgrid)
+        self.assertEqual(src.point_scalars_name, 's1')
+        self.assertEqual(sorted(src._point_scalars_list), ['', 's1'])
+
+        # When
+        src.rename_attribute('s1', 's2')
+
+        # Then
+        self.assertEqual(sorted(src._point_scalars_list), ['', 's2'])
+        self.assertTrue(numpy.all(src.data.point_data.get_array('s2') == s1))
+        self.assertEqual(src.data.point_data.get_array('s1'), None)
 
 
 if __name__ == '__main__':

@@ -6,6 +6,7 @@ files.
 # Copyright (c) 2007-2015, Enthought, Inc.
 # License: BSD Style.
 
+
 # Standard library imports.
 from os.path import basename, isfile, exists, splitext
 
@@ -26,6 +27,7 @@ from mayavi.core.pipeline_info import PipelineInfo
 # `PLOT3DReader` class
 ########################################################################
 class PLOT3DReader(Source):
+
     """A PLOT3D file reader.  This reader does not support a
     timeseries of files.
     """
@@ -40,35 +42,29 @@ class PLOT3DReader(Source):
     q_file_name = Str('', desc='the Q file')
 
     # The active scalar name.
-    scalars_name = Trait(
-        'density',
-        TraitPrefixMap({
-            'density': 100,
-            'pressure': 110,
-            'temperature': 120,
-            'enthalpy': 130,
-            'internal energy': 140,
-            'kinetic energy': 144,
-            'velocity magnitude': 153,
-            'stagnation energy': 163,
-            'entropy': 170,
-            'swirl': 184
-        }),
-        desc='scalar data attribute to show')
+    scalars_name = Trait('density',
+                         TraitPrefixMap({'density': 100,
+                                         'pressure': 110,
+                                         'temperature': 120,
+                                         'enthalpy': 130,
+                                         'internal energy': 140,
+                                         'kinetic energy': 144,
+                                         'velocity magnitude': 153,
+                                         'stagnation energy': 163,
+                                         'entropy': 170,
+                                         'swirl': 184}),
+                         desc='scalar data attribute to show')
     # The active vector name.
-    vectors_name = Trait(
-        'momentum',
-        TraitPrefixMap({
-            'velocity': 200,
-            'vorticity': 201,
-            'momentum': 202,
-            'pressure gradient': 210
-        }),
-        desc='vector data attribute to show')
+    vectors_name = Trait('momentum',
+                         TraitPrefixMap({'velocity': 200,
+                                         'vorticity': 201,
+                                         'momentum': 202,
+                                         'pressure gradient': 210}),
+                         desc='vector data attribute to show')
 
     # The VTK data file reader.
-    reader = Instance(
-        tvtk.MultiBlockPLOT3DReader, args=(), allow_none=False, record=True)
+    reader = Instance(tvtk.MultiBlockPLOT3DReader, args=(), allow_none=False,
+                      record=True)
 
     # Information about what this object can produce.
     output_info = PipelineInfo(datasets=['structured_grid'])
@@ -79,33 +75,29 @@ class PLOT3DReader(Source):
     update_reader = Button('Update Reader')
 
     # Our view.
-    view = View(
-        Group(
-            Item(
-                'xyz_file_name', editor=FileEditor()),
-            Item(
-                'q_file_name', editor=FileEditor()),
-            Item(
-                name='scalars_name',
-                enabled_when='len(object.q_file_name) > 0'),
-            Item(
-                name='vectors_name', enabled_when='len(object.q_file_name)>0'),
-            Item(name='update_reader'),
-            label='Reader', ),
-        Group(
-            Item(
-                name='reader', style='custom', resizable=True),
-            show_labels=False,
-            label='PLOT3DReader'),
-        resizable=True)
+    view = View(Group(Item('xyz_file_name', editor=FileEditor()),
+                      Item('q_file_name', editor=FileEditor()),
+                      Item(name='scalars_name',
+                           enabled_when='len(object.q_file_name) > 0'),
+                      Item(name='vectors_name',
+                           enabled_when='len(object.q_file_name)>0'),
+                      Item(name='update_reader'),
+                      label='Reader',
+                      ),
+                Group(Item(name='reader', style='custom',
+                           resizable=True),
+                      show_labels=False,
+                      label='PLOT3DReader'
+                      ),
+                resizable=True)
 
     ########################################
     # Private traits.
 
     # The current file paths.  This is not meant to be touched by the
     # user.
-    xyz_file_path = Instance(
-        FilePath, args=(), desc='the current XYZ file path')
+    xyz_file_path = Instance(FilePath, args=(),
+                             desc='the current XYZ file path')
     q_file_path = Instance(FilePath, args=(), desc='the current Q file path')
 
     ######################################################################
@@ -133,8 +125,8 @@ class PLOT3DReader(Source):
         # Initialize the files.
         self.initialize(xyz_fn, q_fn, configure=False)
         # Now set the remaining state without touching the children.
-        set_state(
-            self, state, ignore=['children', 'xyz_file_path', 'q_file_path'])
+        set_state(self, state, ignore=['children', 'xyz_file_path',
+                                       'q_file_path'])
         # Setup the children.
         handle_children_state(self.children, state.children)
         # Setup the children's state.
@@ -217,7 +209,7 @@ class PLOT3DReader(Source):
             # No output so the file might be an ASCII file.
             try:
                 # Turn off IBlanking.
-                r.set(i_blanking=False, binary_file=False)
+                r.trait_set(i_blanking=False, binary_file=False)
             except AttributeError:
                 pass
             else:
@@ -250,15 +242,7 @@ class PLOT3DReader(Source):
 
         # Now setup the outputs by resetting self.outputs.  Changing
         # the outputs automatically fires a pipeline_changed event.
-        try:
-            n = r.get_output().number_of_blocks
-        except AttributeError:  # for VTK >= 4.5
-            n = r.number_of_outputs
-        outputs = []
-        for i in range(n):
-            outputs.append(r.get_output().get_block(i))
-
-        self.outputs = outputs
+        self.outputs = [r]
 
         # Fire data_changed just in case the outputs are not
         # really changed.  This can happen if the dataset is of

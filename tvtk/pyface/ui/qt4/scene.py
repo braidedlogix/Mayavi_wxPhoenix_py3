@@ -11,6 +11,7 @@
 # Author: Enthought, Inc.
 # Description: <Enthought pyface package component>
 #------------------------------------------------------------------------------
+
 """A VTK interactor scene widget for the PyFace PyQt backend.  See the class
 docs for more details.
 """
@@ -18,6 +19,7 @@ docs for more details.
 # Author: Prabhu Ramachandran <prabhu_r@users.sf.net>
 # Copyright (c) 2004-2016, Enthought, Inc.
 # License: BSD Style.
+
 
 import os
 import tempfile
@@ -44,7 +46,6 @@ from .QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 class _VTKRenderWindowInteractor(QVTKRenderWindowInteractor):
     """ This is a thin wrapper around the standard VTK PyQt interactor.
     """
-
     def __init__(self, scene, parent, **kwargs):
         QVTKRenderWindowInteractor.__init__(self, parent, **kwargs)
 
@@ -117,14 +118,14 @@ class _VTKRenderWindowInteractor(QVTKRenderWindowInteractor):
             pos = self.mapFromGlobal(QtGui.QCursor.pos())
             x = pos.x()
             y = self.height() - pos.y()
-            scene.picker.pick(x, y)
+            scene.picker.pick(x*self._pixel_ratio, y*self._pixel_ratio)
             return
 
         if key in [QtCore.Qt.Key_F] and modifiers == QtCore.Qt.NoModifier:
             pos = self.mapFromGlobal(QtGui.QCursor.pos())
             x = pos.x()
             y = self.height() - pos.y()
-            data = scene.picker.pick_world(x, y)
+            data = scene.picker.pick_world(x*self._pixel_ratio, y*self._pixel_ratio)
             coord = data.coordinate
             if coord is not None:
                 camera.focal_point = coord
@@ -143,8 +144,7 @@ class _VTKRenderWindowInteractor(QVTKRenderWindowInteractor):
                 self._scene.save(fname)
             return
 
-        shift = (
-            (modifiers & QtCore.Qt.ShiftModifier) == QtCore.Qt.ShiftModifier)
+        shift = ((modifiers & QtCore.Qt.ShiftModifier) == QtCore.Qt.ShiftModifier)
 
         if key == QtCore.Qt.Key_Left:
             if shift:
@@ -221,6 +221,7 @@ class _VTKRenderWindowInteractor(QVTKRenderWindowInteractor):
             self._scene.busy = False
 
 
+
 ######################################################################
 # `Scene` class.
 ######################################################################
@@ -266,44 +267,44 @@ class Scene(TVTKScene, Widget):
     ########################################
 
     # Render_window's view.
-    _stereo_view = Group(
-        Item(name='stereo_render'),
-        Item(name='stereo_type'),
-        show_border=True,
-        label='Stereo rendering', )
+    _stereo_view = Group(Item(name='stereo_render'),
+                         Item(name='stereo_type'),
+                         show_border=True,
+                         label='Stereo rendering',
+                         )
 
     # The default view of this object.
-    default_view = View(
-        Group(
-            Group(
-                Item(name='background'),
-                Item(name='foreground'),
-                Item(name='parallel_projection'),
-                Item(name='disable_render'),
-                Item(name='off_screen_rendering'),
-                Item(name='jpeg_quality'),
-                Item(name='jpeg_progressive'),
-                Item(name='magnification'),
-                Item(name='anti_aliasing_frames'),
-                Item(
-                    name='full_screen', show_label=False), ),
-            Group(
-                Item(
-                    name='render_window',
-                    style='custom',
-                    visible_when='object.stereo',
-                    editor=InstanceEditor(view=View(_stereo_view)),
-                    show_label=False), ),
-            label='Scene'),
-        Group(
-            Item(
-                name='light_manager', style='custom', show_label=False),
-            label='Lights'),
-        Group(
-            Item(
-                name='movie_maker', style='custom', show_label=False),
-            label='Movie'),
-        buttons=['OK', 'Cancel'])
+    default_view = View(Group(
+                            Group(Item(name='background'),
+                                  Item(name='foreground'),
+                                  Item(name='parallel_projection'),
+                                  Item(name='disable_render'),
+                                  Item(name='off_screen_rendering'),
+                                  Item(name='jpeg_quality'),
+                                  Item(name='jpeg_progressive'),
+                                  Item(name='magnification'),
+                                  Item(name='anti_aliasing_frames'),
+                                  Item(name='full_screen',
+                                       show_label=False),
+                                  ),
+                            Group(Item(name='render_window',
+                                       style='custom',
+                                       visible_when='object.stereo',
+                                       editor=InstanceEditor(view=View(_stereo_view)),
+                                       show_label=False),
+                                  ),
+                            label='Scene'),
+                         Group( Item(name='light_manager',
+                                style='custom', show_label=False),
+                                label='Lights'),
+                         Group(
+                             Item(
+                                 name='movie_maker',
+                                 style='custom', show_label=False
+                             ),
+                             label='Movie'),
+                         buttons=['OK', 'Cancel']
+                        )
 
     ########################################
     # Private traits.
@@ -400,7 +401,7 @@ class Scene(TVTKScene, Widget):
 
         # Grab the renderwindow.
         renwin = self._renwin = tvtk.to_tvtk(window.GetRenderWindow())
-        renwin.set(point_smoothing=self.point_smoothing,
+        renwin.trait_set(point_smoothing=self.point_smoothing,
                    line_smoothing=self.line_smoothing,
                    polygon_smoothing=self.polygon_smoothing)
         # Create a renderer and add it to the renderwindow

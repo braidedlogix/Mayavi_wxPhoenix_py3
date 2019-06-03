@@ -199,7 +199,7 @@ impossible to represent in the Python world since this usually
 involves various pointers to other C++ objects.
 
 It is also important to consider that the identity of objects
-is preserved according to the VTK behavior. For example, in the 
+is preserved according to the VTK behavior. For example, in the
 following code, the default object created by the VTK implementation of
 `GetLines()` is the same for any vtkPolyData::
 
@@ -293,7 +293,7 @@ Also note that it is possible to set many properties of a tvtk object
 in one go using the `set` method.  For example::
 
     >>> p = tvtk.Property()
-    >>> p.set(opacity=0.5, color=(1,0,0), representation='w')
+    >>> p.trait_set(opacity=0.5, color=(1,0,0), representation='w')
 
 Any tvtk object will automatically provide the basic functionality of
 a traited class.  Thus, one can also pop up a standard GUI editor for
@@ -461,10 +461,10 @@ Here is a simple example demonstrating these::
 
     >>> ########################################
     >>> from tvtk.api import tvtk
-    >>> import numpy
-    >>> data = numpy.array([[0,0,0,10], [1,0,0,20],
+    >>> import numpy as np
+    >>> data = np.array([[0,0,0,10], [1,0,0,20],
     ...                      [0,1,0,20], [0,0,1,30]], 'f')
-    >>> triangles = numpy.array([[0,1,3], [0,3,2],
+    >>> triangles = np.array([[0,1,3], [0,3,2],
     ...                            [1,2,3], [0,2,1]])
     >>> points = data[:,:3]
     >>> temperature = data[:,-1]
@@ -526,7 +526,7 @@ illustrating these different approaches::
     >>> a = [[0], [1, 2], [3, 4, 5], [6, 7, 8, 9]]
     >>> cells = tvtk.CellArray()
     >>> cells.from_array(a)
-    >>> a = numpy.array([[0,1,2], [3,4,5], [6,7,8]], int)
+    >>> a = np.array([[0,1,2], [3,4,5], [6,7,8]], int)
     >>> cells.from_array(a)
     >>> l_a = [a[:,:1], a[:2,:2], a]
     >>> cells.from_array(a)
@@ -536,10 +536,10 @@ An alternative way to use an arbitrary connectivity list having
 different numbers of points per cell is to use the following
 approach::
 
-    >>> ids = numpy.array([3, 0,1,3,
-    ...                    3, 0,3,2,
-    ...                    3, 1,2,3,
-    ...                    3, 0,2,1])
+    >>> ids = np.array([3, 0,1,3,
+    ...                 3, 0,3,2,
+    ...                 3, 1,2,3,
+    ...                 3, 0,2,1])
     >>> # The list is of form [npts,p0,p1,...p(npts-1), ...]
     >>> n_cell = 4
     >>> cells = tvtk.CellArray()
@@ -578,7 +578,7 @@ different forms of array handling.
      Python list.  Like so::
 
         >>> f = tvtk.FloatArray()
-        >>> a = numpy.array([1,2,3], int)
+        >>> a = np.array([1,2,3], int)
         >>> f.from_array(a)
 
   b. Implicit conversion -- These happen when the user passes an array
@@ -593,7 +593,7 @@ means that changes to the VTK data array or to the numpy array are
 visible in the other.  For example::
 
    >>> f = tvtk.FloatArray()
-   >>> a = numpy.array([1,2,3], 'f')
+   >>> a = np.array([1,2,3], 'f')
    >>> f.from_array(a)
    >>> a[0] = 10.0
    >>> print f
@@ -636,8 +636,8 @@ conversions.
 example::
 
     >>> ca = tvtk.CellArray()
-    >>> triangles = numpy.array([[0,1,3], [0,3,2],
-    ...                          [1,2,3], [0,2,1]])
+    >>> triangles = np.array([[0,1,3], [0,3,2],
+    ...                       [1,2,3], [0,2,1]])
     >>> ca.from_array(triangles)
 
 This always makes a copy.  However, if one uses the `set_cells` method
@@ -646,10 +646,10 @@ a copy is made in the same circumstances as specified above for
 is a "view" of the numpy array.  Thus, the following example does
 not make a copy::
 
-    >>> ids = numpy.array([3, 0,1,3,
-    ...                    3, 0,3,2,
-    ...                    3, 1,2,3,
-    ...                    3, 0,2,1], int)
+    >>> ids = np.array([3, 0,1,3,
+    ...                 3, 0,3,2,
+    ...                 3, 1,2,3,
+    ...                 3, 0,2,1], int)
     >>> ca.set_cells(4, ids)
 
 
@@ -668,7 +668,7 @@ re-allocate memory if they are resized.  This is illustrated in the
 following example::
 
    >>> d = tvtk.DoubleArray()
-   >>> a = numpy.array([1,2,3], 'd')
+   >>> a = np.array([1,2,3], 'd')
    >>> d.from_array(a)
    >>> a[0] = 10
    >>> d.append(4.0)
@@ -739,12 +739,12 @@ If you need to write out VTK data files given a TVTK dataset.  The
     >>> pd = tvtk.PolyData()
     >>> # ...
     >>> write_data(pd, 'file_name')
-    
+
 This will write out an XML file with basename ``file_name``.  If one specifies
 a ``.vtk`` extension, like say::
 
     >>> write_data(pd, 'file_name.vtk')
-    
+
 It will write out an old-style ASCII file.  See the docstring for more details.
 
 VTK-Python defines several handy colors and these are made available in TVTK.

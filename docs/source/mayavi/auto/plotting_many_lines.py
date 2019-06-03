@@ -56,11 +56,10 @@ for i in range(50):
     # of the final set of points once all lines have been combined
     # together, this is why we need to keep track of the total number of
     # points already created (index)
-    connections.append(
-        np.vstack([
-            np.arange(index, index + N - 1.5), np.arange(index + 1, index + N -
-                                                         .5)
-        ]).T)
+    connections.append(np.vstack(
+                       [np.arange(index,   index + N - 1.5),
+                        np.arange(index + 1, index + N - .5)]
+                            ).T)
     index += N
 
 # Now collapse all positions, scalars and connections in big arrays

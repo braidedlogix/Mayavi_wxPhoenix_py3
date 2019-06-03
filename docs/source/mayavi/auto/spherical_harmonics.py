@@ -45,8 +45,8 @@ for n in range(1, 6):
         s[s < 0] *= 0.97
 
         s /= s.max()
-        mlab.mesh(
-            s * x - m, s * y - n, s * z + 1.3, scalars=s, colormap='Spectral')
+        mlab.mesh(s * x - m, s * y - n, s * z + 1.3,
+                  scalars=s, colormap='Spectral')
 
 mlab.view(90, 70, 6.2, (-1.3, -2.9, 0.25))
 mlab.show()

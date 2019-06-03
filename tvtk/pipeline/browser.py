@@ -26,18 +26,18 @@ TODO:
  * When a node is selected, the actor involved could be highlighted.
 
 """
-# Author: Prabhu Ramachandran <prabhu_r@users.sf.net>
-# Copyright (c) 2005, Enthought, Inc.
+# Author: Prabhu Ramachandran <prabhu@aero.iitb.ac.in>
+# Copyright (c) 2005-2018, Enthought, Inc.
 # License: BSD Style.
 
 # Standard library imports.
 import re
 
 # Enthought library imports.
-from traits.api import HasTraits, Property, Any, Instance, \
-                             Trait, List, Str, Dict, Python
+from traits.api import (HasTraits, Property, Any, Instance, Event,
+                        Trait, List, Str, Dict, Python)
 from traitsui.api import \
-     TreeEditor, TreeNodeObject, ObjectTreeNode, View, Item, Group
+     TreeEditor, TreeNodeObject, ObjectTreeNode, View, Item, Group, VSplit
 from traitsui.menu import Menu, Action
 
 from tvtk.api import tvtk
@@ -60,23 +60,22 @@ def get_icon(object_name):
     the empty string."""
 
     # The mapping from names to icons.
-    icon_map = {
-        'actor': 'actor.png',
-        'camera': 'camera.png',
-        'coordinate': 'coordinate.png',
-        'filter': 'filter.png',
-        'lookuptable': 'lookuptable.png',
-        'mapper': 'mapper.png',
-        'polydata': 'polydata.png',
-        'property': 'property.png',
-        'reader': 'reader.png',
-        'renderer': 'renderer.png',
-        'rendererwindowinteractor': 'rendererwindowinteractor.png',
-        'source': 'source.png',
-        'texture': 'texture.png',
-        'window': 'window.png',
-        'writer': 'writer.png',
-    }
+    icon_map = {'actor': 'actor.png',
+                'camera': 'camera.png',
+                'coordinate': 'coordinate.png',
+                'filter': 'filter.png',
+                'lookuptable': 'lookuptable.png',
+                'mapper': 'mapper.png',
+                'polydata': 'polydata.png',
+                'property': 'property.png',
+                'reader': 'reader.png',
+                'renderer': 'renderer.png',
+                'rendererwindowinteractor': 'rendererwindowinteractor.png',
+                'source': 'source.png',
+                'texture': 'texture.png',
+                'window': 'window.png',
+                'writer': 'writer.png',
+                }
 
     # Lower case the name.
     name = object_name.lower()
@@ -129,11 +128,10 @@ class SimpleTreeGenerator(TreeGenerator):
                             tvtk.Collection)):
             return True
 
-        for attribute in [
-                'source', 'get_input', 'input', 'mapper', 'property',
-                'texture', 'text_property', 'volume_property', 'lookup_table',
-                'producer_port', 'producer'
-        ]:
+        for attribute in ['source', 'get_input', 'input', 'mapper', 'property',
+                          'texture', 'text_property', 'volume_property',
+                          'lookup_table', 'producer_port', 'producer',
+                          'get_input_algorithm']:
             if hasattr(obj, attribute):
                 return True
 
@@ -144,7 +142,6 @@ class SimpleTreeGenerator(TreeGenerator):
         dictionary, the keys are the trait names.  This is used to
         generate the tree in the browser."""
         kids = {}
-
         def _add_kid(key, x):
             if x is None:
                 kids[key] = None
@@ -157,43 +154,42 @@ class SimpleTreeGenerator(TreeGenerator):
                     kids[key] = x
 
         if isinstance(obj, tvtk.RenderWindow):
-            return {'renderers': obj.renderers}
+            return {'renderers':obj.renderers}
         elif isinstance(obj, tvtk.Renderer):
             if hasattr(obj, 'view_props'):
-                return {
-                    'view_props': obj.view_props,
-                    'active_camera': obj.active_camera
-                }
+                return {'view_props':obj.view_props,
+                        'active_camera':obj.active_camera}
             else:
-                return {'props': obj.props, 'active_camera': obj.active_camera}
+                return {'props':obj.props,
+                        'active_camera':obj.active_camera}
 
         #if isinstance(obj, tvtk.Collection):
         #    _add_kid(obj)
 
         # Misc. properties.
-        for attribute in [
-                'mapper', 'property', 'texture', 'text_property',
-                'volume_property', 'lookup_table', 'producer'
-        ]:
+        for attribute in ['mapper', 'property', 'texture',
+                          'text_property', 'volume_property',
+                          'lookup_table', 'producer']:
             if hasattr(obj, attribute):
                 _add_kid(attribute, getattr(obj, attribute))
 
         # Check for sources and inputs.
         if hasattr(obj, 'number_of_sources'):
-            srcs = [obj.get_source(i) \
+            srcs = [obj.get_source(i)
                     for i in range(obj.number_of_sources)]
             _add_kid('source', srcs)
         elif hasattr(obj, 'source'):
             _add_kid('source', obj.source)
 
-        if hasattr(obj, 'get_input'):
+        if hasattr(obj, 'get_input_algorithm'):
             inputs = []
             if hasattr(obj, 'number_of_input_ports'):
-                if obj.number_of_input_ports:
-                    inputs = [obj.get_input(i) \
-                              for i in range(obj.number_of_input_ports)]
-            else:
-                inputs = [obj.get_input(i) \
+                inputs = [obj.get_input_algorithm(i, j)
+                          for i in range(obj.number_of_input_ports)
+                          for j in range(
+                                  obj.get_number_of_input_connections(i))]
+            elif hasattr(obj, 'get_input'):
+                inputs = [obj.get_input(i)
                           for i in range(obj.number_of_inputs)]
             _add_kid('input', inputs)
         elif hasattr(obj, 'input'):
@@ -214,45 +210,24 @@ class SimpleTreeGenerator(TreeGenerator):
     def get_nodes(self, menu):
         """Returns a list of nodes for the tree editor.  The menu
         entries to use are given as `menu`"""
-        nodes = [
-            ObjectTreeNode(
-                node_for=[TVTKBranchNode],
-                view=View(
-                    Group(
-                        Item(
-                            'object', style='custom'), show_labels=False)),
-                auto_open=False,
-                children='children',
-                label='name',
-                menu=menu,
-                rename=False,
-                delete=False,
-                copy=False,
-                insert=False),
-            ObjectTreeNode(
-                node_for=[TVTKLeafNode],
-                view=View(
-                    Group(
-                        Item(
-                            'object', style='custom'), show_labels=False)),
-                auto_open=False,
-                label='name',
-                menu=menu,
-                rename=False,
-                delete=False,
-                copy=False,
-                insert=False),
-            ObjectTreeNode(
-                node_for=[TVTKCollectionNode],
-                auto_open=True,
-                children='children',
-                label='name',
-                menu=menu,
-                rename=False,
-                delete=False,
-                copy=False,
-                insert=False),
-        ]
+        nodes = [ObjectTreeNode(node_for=[TVTKBranchNode],
+                                view=View(Group(Item('object', style='custom'),
+                                                show_labels=False)),
+                                auto_open=False,
+                                children='children', label='name', menu=menu,
+                                rename=False, delete=False, copy=False,
+                                insert=False),
+                 ObjectTreeNode(node_for=[TVTKLeafNode],
+                                view=View(Group(Item('object', style='custom'),
+                                                show_labels=False)),
+                                auto_open=False,
+                                label='name', menu=menu, rename=False,
+                                delete=False, copy=False, insert=False),
+                 ObjectTreeNode(node_for=[TVTKCollectionNode],
+                                auto_open=True, children='children',
+                                label='name', menu=menu, rename=False,
+                                delete=False, copy=False, insert=False),
+                 ]
         return nodes
 
 
@@ -277,7 +252,6 @@ class FullTreeGenerator(SimpleTreeGenerator):
         methods = self._get_methods(vtk_obj)
 
         kids = {}
-
         def _add_kid(key, x):
             if x is None:
                 kids[key] = None
@@ -302,30 +276,23 @@ class FullTreeGenerator(SimpleTreeGenerator):
 
         # Check for sources and inputs.
         if hasattr(obj, 'number_of_sources'):
-            srcs = [obj.get_source(i) \
+            srcs = [obj.get_source(i)
                     for i in range(obj.number_of_sources)]
             _add_kid('source', srcs)
         elif hasattr(obj, 'source'):
             _add_kid('source', obj.source)
 
-        if hasattr(obj, 'get_input'):
+        if hasattr(obj, 'get_input_algorithm'):
             inputs = []
             if hasattr(obj, 'number_of_input_ports'):
-                if obj.number_of_input_ports:
-                    # Sometimes not all the inputs can be retrieved using
-                    # 'get_input', as they may be sources (for instance
-                    # the ProbeFilter).
-                    inputs = list()
-                    for i in range(obj.number_of_input_ports):
-                        try:
-                            inputs.append(obj.get_input(i))
-                        except TypeError:
-                            pass
-                    if not inputs:
-                        inputs = [obj.get_input()]
-            else:
-                inputs = [obj.get_input(i) \
-                          for i in range(obj.number_of_inputs)]
+                inputs = [obj.get_input_algorithm(i, j)
+                          for i in range(obj.number_of_input_ports)
+                          for j in range(
+                                  obj.get_number_of_input_connections(i))]
+            _add_kid('input', inputs)
+        elif hasattr(obj, 'get_input'):
+            inputs = [obj.get_input(i)
+                      for i in range(obj.number_of_inputs)]
             _add_kid('input', inputs)
         elif hasattr(obj, 'input'):
             _add_kid('input', obj.input)
@@ -338,21 +305,12 @@ class FullTreeGenerator(SimpleTreeGenerator):
     def has_children(self, obj):
         """Returns true of the object has children, false if not.  This is
         very specific to tvtk objects."""
-        if isinstance(obj, (tvtk.RenderWindow, tvtk.Renderer,
-                            tvtk.Collection)):
-            return True
-        for attribute in [
-                'source', 'get_input', 'input', 'mapper', 'property',
-                'texture', 'text_property', 'volume_property', 'lookup_table',
-                'producer_port', 'producer'
-        ]:
-            if hasattr(obj, attribute):
-                return True
+        result = super(FullTreeGenerator, self).has_children(obj)
         # FIXME: This is inefficient.  We probably should cache the
         # get_children call.
-        if self.get_children(obj):
+        if not result and self.get_children(obj):
             return True
-        return False
+        return result
 
     ###########################################################################
     # Non-public interface.
@@ -384,7 +342,7 @@ class FullTreeGenerator(SimpleTreeGenerator):
         del methods[0]
 
         # using only the first set of indented values.
-        patn = re.compile("  \S")
+        patn = re.compile(r"  \S")
         for method in methods[:]:
             if patn.match(method):
                 if method.find(":") == -1:
@@ -411,10 +369,10 @@ class FullTreeGenerator(SimpleTreeGenerator):
             methods[i] = strng.split(":")
             method_names.append(methods[i][0])
 
-        if re.match("vtk\w*Renderer", vtk_obj.GetClassName()):
+        if re.match(r"vtk\w*Renderer", vtk_obj.GetClassName()):
             methods.append(["ActiveCamera", ""])
 
-        if re.match("vtk\w*Assembly", vtk_obj.GetClassName()):
+        if re.match(r"vtk\w*Assembly", vtk_obj.GetClassName()):
             methods.append(["Parts", ""])
             methods.append(["Volumes", ""])
             methods.append(["Actors", ""])
@@ -430,9 +388,9 @@ class FullTreeGenerator(SimpleTreeGenerator):
         # Some of these object are removed because they arent useful in
         # the browser.  I check for Source and Input anyway so I dont need
         # them.
-        for name in ('Output', 'FieldData', 'CellData', 'PointData', 'Source',
-                     'Input', 'ExtentTranslator', 'Interactor', 'Lights',
-                     'Information', 'Executive'):
+        for name in('Output', 'FieldData', 'CellData', 'PointData',
+                    'Source', 'Input', 'ExtentTranslator', 'ProgressText',
+                    'Interactor', 'Lights', 'Information', 'Executive'):
             _remove_method(name, methods, method_names)
 
         return methods
@@ -442,6 +400,7 @@ class FullTreeGenerator(SimpleTreeGenerator):
 # `CompositeIterable` class.
 ######################################################################
 class CompositeIterable(HasTraits):
+
     """This class allows one to iterate over a bunch of disparate
     objects treating them as one single iterable.  Each of the
     iterated objects is wrapped with a suitable Node class so that the
@@ -646,7 +605,8 @@ class UICloseHandler(TVTKBaseHandler):
 ######################################################################
 class PipelineBrowser(HasTraits):
     # The tree generator to use.
-    tree_generator = Trait(FullTreeGenerator(), Instance(TreeGenerator))
+    tree_generator = Trait(FullTreeGenerator(),
+                           Instance(TreeGenerator))
 
     # The TVTK render window(s) associated with this browser.
     renwins = List
@@ -656,9 +616,17 @@ class PipelineBrowser(HasTraits):
     # object instantiation time.
     root_object = List(TVTKBase)
 
+    selected = Instance(TVTKBase)
+
+    # This is fired when an object has been changed on the UI. Use this when
+    # you do not set the renwins list with the render windows but wish to do
+    # your own thing when the object traits are edited on the UI.
+    object_edited = Event
+
     # Private traits.
     # The root of the tree to display.
     _root = Any
+    _ui = Any
 
     ###########################################################################
     # `object` interface.
@@ -676,41 +644,39 @@ class PipelineBrowser(HasTraits):
 
         """
         super(PipelineBrowser, self).__init__(**traits)
-        self.ui = None
+        self._ui = None
         self.view = None
         if renwin:
             self.renwins.append(renwin)
 
         self._root_object_changed(self.root_object)
-        menu = Menu(
-            Action(
-                name='Refresh', action='editor.update_editor'),
-            Action(
-                name='Expand all', action='editor.expand_all'))
+
+    def default_traits_view(self):
+        menu = Menu(Action(name='Refresh', action='editor.update_editor'),
+                    Action(name='Expand all', action='editor.expand_all'))
         self.menu = menu
 
         nodes = self.tree_generator.get_nodes(menu)
 
-        self.tree_editor = TreeEditor(
-            nodes=nodes,
-            editable=False,
-            orientation='vertical',
-            hide_root=True,
-            on_dclick=self._on_dclick)
-        self.view = View(
-            Group(
-                Item(
-                    name='_root', editor=self.tree_editor, resizable=True),
-                show_labels=False,
-                show_border=False,
-                orientation='vertical'),
-            title='Pipeline browser',
-            help=False,
-            resizable=True,
-            undo=False,
-            revert=False,
-            width=.3,
-            height=.3)
+        self.tree_editor = TreeEditor(nodes=nodes,
+                                      editable=False,
+                                      orientation='vertical',
+                                      hide_root=True,
+                                      on_select=self._on_select,
+                                      on_dclick=self._on_dclick)
+        view = View(Group(VSplit(Item(name='_root',
+                                      editor=self.tree_editor,
+                                      resizable=True),
+                                 Item(name='selected',
+                                      style='custom',
+                                      resizable=True),
+                                 show_labels=False,
+                                 show_border=False)),
+                    title='Pipeline browser',
+                    help=False,
+                    resizable=True, undo=False, revert=False,
+                    width=.3, height=.3)
+        return view
 
     ###########################################################################
     # `PipelineBrowser` interface.
@@ -720,37 +686,38 @@ class PipelineBrowser(HasTraits):
         `parent` widget is passed, the tree is displayed inside the
         passed parent widget."""
         # If UI already exists, raise it and return.
-        if self.ui and self.ui.control:
+        if self._ui is not None and self._ui.control is not None:
             try:
-                self.ui.control.Raise()
+                self._ui.control.Raise()
             except AttributeError:
                 pass
             else:
                 return
         else:
             # No active ui, create one.
-            if parent:
-                self.ui = self.view.ui(self, parent=parent, kind='subpanel')
+            view = self.default_traits_view()
+            if parent is not None:
+                self._ui = view.ui(self, parent=parent, kind='subpanel')
             else:
-                self.ui = self.view.ui(self, parent=parent)
+                self._ui = view.ui(self, parent=parent)
 
     def update(self):
         """Update the tree view."""
         # This is a hack.
-        if self.ui and self.ui.control:
+        if self._ui is not None and self._ui.control is not None:
             try:
-                ed = self.ui._editors[0]
+                ed = self._ui._editors[0]
                 ed.update_editor()
-                self.ui.control.Refresh()
+                self._ui.control.Refresh()
             except (AttributeError, IndexError):
                 pass
-
     # Another name for update.
     refresh = update
 
     def render(self):
         """Calls render on all render windows associated with this
         browser."""
+        self.object_edited = True
         for rw in self.renwins:
             rw.render()
 
@@ -760,8 +727,8 @@ class PipelineBrowser(HasTraits):
     def _make_default_root(self):
         tree_gen = self.tree_generator
         objs = [x.render_window for x in self.renwins]
-        node = TVTKCollectionNode(
-            object=objs, name="Root", tree_generator=tree_gen)
+        node = TVTKCollectionNode(object=objs, name="Root",
+                                  tree_generator=tree_gen)
         return node
 
     def _tree_generator_changed(self, tree_gen):
@@ -775,8 +742,9 @@ class PipelineBrowser(HasTraits):
             if not hasattr(root_obj, '__len__'):
                 ro = [root_obj]
 
-            self._root = TVTKCollectionNode(
-                object=ro, name="Root", tree_generator=tree_gen)
+            self._root = TVTKCollectionNode(object=ro,
+                                            name="Root",
+                                            tree_generator=tree_gen)
         else:
             self._root = self._make_default_root()
 
@@ -787,8 +755,8 @@ class PipelineBrowser(HasTraits):
         """Trait handler called when the root object is assigned to."""
         tg = self.tree_generator
         if root_obj:
-            self._root = TVTKCollectionNode(
-                object=root_obj, name="Root", tree_generator=tg)
+            self._root = TVTKCollectionNode(object=root_obj, name="Root",
+                                            tree_generator=tg)
         else:
             self._root = self._make_default_root()
             self.root_object = self._root.object
@@ -807,6 +775,18 @@ class PipelineBrowser(HasTraits):
             object.on_trait_change(self.render)
             ui = object.edit_traits(view=view)
 
+    def _on_select(self, obj):
+        if hasattr(obj, 'object') and hasattr(obj.object, 'edit_traits'):
+            new = obj.object
+            old = self.selected
+            if new != old:
+                self.selected = new
+            if old is not None:
+                old.on_trait_change(self.render, remove=True)
+            if new is not None:
+                new.on_trait_change(self.render)
+
+
 
 ######################################################################
 # Test cases.
@@ -817,7 +797,7 @@ def main(instantiate_gui=True):
 
     v = ivtk.viewer(browser=False, instantiate_gui=instantiate_gui)
     cs = tvtk.ConeSource()
-    m = tvtk.PolyDataMapper(input=cs.output)
+    m = tvtk.PolyDataMapper(input_connection=cs.output_port)
     a = tvtk.Actor(mapper=m)
     v.scene.add_actor(a)
     v.scene.reset_zoom()
@@ -831,5 +811,5 @@ def main(instantiate_gui=True):
 if __name__ == '__main__':
     from pyface.api import GUI
     gui = GUI()
-    main(instantiate_gui=False)
+    v, b, a = main(instantiate_gui=False)
     gui.start_event_loop()

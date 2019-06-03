@@ -33,8 +33,7 @@ y = 4 * (np.random.random(500) - 0.5)
 
 
 def f(x, y):
-    return np.exp(-(x**2 + y**2))
-
+    return np.exp(-(x ** 2 + y ** 2))
 
 z = f(x, y)
 

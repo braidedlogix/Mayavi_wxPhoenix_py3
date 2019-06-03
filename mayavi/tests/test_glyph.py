@@ -22,6 +22,7 @@ from mayavi.modules.vector_cut_plane import VectorCutPlane
 
 
 class TestGlyph(unittest.TestCase):
+
     def make_data(self):
         """Trivial data -- creates an elementatry scalar field and a
         constant vector field along the 'x' axis."""
@@ -35,10 +36,9 @@ class TestGlyph(unittest.TestCase):
         return s, v
 
     def setUp(self):
-        """Initial setting up of test fixture, automatically called by TestCase before any other test method is invoked"""
         e = NullEngine()
         # Uncomment to see visualization for debugging etc.
-        #e = Engine()
+        # e = Engine()
         e.start()
         s = e.new_scene()
         self.e = e
@@ -73,7 +73,7 @@ class TestGlyph(unittest.TestCase):
         gs.glyph_position = 'tail'
         gs.glyph_source = gs.glyph_list[1]
         e.add_module(v)
-        v.implicit_plane.set(normal=(0, 1, 0), origin=(0, 3, 0))
+        v.implicit_plane.trait_set(normal=(0, 1, 0), origin=(0, 3, 0))
 
         v = VectorCutPlane()
         glyph = v.glyph
@@ -81,9 +81,9 @@ class TestGlyph(unittest.TestCase):
         gs.glyph_source = gs.glyph_list[2]
         gs.glyph_position = 'head'
         e.add_module(v)
-        v.implicit_plane.set(normal=(0, 1, 0), origin=(0, -2, 0))
-        self.g = g
-        self.v = v
+        v.implicit_plane.trait_set(normal=(0, 1, 0), origin=(0, -2, 0))
+        self.g=g
+        self.v=v
         self.scene = e.current_scene
         return
 
@@ -104,7 +104,7 @@ class TestGlyph(unittest.TestCase):
         self.assertEqual(g.glyph.glyph.scale_factor, 0.5)
         self.assertEqual(g.actor.property.line_width, 1.0)
         # Test masking
-        n_output_points = src.outputs[0].number_of_points
+        n_output_points = src.outputs[0].output.number_of_points
         n_glyph_input_points = g.glyph.glyph.input.number_of_points
         if mask:
             self.assertNotEqual(n_glyph_input_points, 0)
@@ -122,23 +122,22 @@ class TestGlyph(unittest.TestCase):
         gs = glyph.glyph_source
         self.assertEqual(gs.glyph_position, 'tail')
         self.assertEqual(gs.glyph_source, gs.glyph_list[1])
-        self.assertEqual(
-            numpy.allclose(v.implicit_plane.normal, (0., 1., 0.)), True)
+        self.assertEqual(numpy.allclose(v.implicit_plane.normal,
+                                        (0., 1., 0.)), True)
 
         v = src.children[0].children[3]
         glyph = v.glyph
         gs = glyph.glyph_source
         self.assertEqual(gs.glyph_source, gs.glyph_list[2])
         self.assertEqual(gs.glyph_position, 'head')
-        self.assertEqual(
-            numpy.allclose(v.implicit_plane.normal, (0., 1., 0.)), True)
+        self.assertEqual(numpy.allclose(v.implicit_plane.normal,
+                                        (0., 1., 0.)), True)
 
     def test_glyph(self):
         "Test if the test fixture works"
         self.check()
 
-    @unittest.skipIf(platform.system() == "Darwin",
-                     "Test crashes on OSX. See issue #373")
+    @unittest.skipIf(platform.system() == "Darwin", "Test crashes on OSX. See issue #373")
     def test_mask_input_points_with_random_mode(self):
         """Test if masking input points works with random mode.
            Tests Issue #165"""
@@ -205,7 +204,7 @@ class TestGlyph(unittest.TestCase):
         # Test if the MayaVi2 visualization can be deep-copied.
 
         # Pop the source object.
-        s = self.scene
+        s =  self.scene
         sources = s.children
         s.children = []
         # Add it back to see if that works without error.
@@ -220,7 +219,6 @@ class TestGlyph(unittest.TestCase):
         sources1 = copy.deepcopy(sources)
         s.children[:] = sources1
         self.check()
-
 
 if __name__ == '__main__':
     unittest.main()

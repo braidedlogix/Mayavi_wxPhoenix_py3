@@ -1,0 +1,10 @@
+pillow
+mock
+Sphinx
+coverage
+psutil
+traits
+traitsui
+apptools
+pyface
+envisage

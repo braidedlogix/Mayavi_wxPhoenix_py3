@@ -4,18 +4,36 @@
 # Copyright (c) 2005-2015, Enthought, Inc.
 # License: BSD Style.
 
-import os
+from contextlib import contextmanager
 import string
-import sys
 import re
 import vtk
 
 vtk_major_version = vtk.vtkVersion.GetVTKMajorVersion()
 vtk_minor_version = vtk.vtkVersion.GetVTKMinorVersion()
 
+
 ######################################################################
 # Utility functions.
 ######################################################################
+@contextmanager
+def suppress_vtk_warnings():
+    """A context manager to suppress VTK warnings.
+
+    This is handy when trying to find something dynamically with VTK.
+
+    **Example**
+
+    with supress_vtk_warnings():
+       x = tvtk.VolumeRayCastMapper()
+
+    """
+    try:
+        obj = vtk.vtkObject()
+        obj.GlobalWarningDisplayOff()
+        yield
+    finally:
+        obj.GlobalWarningDisplayOn()
 
 
 def get_tvtk_name(vtk_name):
@@ -34,18 +52,9 @@ def get_tvtk_name(vtk_name):
     """
     if vtk_name[:3] == 'vtk':
         name = vtk_name[3:]
-        dig2name = {
-            '1': 'One',
-            '2': 'Two',
-            '3': 'Three',
-            '4': 'Four',
-            '5': 'Five',
-            '6': 'Six',
-            '7': 'Seven',
-            '8': 'Eight',
-            '9': 'Nine',
-            '0': 'Zero'
-        }
+        dig2name = {'1': 'One', '2': 'Two', '3': 'Three', '4': 'Four',
+                    '5': 'Five', '6': 'Six', '7': 'Seven', '8': 'Eight',
+                    '9': 'Nine', '0': 'Zero'}
 
         if name[0] in string.digits:
             return dig2name[name[0]] + name[1:]

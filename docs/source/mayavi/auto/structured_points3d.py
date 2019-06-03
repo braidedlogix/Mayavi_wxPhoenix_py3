@@ -25,16 +25,17 @@ from mayavi.scripts import mayavi2
 dims = array((128, 128, 128))
 vol = array((-5., 5, -5, 5, -5, 5))
 origin = vol[::2]
-spacing = (vol[1::2] - origin) / (dims - 1)
+spacing = (vol[1::2] - origin)/(dims -1)
 xmin, xmax, ymin, ymax, zmin, zmax = vol
-x, y, z = ogrid[xmin:xmax:dims[0] * 1j, ymin:ymax:dims[1] * 1j, zmin:zmax:dims[
-    2] * 1j]
+x, y, z = ogrid[xmin:xmax:dims[0]*1j,
+                ymin:ymax:dims[1]*1j,
+                zmin:zmax:dims[2]*1j]
 x, y, z = [t.astype('f') for t in (x, y, z)]
-scalars = sin(x * y * z) / (x * y * z)
+scalars = sin(x*y*z)/(x*y*z)
 
 # Make the tvtk dataset.
-spoints = tvtk.StructuredPoints(
-    origin=origin, spacing=spacing, dimensions=dims)
+spoints = tvtk.StructuredPoints(origin=origin, spacing=spacing,
+                                dimensions=dims)
 # The copy makes the data contiguous and the transpose makes it
 # suitable for display via tvtk.  Note that it is not necessary to
 # make the data contiguous since in that case the array is copied
@@ -53,7 +54,6 @@ if is_old_pipeline():
 #w = tvtk.XMLImageDataWriter(input=spoints, file_name='spoints3d.vti')
 #w.write()
 
-
 # Now view the data.
 @mayavi2.standalone
 def view():
@@ -62,11 +62,10 @@ def view():
     from mayavi.modules.image_plane_widget import ImagePlaneWidget
 
     mayavi.new_scene()
-    src = VTKDataSource(data=spoints)
+    src = VTKDataSource(data = spoints)
     mayavi.add_source(src)
     mayavi.add_module(Outline())
     mayavi.add_module(ImagePlaneWidget())
-
 
 if __name__ == '__main__':
     view()

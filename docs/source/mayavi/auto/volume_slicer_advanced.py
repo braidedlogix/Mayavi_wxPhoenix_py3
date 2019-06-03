@@ -50,7 +50,7 @@ class VolumeSlicer(HasTraits):
     data = Array
 
     # The position of the view
-    position = Array(shape=(3, ))
+    position = Array(shape=(3,))
 
     # The 4 views displayed
     scene3d = Instance(MlabSceneModel, ())
@@ -83,24 +83,23 @@ class VolumeSlicer(HasTraits):
         self.ipw_3d_y
         self.ipw_3d_z
 
+
     #---------------------------------------------------------------------------
     # Default values
     #---------------------------------------------------------------------------
     def _position_default(self):
-        return 0.5 * np.array(self.data.shape)
+        return 0.5*np.array(self.data.shape)
 
     def _data_src_default(self):
-        return mlab.pipeline.scalar_field(
-            self.data,
-            figure=self.scene3d.mayavi_scene,
-            name='Data', )
+        return mlab.pipeline.scalar_field(self.data,
+                            figure=self.scene3d.mayavi_scene,
+                            name='Data',)
 
     def make_ipw_3d(self, axis_name):
-        ipw = mlab.pipeline.image_plane_widget(
-            self.data_src,
-            figure=self.scene3d.mayavi_scene,
-            plane_orientation='%s_axes' % axis_name,
-            name='Cut %s' % axis_name)
+        ipw = mlab.pipeline.image_plane_widget(self.data_src,
+                        figure=self.scene3d.mayavi_scene,
+                        plane_orientation='%s_axes' % axis_name,
+                        name='Cut %s' % axis_name)
         return ipw
 
     def _ipw_3d_x_default(self):
@@ -112,14 +111,15 @@ class VolumeSlicer(HasTraits):
     def _ipw_3d_z_default(self):
         return self.make_ipw_3d('z')
 
+
     #---------------------------------------------------------------------------
     # Scene activation callbacks
     #---------------------------------------------------------------------------
     @on_trait_change('scene3d.activated')
     def display_scene3d(self):
-        outline = mlab.pipeline.outline(
-            self.data_src,
-            figure=self.scene3d.mayavi_scene, )
+        outline = mlab.pipeline.outline(self.data_src,
+                        figure=self.scene3d.mayavi_scene,
+                        )
         self.scene3d.mlab.view(40, 50)
         # Interaction properties can only be changed after the scene
         # has been created, and thus the interactor exists
@@ -131,10 +131,11 @@ class VolumeSlicer(HasTraits):
                                  tvtk.InteractorStyleTerrain()
         self.update_position()
 
+
     def make_side_view(self, axis_name):
         scene = getattr(self, 'scene_%s' % axis_name)
         scene.scene.parallel_projection = True
-        ipw_3d = getattr(self, 'ipw_3d_%s' % axis_name)
+        ipw_3d   = getattr(self, 'ipw_3d_%s' % axis_name)
 
         # We create the image_plane_widgets in the side view using a
         # VTK dataset pointing to the data on the corresponding
@@ -142,12 +143,13 @@ class VolumeSlicer(HasTraits):
         # ipw_3d._get_reslice_output())
         side_src = ipw_3d.ipw._get_reslice_output()
         ipw = mlab.pipeline.image_plane_widget(
-            side_src,
-            plane_orientation='z_axes',
-            vmin=self.data.min(),
-            vmax=self.data.max(),
-            figure=scene.mayavi_scene,
-            name='Cut view %s' % axis_name, )
+                            side_src,
+                            plane_orientation='z_axes',
+                            vmin=self.data.min(),
+                            vmax=self.data.max(),
+                            figure=scene.mayavi_scene,
+                            name='Cut view %s' % axis_name,
+                            )
         setattr(self, 'ipw_%s' % axis_name, ipw)
 
         # Extract the spacing of the side_src to convert coordinates
@@ -158,24 +160,21 @@ class VolumeSlicer(HasTraits):
         ipw.ipw.left_button_action = 0
 
         x, y, z = self.position
-        cursor = mlab.points3d(
-            x,
-            y,
-            z,
-            mode='axes',
-            color=(0, 0, 0),
-            scale_factor=2 * max(self.data.shape),
-            figure=scene.mayavi_scene,
-            name='Cursor view %s' % axis_name, )
+        cursor = mlab.points3d(x, y, z,
+                            mode='axes',
+                            color=(0, 0, 0),
+                            scale_factor=2*max(self.data.shape),
+                            figure=scene.mayavi_scene,
+                            name='Cursor view %s' % axis_name,
+                        )
         self.cursors[axis_name] = cursor
 
         # Add a callback on the image plane widget interaction to
         # move the others
         this_axis_number = self._axis_names[axis_name]
-
         def move_view(obj, evt):
             # Disable rendering on all scene
-            position = list(obj.GetCurrentCursorPosition() * spacing)[:2]
+            position = list(obj.GetCurrentCursorPosition()*spacing)[:2]
             position.insert(this_axis_number, self.position[this_axis_number])
             # We need to special case y, as the view has been rotated.
             if axis_name is 'y':
@@ -186,8 +185,8 @@ class VolumeSlicer(HasTraits):
         ipw.ipw.add_observer('StartInteractionEvent', move_view)
 
         # Center the image plane widget
-        ipw.ipw.slice_position = 0.5 * self.data.shape[self._axis_names[
-            axis_name]]
+        ipw.ipw.slice_position = 0.5*self.data.shape[
+                                        self._axis_names[axis_name]]
 
         # 2D interaction: only pan and zoom
         scene.scene.interactor.interactor_style = \
@@ -199,12 +198,11 @@ class VolumeSlicer(HasTraits):
 
         # Choose a view that makes sens
         views = dict(x=(0, 0), y=(90, 180), z=(0, 0))
-        mlab.view(
-            views[axis_name][0],
-            views[axis_name][1],
-            focalpoint=0.5 * np.array(self.data.shape),
-            figure=scene.mayavi_scene)
-        scene.scene.camera.parallel_scale = 0.52 * np.mean(self.data.shape)
+        mlab.view(views[axis_name][0],
+                  views[axis_name][1],
+                  focalpoint=0.5*np.array(self.data.shape),
+                  figure=scene.mayavi_scene)
+        scene.scene.camera.parallel_scale = 0.52*np.mean(self.data.shape)
 
     @on_trait_change('scene_x.activated')
     def display_scene_x(self):
@@ -217,6 +215,7 @@ class VolumeSlicer(HasTraits):
     @on_trait_change('scene_z.activated')
     def display_scene_z(self):
         return self.make_side_view('z')
+
 
     #---------------------------------------------------------------------------
     # Traits callback
@@ -245,56 +244,52 @@ class VolumeSlicer(HasTraits):
             # Move the cursor
             # For the following to work, you need Mayavi 3.4.0, if you
             # have a less recent version, use 'x=[position2d[0]]'
-            self.cursors[axis_name].mlab_source.set(x=position2d[0],
-                                                    y=position2d[1],
-                                                    z=0)
+            self.cursors[axis_name].mlab_source.trait_set(
+                x=position2d[0], y=position2d[1], z=0)
 
         # Finally re-enable rendering
         self.disable_render = False
 
     @on_trait_change('disable_render')
     def _render_enable(self):
-        for scene in (self.scene3d, self.scene_x, self.scene_y, self.scene_z):
+        for scene in (self.scene3d, self.scene_x, self.scene_y,
+                                                  self.scene_z):
             scene.scene.disable_render = self.disable_render
+
 
     #---------------------------------------------------------------------------
     # The layout of the dialog created
     #---------------------------------------------------------------------------
-    view = View(
-        HGroup(
-            Group(
-                Item(
-                    'scene_y',
-                    editor=SceneEditor(scene_class=Scene),
-                    height=250,
-                    width=300),
-                Item(
-                    'scene_z',
-                    editor=SceneEditor(scene_class=Scene),
-                    height=250,
-                    width=300),
-                show_labels=False, ),
-            Group(
-                Item(
-                    'scene_x',
-                    editor=SceneEditor(scene_class=Scene),
-                    height=250,
-                    width=300),
-                Item(
-                    'scene3d',
-                    editor=SceneEditor(scene_class=Scene),
-                    height=250,
-                    width=300),
-                show_labels=False, ), ),
-        resizable=True,
-        title='Volume Slicer', )
+    view = View(HGroup(
+                  Group(
+                       Item('scene_y',
+                            editor=SceneEditor(scene_class=Scene),
+                            height=250, width=300),
+                       Item('scene_z',
+                            editor=SceneEditor(scene_class=Scene),
+                            height=250, width=300),
+                       show_labels=False,
+                  ),
+                  Group(
+                       Item('scene_x',
+                            editor=SceneEditor(scene_class=Scene),
+                            height=250, width=300),
+                       Item('scene3d',
+                            editor=SceneEditor(scene_class=Scene),
+                            height=250, width=300),
+                       show_labels=False,
+                  ),
+                ),
+                resizable=True,
+                title='Volume Slicer',
+                )
 
 
 ################################################################################
 if __name__ == '__main__':
     # Create some data
     x, y, z = np.ogrid[-5:5:100j, -5:5:100j, -5:5:100j]
-    data = np.sin(3 * x) / x + 0.05 * z**2 + np.cos(3 * y)
+    data = np.sin(3*x)/x + 0.05*z**2 + np.cos(3*y)
 
     m = VolumeSlicer(data=data)
     m.configure_traits()

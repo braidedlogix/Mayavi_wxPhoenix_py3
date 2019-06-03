@@ -4,8 +4,8 @@ used anywhere.  This is because it is usually much easier to simply
 add a trait in the module to enable/disable a particular component.
 
 """
-# Author: Prabhu Ramachandran <prabhu_r@users.sf.net>
-# Copyright (c) 2005, Enthought, Inc.
+# Author: Prabhu Ramachandran <prabhu@aero.iitb.ac.in>
+# Copyright (c) 2005-2018, Enthought, Inc.
 # License: BSD Style.
 
 # Enthought library imports.
@@ -41,15 +41,12 @@ class Optional(Component):
     # This is defined outside the view so that the label may be easily
     # changed.
     enabled_item = Item(name='enabled')
-    view = View(
-        Group(
-            Group(enabled_item),
-            Group(
-                Item(
-                    name='component',
-                    style='custom',
-                    visible_when='object.enabled'),
-                show_labels=False)))
+    view = View(Group(Group(enabled_item),
+                      Group(Item(name='component', style='custom',
+                                 visible_when='object.enabled'),
+                            show_labels=False)
+                      )
+                )
 
     ######################################################################
     # `Component` interface
@@ -107,7 +104,7 @@ class Optional(Component):
         if self.enabled:
             return self.component.outputs
         else:
-            return self.inputs[0].get_output_object()
+            return self.inputs[0].outputs
 
     def _enabled_changed(self, value):
         # Force downstream modules to update.
@@ -120,10 +117,10 @@ class Optional(Component):
 
     def _component_changed(self, old, new):
         if old is not None:
-            old.on_trait_change(
-                self._fire_pipeline_changed, 'pipeline_changed', remove=True)
-            old.on_trait_change(
-                self._fire_data_changed, 'data_changed', remove=True)
+            old.on_trait_change(self._fire_pipeline_changed,
+                                'pipeline_changed', remove=True)
+            old.on_trait_change(self._fire_data_changed,
+                                'data_changed', remove=True)
 
         new.on_trait_change(self._fire_pipeline_changed, 'pipeline_changed')
         new.on_trait_change(self._fire_data_changed, 'data_changed')

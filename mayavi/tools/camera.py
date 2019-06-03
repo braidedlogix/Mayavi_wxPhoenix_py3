@@ -7,7 +7,7 @@ Controlling the camera.
 # License: BSD Style.
 
 # Standard library imports.
-import warnings
+import sys
 
 try:
     import numpy as np
@@ -17,12 +17,17 @@ except ImportError as m:
 http://numpy.scipy.org
         ''' % (m, '_' * 80)
     raise ImportError(msg)
-
 from numpy import pi
 
 # We can't use gcf, as it creates a circular import in camera management
 # routines.
 from .engine_manager import get_engine
+
+
+if sys.version_info[0] > 2:
+    string_types = (str,)
+else:
+    string_types = (basestring,)
 
 
 def world_to_display(x, y, z, figure=None):
@@ -131,8 +136,10 @@ def get_outline_bounds(figure=None):
 
     # Use mode='rgba' to have float values, as with fig.scene.background
     outline = screenshot(mode='rgba')
-    outline = ((outline[..., 0] != red) + (outline[..., 1] != green) +
-               (outline[..., 2] != blue))
+    outline = (
+        (outline[..., 0] != red) + (outline[..., 1] != green)
+        + (outline[..., 2] != blue)
+    )
     outline_x = outline.sum(axis=0)
     outline_y = outline.sum(axis=1)
     height, width = outline.shape
@@ -155,13 +162,8 @@ def get_outline_bounds(figure=None):
     return x_min, x_max, y_min, y_max, width, height
 
 
-def view(azimuth=None,
-         elevation=None,
-         distance=None,
-         focalpoint=None,
-         roll=None,
-         reset_roll=True,
-         figure=None):
+def view(azimuth=None, elevation=None, distance=None, focalpoint=None,
+         roll=None, reset_roll=True, figure=None):
     """ Sets/Gets the view point for the camera::
 
      view(azimuth=None, elevation=None, distance=None, focalpoint=None,
@@ -282,13 +284,15 @@ def view(azimuth=None,
     # centered at the center of the bounds, with radius chosen from the
     # bounds.
     bounds = np.array(ren.compute_visible_prop_bounds())
-    if distance is not None and not distance == 'auto':
+    if distance is not None and not (
+            isinstance(distance, string_types) and distance == 'auto'):
         r = distance
     else:
         r = max(bounds[1::2] - bounds[::2]) * 2.0
 
     cen = (bounds[1::2] + bounds[::2]) * 0.5
-    if focalpoint is not None and not focalpoint == 'auto':
+    if focalpoint is not None and not (
+            isinstance(focalpoint, string_types) and focalpoint == 'auto'):
         cen = np.asarray(focalpoint)
 
     # Find camera position.
@@ -303,7 +307,6 @@ def view(azimuth=None,
     ren.reset_camera_clipping_range()
 
     if roll is not None:
-        print("setting roll")
         _roll(roll)
     elif reset_roll:
         # Now calculate the view_up vector of the camera.  If the view up is
@@ -318,14 +321,13 @@ def view(azimuth=None,
         # Reset the zoom, to have the full extents:
         scene.reset_zoom()
         x_min, x_max, y_min, y_max, w, h = get_outline_bounds(figure=figure)
-        x_focus, y_focus = world_to_display(
-            cen[0], cen[1], cen[2], figure=figure)
+        x_focus, y_focus = world_to_display(cen[0], cen[1], cen[2],
+                                            figure=figure)
 
-        ratio = 1.1 * max(
-            (x_focus - x_min) / x_focus,
-            (x_max - x_focus) / (w - x_focus),
-            (y_focus - y_min) / y_focus,
-            (y_max - y_focus) / (h - y_focus), )
+        ratio = 1.1 * max((x_focus - x_min) / x_focus,
+                          (x_max - x_focus) / (w - x_focus),
+                          (y_focus - y_min) / y_focus,
+                          (y_max - y_focus) / (h - y_focus))
 
         distance = get_camera_direction(cam)[0]
         r = distance * ratio
@@ -357,18 +359,16 @@ def move(forward=None, right=None, up=None):
     Note that the arguments specify relative motion, although the
     return value with no arguments is in an absolute coordinate system.
 
-
     **Keyword arguments**:
 
-     :forward: float, optional. The distance in space to translate the
-         camera forward (if positive) or backward (if negative)
+    :forward: float, optional. The distance in space to translate the
+        camera forward (if positive) or backward (if negative)
 
+    :right: float, optional.  The distance in space to translate the
+        camera to the right (if positive) or left (if negative)
 
-     :right: float, optional.  The distance in space to translate the
-         camera to the right (if positive) or left (if negative)
-
-     :up: float, optional. The distance in space to translate the
-         camera up (if positive) or down (if negative)
+    :up: float, optional. The distance in space to translate the
+        camera up (if positive) or down (if negative)
 
 
     **Returns**:
@@ -396,18 +396,20 @@ def move(forward=None, right=None, up=None):
        array([ 4.25909623, -0.84307292, -1.57576693]))
 
     Return to the starting position::
-     >>> move(-3,1,1.2)
-     >>> move()
-     (array([-0.06317079, -0.52849738, -1.68316389]),
-      array([ 1.25909623,  0.15692708, -0.37576693]))
 
+      >>> move(-3,1,1.2)
+      >>> move()
+      (array([-0.06317079, -0.52849738, -1.68316389]),
+       array([ 1.25909623,  0.15692708, -0.37576693]))
 
     **See also**
+
     :mlab.yaw: yaw the camera (tilt left-right)
     :mlab.pitch: pitch the camera (tilt up-down)
     :mlab.roll: control the absolute roll angle of the camera
     :mlab.view: set the camera position relative to the focal point instead
                 of in absolute space
+
     """
 
     f = get_engine().current_scene

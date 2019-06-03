@@ -10,9 +10,11 @@ TVTK object to ensure that the test works with TVTK objects.
 import sys
 import unittest
 
-from traits.api import (HasTraits, Float, Instance, Str, List, Bool)
+from traits.api import (HasTraits, Float, Instance,
+        Str, List, Bool)
 from tvtk.api import tvtk
-from apptools.scripting.api import (Recorder, recordable, set_recorder)
+from apptools.scripting.api import (Recorder, recordable,
+    set_recorder)
 
 
 ######################################################################
@@ -50,7 +52,7 @@ class Parent(HasTraits):
     recorder = Instance(Recorder, record=False)
 
 
-class Test(HasTraits):
+class _Test(HasTraits):
     # This should be set.
     recorder = Instance(HasTraits)
 
@@ -80,20 +82,25 @@ class TestRecorder(unittest.TestCase):
         "Does the get_unique_id method work."
         t = tvtk.XMLUnstructuredGridWriter()
         tape = self.tape
-        self.assertEqual(
-            tape._get_unique_name(t), 'xml_unstructured_grid_writer')
-        self.assertEqual(
-            tape._get_unique_name(t), 'xml_unstructured_grid_writer1')
+        self.assertEqual(tape._get_unique_name(t),
+                         'xml_unstructured_grid_writer')
+        self.assertEqual(tape._get_unique_name(t),
+                         'xml_unstructured_grid_writer1')
         t = Toy()
-        self.assertEqual(tape._get_unique_name(t), 'toy')
+        self.assertEqual(tape._get_unique_name(t),
+                         'toy')
         t = (1, 2)
-        self.assertEqual(tape._get_unique_name(t), 'tuple0')
+        self.assertEqual(tape._get_unique_name(t),
+                         'tuple0')
         l = [1, 2]
-        self.assertEqual(tape._get_unique_name(l), 'list0')
+        self.assertEqual(tape._get_unique_name(l),
+                         'list0')
         d = {'a': 1}
-        self.assertEqual(tape._get_unique_name(d), 'dict0')
+        self.assertEqual(tape._get_unique_name(d),
+                         'dict0')
 
-        self.assertEqual(tape._get_unique_name(1), 'int0')
+        self.assertEqual(tape._get_unique_name(1),
+                         'int0')
 
     def test_record(self):
         "Does recording work correctly."
@@ -116,11 +123,13 @@ class TestRecorder(unittest.TestCase):
         self.assertEqual(tape.get_object_path(c), 'parent.children[0]')
 
         self.assertEqual(tape.get_script_id(toy), 'child.toy')
-        self.assertEqual(tape.get_object_path(toy), 'parent.children[0].toy')
+        self.assertEqual(tape.get_object_path(toy),
+                         'parent.children[0].toy')
 
         c.name = 'Ram'
         # The child should first be instantiated.
-        self.assertEqual(tape.lines[-2], "child = parent.children[0]")
+        self.assertEqual(tape.lines[-2],
+                         "child = parent.children[0]")
         # Then its trait set.
         self.assertEqual(tape.lines[-1], "child.name = 'Ram'")
         c.age = 10.5
@@ -204,17 +213,22 @@ class TestRecorder(unittest.TestCase):
 
         # Since the name toy is unknown, there should be a
         # line to create it.
-        self.assertEqual(tape.lines[-3][-10:], "import Toy")
-        self.assertEqual(tape.lines[-2], "toy = Toy()")
-        self.assertEqual(tape.lines[-1], "toy.type = 'computer'")
+        self.assertEqual(tape.lines[-3][-10:],
+                         "import Toy")
+        self.assertEqual(tape.lines[-2],
+                         "toy = Toy()")
+        self.assertEqual(tape.lines[-1],
+                         "toy.type = 'computer'")
 
         # Since this one is known, there should be no imports or
         # anything.
         t1 = Toy()
         tape.register(t1, known=True)
         t1.type = 'ball'
-        self.assertEqual(tape.lines[-2], "toy.type = 'computer'")
-        self.assertEqual(tape.lines[-1], "toy1.type = 'ball'")
+        self.assertEqual(tape.lines[-2],
+                         "toy.type = 'computer'")
+        self.assertEqual(tape.lines[-1],
+                         "toy1.type = 'ball'")
 
     def test_list_items_changed(self):
         "Test if a list item is changed does the change get recorded."
@@ -231,17 +245,21 @@ class TestRecorder(unittest.TestCase):
         self.assertEqual(tape.lines[-1],
                          "child.friends[1:3] = ['Sam', 'Frodo']")
         child.friends[1] = 'Hari'
-        self.assertEqual(tape.lines[-1], "child.friends[1:2] = ['Hari']")
+        self.assertEqual(tape.lines[-1],
+                    "child.friends[1:2] = ['Hari']")
 
         # What if we change a list where record=True.
         child1 = Child()
         tape.register(child1)
         p.children.append(child1)
-        self.assertEqual(tape.lines[-1], "parent.children[1:1] = [child1]")
+        self.assertEqual(tape.lines[-1],
+                         "parent.children[1:1] = [child1]")
         del p.children[1]
-        self.assertEqual(tape.lines[-1], "parent.children[1:2] = []")
+        self.assertEqual(tape.lines[-1],
+                         "parent.children[1:2] = []")
         p.children[0] = child1
-        self.assertEqual(tape.lines[-1], "parent.children[0:1] = [child1]")
+        self.assertEqual(tape.lines[-1],
+                         "parent.children[0:1] = [child1]")
 
     def test_path_change_on_list(self):
         "Does the object path update when a list has changed?"
@@ -253,11 +271,16 @@ class TestRecorder(unittest.TestCase):
         p.children.append(child1)
         tape.register(p)
         tape.recording = True
-        self.assertEqual(tape.get_object_path(child1), 'parent.children[1]')
-        self.assertEqual(tape.get_script_id(child1), 'child1')
+        self.assertEqual(tape.get_object_path(child1),
+                         'parent.children[1]')
+        self.assertEqual(tape.get_script_id(child1),
+                         'child1')
         del p.children[0]
-        self.assertEqual(tape.get_object_path(child1), 'parent.children[0]')
-        self.assertEqual(tape.get_script_id(child1), 'child1')
+        self.assertEqual(tape.get_object_path(child1),
+                         'parent.children[0]')
+        self.assertEqual(tape.get_script_id(child1),
+                         'child1')
+
 
     def test_write_script_id_in_namespace(self):
         "Test the write_script_id_in_namespace method."
@@ -269,7 +292,7 @@ class TestRecorder(unittest.TestCase):
 
     def test_recorder_and_ignored(self):
         "Test if recorder trait is set and private traits are ignored."
-        t = Test()
+        t = _Test()
         self.assertEqual(t.recorder, None)
         self.assertEqual(t._ignore, False)
         self.assertEqual(t.ignore_, False)
@@ -329,7 +352,6 @@ class TestRecorder(unittest.TestCase):
         tape = self.tape
         p = self.p
         c = p.children[0]
-
         class A(object):
             @recordable
             def __init__(self, x, y=1):
@@ -354,8 +376,10 @@ class TestRecorder(unittest.TestCase):
 
         # Should record.
         a.f(1, 'asd')
-        self.assertEqual(tape.lines[-3][-8:], "import A")
-        self.assertEqual(tape.lines[-2], "a = A(x=1)")
+        self.assertEqual(tape.lines[-3][-8:],
+                         "import A")
+        self.assertEqual(tape.lines[-2],
+                         "a = A(x=1)")
         self.assertEqual(tape.lines[-1], "tuple0 = a.f(1, 'asd')")
 
         result = a.f(p, c)
@@ -398,7 +422,9 @@ class TestRecorder(unittest.TestCase):
 
         # Test if recording works correctly with the changed script_id.
         p.children.append(c1)
-        self.assertEqual(tape.lines[-1], "child.children[1:1] = [child2]")
+        self.assertEqual(tape.lines[-1],
+                         "child.children[1:1] = [child2]")
+
 
     def test_save(self):
         "Test if saving tape to file works."
@@ -419,12 +445,13 @@ class TestRecorder(unittest.TestCase):
         f = io.StringIO()
         tape.save(f)
         # Test if the file is OK.
-        expect = ["child = parent.children[0]\n", "child.toy.type = 'teddy'\n"]
+        expect = ["child = parent.children[0]\n",
+                  "child.toy.type = 'teddy'\n"
+                  ]
         f.seek(0)
         lines = f.readlines()
         self.assertEqual(expect, lines)
         f.close()
-
 
 if __name__ == '__main__':
     unittest.main()

@@ -2,7 +2,7 @@
 Tests for enthought/tvtk/misc.py
 """
 # Author: Prabhu Ramachandran <prabhu@aero.iitb.ac.in>
-# Copyright (c) 2008, Enthought, Inc.
+# Copyright (c) 2008-2018, Enthought, Inc.
 # License: BSD Style.
 
 import unittest
@@ -11,19 +11,19 @@ import os.path
 import os
 
 from tvtk.api import tvtk, write_data
+from tvtk.common import suppress_vtk_warnings
 
 
 class TestMisc(unittest.TestCase):
     def setUp(self):
 
-        datasets = [
-            tvtk.ImageData(),
-            tvtk.StructuredPoints(),
-            tvtk.RectilinearGrid(),
-            tvtk.StructuredGrid(),
-            tvtk.PolyData(),
-            tvtk.UnstructuredGrid(),
-        ]
+        datasets = [tvtk.ImageData(),
+                    tvtk.StructuredPoints(),
+                    tvtk.RectilinearGrid(),
+                    tvtk.StructuredGrid(),
+                    tvtk.PolyData(),
+                    tvtk.UnstructuredGrid(),
+                    ]
         exts = ['.vti', '.vti', '.vtr', '.vts', '.vtp', '.vtu']
         self.datasets = datasets
         self.exts = exts
@@ -88,6 +88,13 @@ class TestMisc(unittest.TestCase):
             r.update()
             self.assertEqual(isinstance(r.output, d.__class__), True)
             os.remove(fname)
+
+    def test_suppress_vtk_warnings(self):
+        obj = tvtk.to_vtk(tvtk.Object())
+        self.assertEqual(obj.GetGlobalWarningDisplay(), 1)
+        with suppress_vtk_warnings():
+            self.assertEqual(obj.GetGlobalWarningDisplay(), 0)
+        self.assertEqual(obj.GetGlobalWarningDisplay(), 1)
 
 
 if __name__ == '__main__':

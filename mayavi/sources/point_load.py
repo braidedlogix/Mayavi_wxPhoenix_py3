@@ -23,21 +23,21 @@ class PointLoad(Source):
     # The version of this class.  Used for persistence.
     __version__ = 0
 
-    point_load = Instance(
-        tvtk.PointLoad, args=(), allow_none=False, record=True)
+    point_load = Instance(tvtk.PointLoad, args=(), allow_none=False,
+                          record=True)
 
     # Information about what this object can produce.
-    output_info = PipelineInfo(
-        datasets=['image_data'], attribute_types=['any'], attributes=['any'])
+    output_info = PipelineInfo(datasets=['image_data'],
+                               attribute_types=['any'],
+                               attributes=['any'])
 
     # Create the UI for the traits.
-    view = View(
-        Group(
-            Item(
-                name='point_load', style='custom', resizable=True),
-            label='PointLoad',
-            show_labels=False),
-        resizable=True)
+    view = View(Group(Item(name='point_load',
+                           style='custom',
+                           resizable=True),
+                      label='PointLoad',
+                      show_labels=False),
+                resizable=True)
 
     ######################################################################
     # `object` interface
@@ -50,7 +50,7 @@ class PointLoad(Source):
         self.point_load.on_trait_change(self.render)
 
         # Setup the outputs.
-        self.outputs = [self.point_load.output]
+        self.outputs = [self.point_load]
 
     def has_output_port(self):
         """ Return True as the point load has output port."""

@@ -54,8 +54,8 @@ if not os.path.exists('pdb%s.ent.gz' % protein_code):
         from urllib.request import urlopen
     print('Downloading protein data, please wait')
     opener = urlopen(
-        'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/q0/pdb%s.ent.gz'
-        % protein_code)
+      'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/q0/pdb%s.ent.gz'
+      % protein_code)
     open('pdb%s.ent.gz' % protein_code, 'wb').write(opener.read())
 
 # Parse the pdb file ##########################################################
@@ -121,8 +121,8 @@ from mayavi import mlab
 mlab.figure(1, bgcolor=(0, 0, 0))
 mlab.clf()
 
-pts = mlab.points3d(
-    x, y, z, 1.5 * scalars.max() - scalars, scale_factor=0.015, resolution=10)
+pts = mlab.points3d(x, y, z, 1.5 * scalars.max() - scalars,
+                                    scale_factor=0.015, resolution=10)
 pts.mlab_source.dataset.lines = np.array(connections)
 
 # Use a tube fiter to plot tubes on the link, varying the radius with the

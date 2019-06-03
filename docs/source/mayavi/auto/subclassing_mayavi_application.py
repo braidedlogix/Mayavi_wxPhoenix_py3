@@ -20,7 +20,6 @@ from os.path import join, abspath, dirname
 from mayavi.plugins.app import Mayavi
 from mayavi.scripts.util import get_data_dir
 
-
 class MyApp(Mayavi):
     def run(self):
         """This is executed once the application GUI has started.
@@ -40,13 +39,12 @@ class MyApp(Mayavi):
 
         # Read a VTK (old style) data file.
         r = VTKFileReader()
-        r.initialize(
-            join(get_data_dir(dirname(abspath(__file__))), 'heart.vtk'))
+        r.initialize(join(get_data_dir(dirname(abspath(__file__))), 'heart.vtk'))
         script.add_source(r)
 
         # Put up some text.
-        t = Text(
-            text='MayaVi rules!', x_position=0.2, y_position=0.9, width=0.8)
+        t = Text(text='MayaVi rules!', x_position=0.2,
+                 y_position=0.9, width=0.8)
         t.property.color = 1, 1, 0  # Bright yellow, yeah!
         script.add_module(t)
 
@@ -87,6 +85,7 @@ class MyApp(Mayavi):
         script.add_module(ipw)
         # Set the position to the middle of the data.
         ipw.ipw.slice_position = 16
+
 
 
 if __name__ == '__main__':

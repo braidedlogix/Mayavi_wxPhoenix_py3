@@ -11,40 +11,18 @@
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
 
+
 # Adding the current directory to the path, so that sphinx finds the
 # extensions.
-import sys, os
-sys.path.append(os.path.abspath('sphinxext'))
+import os
+
 
 # General configuration
 # ---------------------
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinxext.traitsdoc']
-
-## An autodocumentation processor, to insert title of functions before
-## the auto-documented functions:
-#def add_title(app, what, name, obj, options, signature, return_annotation):
-#    """ Add a section title with the name of the function before the
-#        docstring.
-#    """
-#    if what is not 'function':
-#        return
-#    short_name = name.split('.')[-1]
-#    extra_lines = """
-#
-#%s
-#...........................................
-#
-#    """ % short_name
-#    return extra_lines + signature, return_annotation
-#
-#
-#def setup(app):
-#    """ Register our docstring processor.
-#    """
-#    app.connect('autodoc-process-signature', add_title)
+extensions = ['sphinx.ext.autodoc', 'traits.util.trait_documenter']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -57,7 +35,7 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'mayavi'
-copyright = u'2008-2016, Enthought Inc.'
+copyright = u'2008-2018, Enthought Inc.'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
@@ -88,6 +66,7 @@ today_fmt = '%B %d, %Y'
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
+
 
 # Options for HTML output
 # -----------------------
@@ -144,7 +123,7 @@ html_logo = 'mayavi-logo.png'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [('index', 'mayavi_user_guide.tex', 'Mayavi User Guide',
-                    'Prabhu Ramachandran, Gael Varoquaux', 'manual')]
+                        'Prabhu Ramachandran, Gael Varoquaux', 'manual')]
 
 # Additional stuff for the LaTeX preamble.
 latex_preamble = """
@@ -154,6 +133,7 @@ latex_preamble = """
 
 # A logo displayed on the cover page.
 latex_logo = 'm2_about.jpg'
+
 
 # Documents to append as an appendix to all manuals.
 #latex_appendices = []

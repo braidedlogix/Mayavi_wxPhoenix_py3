@@ -13,6 +13,18 @@ the following article (bibtex entry :download:`citation.bib`):
   Scientific Data`* IEEE Computing in Science & Engineering, **13**
   (2), pp. 40-51 (2011)
 
+
+Tutorial videos
+----------------
+
+Here are some tutorial videos that you can watch to learn Mayavi:
+
+- SciPy 2018 Mayavi tutorial (3 hrs):
+
+  - Video: https://www.youtube.com/watch?v=r6OD07Qq2mw
+  - Material: https://github.com/prabhuramachandran/mayavi-tutorial
+
+
 .. _getting-help:
 
 Getting help
@@ -24,6 +36,13 @@ other requests, if this manual, the Mayavi web page, the wiki page,
 stack overflow and google are of no help, feel free to ask on the
 `issue tracker`_.
 
+If you have questions you could ask on the `Mayavi-users mailing list
+<https://sourceforge.net/p/mayavi/mailman/mayavi-users/>`_. This is used by
+some folks and is not too active. Another mailing list that may be of use is
+the `ETS Users mailing list
+<https://groups.google.com/forum/#!forum/ets-users>`_. This is a more general
+list where a lot of folks experienced with the Enthought Tool Suite are
+available.
 
 Tests for Mayavi
 -----------------
@@ -85,7 +104,7 @@ Helping out
 
 We are always on the lookout for people to help this project grow.  If
 you need a functionality added to Mayavi, open an new feature request
-issue in `issue tracker`_. 
+issue in `issue tracker`_.
 
 To submit bug fixes or new functionality, this is the recommended
 workflow:
@@ -135,8 +154,8 @@ your changes into the next stable release.
 .. _github: https://github.com/enthought/mayavi
 .. _issue tracker: https://github.com/enthought/mayavi/issues
 .. _pull request: https://help.github.com/articles/using-pull-requests
-.. _sphinx: http://sphinx.pocoo.org
-.. _Travis: http://travis-ci.org/enthought/mayavi 
+.. _sphinx: https://sphinx.pocoo.org
+.. _Travis: https://travis-ci.org/enthought/mayavi
 .. _Appveyor: https://ci.appveyor.com/project/itziakos/mayavi
 
 ..

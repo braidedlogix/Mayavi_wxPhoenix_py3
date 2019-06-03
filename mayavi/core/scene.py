@@ -16,7 +16,6 @@ from mayavi.core.source import Source
 from mayavi.core.common import handle_children_state, exception
 from mayavi.core.adder_node import SourceAdderNode
 
-
 ######################################################################
 # `Scene` class.
 ######################################################################
@@ -47,14 +46,17 @@ class Scene(Base):
     type = Str(' scene')
 
     # The objects view.
-    view = View(Group(Item(name='scene', style='custom'), show_labels=False), 
-                resizable=True)
+    view = View(Group(Item(name='scene', style='custom'),
+                           show_labels=False)
+               )
+
     # The adder node dialog class
     _adder_node_class = SourceAdderNode
 
     # The dispatch, to register callbacks on mouse pick
     _mouse_pick_dispatcher = Instance(
-        'mayavi.core.mouse_pick_dispatcher.MousePickDispatcher', record=False)
+        'mayavi.core.mouse_pick_dispatcher.MousePickDispatcher',
+        record=False)
 
     ######################################################################
     # `object` interface
@@ -75,18 +77,23 @@ class Scene(Base):
             state.scene.camera.pop("distance", None)
 
         # Now set our complete state.  Doing the scene last ensures
-        # that the camera view is set right.
+        # that the camera view is set right.  Before doing this though,
+        # if the light_manager is None, the scene hasn't been painted,
+        # in that case save the light manager state and set the state later.
+        # All we do is set the _saved_light_manager_state and the scene
+        # will take care of the rest.
+        if self.scene is not None and self.scene.light_manager is None:
+            lm_state = state['scene'].pop('light_manager', None)
+            self.scene._saved_light_manager_state = lm_state
+
         set_state(self, state, last=['scene'])
 
     ######################################################################
     # `Scene` interface
     ######################################################################
 
-    def on_mouse_pick(self,
-                      callback,
-                      type='point',
-                      button='Left',
-                      remove=False):
+    def on_mouse_pick(self, callback, type='point', button='Left',
+                            remove=False):
         """ Add a picking callback on mouse click.
 
             When the mouse button is press, object picking is called, and
@@ -119,6 +126,7 @@ class Scene(Base):
         else:
             self._mouse_pick_dispatcher.callbacks.append(key)
         return self._mouse_pick_dispatcher._active_pickers[type]
+
 
     ######################################################################
     # `Base` interface
@@ -214,7 +222,7 @@ class Scene(Base):
         for obj in removed:
             obj.stop()
         for obj in added:
-            obj.set(scene=self.scene, parent=self)
+            obj.trait_set(scene=self.scene, parent=self)
             if self.running:
                 # It makes sense to start children only if we are running.
                 # If not, the children will be started when we start.

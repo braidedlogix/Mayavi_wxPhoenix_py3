@@ -10,10 +10,10 @@ import unittest
 
 from tvtk import messenger
 
+
 #################################################################
 # Support code.
 #################################################################
-
 
 class A:
     def __init__(self):
@@ -30,21 +30,17 @@ class A:
     def catch_all_cb(self, obj, event, *args, **kw):
         self.did_catch_all = 1
 
-
 ret = None
-
 
 def callback(obj, event, *args, **kw):
     global ret
-    ret = event, args, kw
-
+    ret  = event, args, kw
 
 class B:
     def __init__(self):
         self.a = A()
         messenger.connect(self, 'method', self.a.callback)
         messenger.connect(self, 'function', callback)
-
     def __del__(self):
         messenger.disconnect(self)
 
@@ -57,7 +53,6 @@ class B:
 # The test case.
 #################################################################
 
-
 class TestMessenger(unittest.TestCase):
     def test_basic(self):
         """Test basic functionality of the messenger."""
@@ -67,10 +62,10 @@ class TestMessenger(unittest.TestCase):
         b.send(1, test=1)
         self.assertEqual(b.a.event, 'method')
         self.assertEqual(ret[0], 'function')
-        self.assertEqual(b.a.args, (1, ))
-        self.assertEqual(ret[1], (1, ))
-        self.assertEqual(b.a.kw, {'test': 1})
-        self.assertEqual(ret[2], {'test': 1})
+        self.assertEqual(b.a.args, (1,))
+        self.assertEqual(ret[1], (1,))
+        self.assertEqual(b.a.kw, {'test':1})
+        self.assertEqual(ret[2], {'test':1})
         # Ensures that disconnect works and also that there are no
         # reference cycles.
         self.assertEqual(len(m._signals) > orig_len, True)
@@ -88,10 +83,10 @@ class TestMessenger(unittest.TestCase):
         b.send(1, test=1)
         self.assertEqual(b.a.event, 'method')
         self.assertEqual(ret[0], 'function')
-        self.assertEqual(b.a.args, (1, ))
-        self.assertEqual(ret[1], (1, ))
-        self.assertEqual(b.a.kw, {'test': 1})
-        self.assertEqual(ret[2], {'test': 1})
+        self.assertEqual(b.a.args, (1,))
+        self.assertEqual(ret[1], (1,))
+        self.assertEqual(b.a.kw, {'test':1})
+        self.assertEqual(ret[2], {'test':1})
 
     def test_catchall(self):
         """Tests if catch all handlers are called."""
@@ -104,8 +99,8 @@ class TestMessenger(unittest.TestCase):
         messenger.connect(b, 'AnyEvent', b.a.catch_all_cb)
         b.send(1, test=1)
         self.assertEqual(b.a.event, 'method')
-        self.assertEqual(b.a.args, (1, ))
-        self.assertEqual(b.a.kw, {'test': 1})
+        self.assertEqual(b.a.args, (1,))
+        self.assertEqual(b.a.kw, {'test':1})
         self.assertEqual(b.a.did_catch_all, 1)
         b.a.did_catch_all = 0
         messenger.disconnect(b, 'AnyEvent')
@@ -127,11 +122,9 @@ class TestMessenger(unittest.TestCase):
 
     def test_send_on_dead_ref(self):
         """Test if sending to a gc'd callback works gracefully."""
-
         class C:
             def foo(self, o, e):
                 pass
-
         c = C()
         c1 = C()
         messenger.connect(c1, 'foo', c.foo)

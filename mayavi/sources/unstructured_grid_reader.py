@@ -18,7 +18,6 @@ from mayavi.core.file_data_source import FileDataSource
 from mayavi.core.pipeline_info import PipelineInfo
 from mayavi.core.common import error
 
-
 ########################################################################
 # `UnstructuredGridReader` class
 ########################################################################
@@ -38,14 +37,14 @@ class UnstructuredGridReader(FileDataSource):
     _reader_dict = Dict(Str, Instance(tvtk.Object))
 
     # Our view.
-    view = View(
-        Group(
-            Include('time_step_group'),
-            Item(name='base_file_name'),
-            Item(
-                name='reader', style='custom', resizable=True),
-            show_labels=False),
-        resizable=True)
+    view = View(Group(Include('time_step_group'),
+                      Item(name='base_file_name'),
+                      Item(name='reader',
+                           style='custom',
+                           resizable=True),
+                      show_labels=False),
+                resizable=True)
+
 
     ######################################################################
     # `object` interface
@@ -88,29 +87,26 @@ class UnstructuredGridReader(FileDataSource):
         if extension in self._reader_dict:
             self.reader = self._reader_dict[extension]
         else:
-            error('Invalid file extension for file: %s' % value)
+            error('Invalid file extension for file: %s'%value)
             return
 
+        old_fname = self.reader.file_name
         self.reader.file_name = value.strip()
         self.reader.update_information()
         if isinstance(self.reader, tvtk.ExodusIIReader):
             # Make sure the point fields are read during Update().
-            for k in range(self.reader.number_of_point_result_arrays):
-                arr_name = self.reader.get_point_result_array_name(k)
-                self.reader.set_point_result_array_status(arr_name, 1)
+            for k in range(self.reader.number_of_point_result_arrays ):
+                arr_name = self.reader.get_point_result_array_name( k )
+                self.reader.set_point_result_array_status( arr_name, 1 )
         self.reader.update()
 
         if old_reader is not None:
             old_reader.on_trait_change(self.render, remove=True)
         self.reader.on_trait_change(self.render)
 
-        old_outputs = self.outputs
-        if isinstance(self.reader, tvtk.ExodusIIReader):
-            self.outputs = [self.reader.output.get_block(0).get_block(0)]
-        else:
-            self.outputs = [self.reader.output]
+        self.outputs = [self.reader]
 
-        if self.outputs == old_outputs:
+        if old_fname != value:
             self.data_changed = True
 
         # Change our name on the tree view
@@ -121,7 +117,7 @@ class UnstructuredGridReader(FileDataSource):
         this is not a property getter.
         """
         fname = basename(self.file_path.get())
-        ret = "%s" % fname
+        ret = "%s"%fname
         if len(self.file_list) > 1:
             ret += " (timeseries)"
         if '[Hidden]' in self.name:
@@ -132,16 +128,14 @@ class UnstructuredGridReader(FileDataSource):
     def __reader_dict_default(self):
         """Default value for reader dict."""
         if is_old_pipeline():
-            rd = {
-                'inp': tvtk.AVSucdReader(),
-                'neu': tvtk.GAMBITReader(),
-                'exii': tvtk.ExodusReader()
-            }
+            rd = {'inp':tvtk.AVSucdReader(),
+                 'neu':tvtk.GAMBITReader(),
+                 'exii':tvtk.ExodusReader()
+                }
         else:
-            rd = {
-                'inp': tvtk.AVSucdReader(),
-                'neu': tvtk.GAMBITReader(),
-                'ex2': tvtk.ExodusIIReader()
-            }
+            rd = {'inp':tvtk.AVSucdReader(),
+                 'neu':tvtk.GAMBITReader(),
+                 'ex2':tvtk.ExodusIIReader()
+                }
 
         return rd

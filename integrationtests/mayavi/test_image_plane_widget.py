@@ -12,6 +12,7 @@ import numpy
 
 # Enthought library imports.
 from traits.api import TraitError
+from pyface.api import GUI
 
 # Local imports.
 from common import TestCase
@@ -23,14 +24,14 @@ class TestImagePlaneWidget(TestCase):
         dims = numpy.array((64, 64, 64), 'i')
 
         # Create some scalars to render.
-        dx, dy, dz = 10.0 / (dims - 1)
-        x = numpy.reshape(
-            numpy.arange(-5.0, 5.0 + dx * 0.5, dx, 'f'), (dims[0], 1, 1))
-        y = numpy.reshape(
-            numpy.arange(-5.0, 5.0 + dy * 0.5, dy, 'f'), (1, dims[1], 1))
-        z = numpy.reshape(
-            numpy.arange(-5.0, 5.0 + dz * 0.5, dz, 'f'), (1, 1, dims[0]))
-        scalars = numpy.sin(x * y * z) / (x * y * z)
+        dx, dy, dz = 10.0/(dims - 1)
+        x = numpy.reshape(numpy.arange(-5.0, 5.0+dx*0.5, dx, 'f'),
+                          (dims[0], 1, 1))
+        y = numpy.reshape(numpy.arange(-5.0, 5.0+dy*0.5, dy, 'f'),
+                          (1, dims[1], 1))
+        z = numpy.reshape(numpy.arange(-5.0, 5.0+dz*0.5, dz, 'f'),
+                          (1, 1, dims[0]))
+        scalars = numpy.sin(x*y*z)/(x*y*z)
         return scalars
 
     def set_view(self, s):
@@ -41,6 +42,7 @@ class TestImagePlaneWidget(TestCase):
         c.azimuth(30)
         c.elevation(30)
         s.render()
+        GUI.process_events()
 
     def check(self):
         script = self.script
@@ -105,9 +107,9 @@ class TestImagePlaneWidget(TestCase):
 
         # Save visualization.
         f = BytesIO()
-        f.name = abspath('test.mv2')  # We simulate a file.
+        f.name = abspath('test.mv2') # We simulate a file.
         script.save_visualization(f)
-        f.seek(0)  # So we can read this saved data.
+        f.seek(0) # So we can read this saved data.
 
         # Remove existing scene.
         engine = script.engine
@@ -119,6 +121,7 @@ class TestImagePlaneWidget(TestCase):
         # Set the scene to a suitable view.
         self.set_view(s)
 
+        GUI.process_events()
         self.check()
 
         ############################################################
@@ -132,6 +135,7 @@ class TestImagePlaneWidget(TestCase):
 
         self.set_view(s)
 
+        GUI.process_events()
         self.check()
 
         # Now deepcopy the source and replace the existing one with
@@ -143,6 +147,7 @@ class TestImagePlaneWidget(TestCase):
 
         self.set_view(s)
 
+        GUI.process_events()
         self.check()
 
         # If we have come this far, we are golden!

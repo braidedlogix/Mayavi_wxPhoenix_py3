@@ -11,7 +11,7 @@ from apptools.preferences.api import Preferences, PreferencesHelper
 from mayavi.tools.preferences_mirror import PreferencesMirror
 
 
-class TestPreference(PreferencesHelper):
+class _TestPreference(PreferencesHelper):
     """A simple test preference helper."""
     preferences_path = "test"
 
@@ -25,9 +25,10 @@ class ClassNameTest(unittest.TestCase):
         """Called before each test is run"""
         self.preferences = set_default_preferences(Preferences())
         # The filename of the example preferences file.
-        pref_file = resource_filename('mayavi.tests', 'test_preference.ini')
+        pref_file = resource_filename('mayavi.tests',
+                                      'test_preference.ini')
         self.preferences.load(pref_file)
-        self.pref = TestPreference()
+        self.pref = _TestPreference()
         self.mirror = PreferencesMirror()
         self.mirror.preferences = self.pref
 
@@ -44,20 +45,20 @@ class ClassNameTest(unittest.TestCase):
         pref = self.pref
         mirror = self.mirror
         # Save original state.
-        saved = pref.get()
-        pref.set(bg='white', width=20, show=True)
+        saved = pref.trait_get()
+        pref.trait_set(bg = 'white', width=20, show=True)
         self.assertEqual(pref.bg, mirror.bg)
         self.assertEqual(pref.width, mirror.width)
         self.assertEqual(pref.show, mirror.show)
         # Reset preferences back to defaults.
-        pref.set(saved)
+        pref.trait_set(saved)
 
     def test_no_reverse_sync(self):
         """mirror must not sync changes back to the original preferences."""
         pref = self.pref
         mirror = self.mirror
-        saved = pref.get()
-        mirror.set(bg='white', width=20, show=True)
+        saved = pref.trait_get()
+        mirror.trait_set(bg = 'white', width=20, show=True)
         self.assertNotEqual(pref.bg, mirror.bg)
         self.assertNotEqual(pref.width, mirror.width)
         self.assertNotEqual(pref.show, mirror.show)
@@ -69,15 +70,15 @@ class ClassNameTest(unittest.TestCase):
         """Are Mirror's preferences saved correctly"""
         pref = self.pref
         mirror = self.mirror
-        saved = pref.get()
-        mirror.set(bg='white', width=20, show=True)
+        saved = pref.trait_get()
+        mirror.trait_set(bg = 'white', width=20, show=True)
         mirror.save()
         self.assertEqual(pref.bg, mirror.bg)
         self.assertEqual(pref.width, mirror.width)
         self.assertEqual(pref.show, mirror.show)
         # Reset preferences back to defaults.
-        pref.set(saved)
-
+        pref.trait_set(saved)
 
 if __name__ == '__main__':
     unittest.main()
+

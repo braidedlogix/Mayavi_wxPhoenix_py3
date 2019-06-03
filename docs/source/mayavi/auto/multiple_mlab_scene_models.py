@@ -48,23 +48,24 @@ class MyDialog(HasTraits):
         mlab.points3d(x, y, z, s, figure=scene.mayavi_scene)
 
     # The layout of the dialog created
-    view = View(
-        HSplit(
-            Group(
-                Item(
-                    'scene1', editor=SceneEditor(), height=250, width=300),
-                'button1',
-                show_labels=False, ),
-            Group(
-                Item(
-                    'scene2',
-                    editor=SceneEditor(),
-                    height=250,
-                    width=300,
-                    show_label=False),
-                'button2',
-                show_labels=False, ), ),
-        resizable=True, )
+    view = View(HSplit(
+                  Group(
+                       Item('scene1',
+                            editor=SceneEditor(), height=250,
+                            width=300),
+                       'button1',
+                       show_labels=False,
+                  ),
+                  Group(
+                       Item('scene2',
+                            editor=SceneEditor(), height=250,
+                            width=300, show_label=False),
+                       'button2',
+                       show_labels=False,
+                  ),
+                ),
+                resizable=True,
+                )
 
 
 m = MyDialog()

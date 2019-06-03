@@ -40,7 +40,7 @@ def get_file_list(file_name):
     # Find the head and tail of the file pattern.
     head = re.sub("[0-9]+[^0-9]*$", "", f_base)
     tail = re.sub("^.*[0-9]+", "", f_base)
-    pattern = head + "[0-9]*" + tail
+    pattern = head+"[0-9]*"+tail
     # Glob the files for the pattern.
     _files = glob(join(f_dir, pattern))
 
@@ -74,7 +74,7 @@ def get_file_list(file_name):
         else:
             return 0
 
-    files.sort(key=lambda x: _get_index(x))
+    files.sort(key=lambda x:_get_index(x))
     return files
 
 
@@ -127,13 +127,11 @@ class FileDataSource(Source):
     # and is dynamically changed when the `file_list` trait changes.
     # This is done so the timestep bounds are linked to the number of
     # the files in the file list.
-    timestep = Range(
-        value=0,
-        low='_min_timestep',
-        high='_max_timestep',
-        enter_set=True,
-        auto_set=False,
-        desc='the current time step')
+    timestep = Range(value=0,
+                     low='_min_timestep',
+                     high='_max_timestep',
+                     enter_set=True, auto_set=False,
+                     desc='the current time step')
 
     sync_timestep = Bool(False, desc='if all dataset timesteps are synced')
 
@@ -143,30 +141,31 @@ class FileDataSource(Source):
 
     update_files = Button('Rescan files')
 
-    base_file_name = Str('',
-                         desc="the base name of the file",
-                         enter_set=True,
-                         auto_set=False,
-                         editor=FileEditor())
+    base_file_name=Str('', desc="the base name of the file",
+                       enter_set=True, auto_set=False,
+                       editor=FileEditor())
 
     # A timestep view group that may be included by subclasses.
     time_step_group = Group(
-        Item(
-            name='file_path', style='readonly'),
-        Group(
-            Item(
-                name='timestep',
-                editor=RangeEditor(
-                    low=0, high_name='_max_timestep', mode='slider'), ),
-            Item(name='sync_timestep'),
-            HGroup(
-                Item(name='play'),
-                Item(
-                    name='play_delay', label='Delay'),
-                Item(name='loop'), ),
-            visible_when='len(object.file_list) > 1'),
-        Item(
-            name='update_files', show_label=False), )
+                          Item(name='file_path', style='readonly'),
+                          Group(
+                              Item(name='timestep',
+                                   editor=RangeEditor(
+                                       low=0, high_name='_max_timestep',
+                                       mode='slider'
+                                   ),
+                              ),
+                              Item(name='sync_timestep'),
+                              HGroup(
+                                  Item(name='play'),
+                                  Item(name='play_delay',
+                                       label='Delay'),
+                                  Item(name='loop'),
+                              ),
+                              visible_when='len(object.file_list) > 1'
+                          ),
+                          Item(name='update_files', show_label=False),
+                      )
 
     ##################################################
     # Private traits.
@@ -179,6 +178,7 @@ class FileDataSource(Source):
     _min_timestep = Int(0)
     _max_timestep = Int(0)
     _timer = Any
+    _in_update_files = Any(False)
 
     ######################################################################
     # `object` interface
@@ -194,7 +194,7 @@ class FileDataSource(Source):
         # Use the saved path to initialize the file_list and timestep.
         fname = state.file_path.abs_pth
         if not isfile(fname):
-            msg = 'Could not find file at %s\n' % fname
+            msg = 'Could not find file at %s\n'%fname
             msg += 'Please move the file there and try again.'
             raise IOError(msg)
 
@@ -222,12 +222,12 @@ class FileDataSource(Source):
     def _file_list_changed(self, value):
         # Change the range of the timestep suitably to reflect new list.
         n_files = len(self.file_list)
-        timestep = max(min(self.timestep, n_files - 1), 0)
+        timestep = max(min(self.timestep, n_files-1), 0)
         if self.timestep == timestep:
             self._timestep_changed(timestep)
         else:
             self.timestep = timestep
-        self._max_timestep = max(n_files - 1, 0)
+        self._max_timestep = max(n_files -1, 0)
 
     def _file_list_items_changed(self, list_event):
         self._file_list_changed(self.file_list)
@@ -288,15 +288,15 @@ class FileDataSource(Source):
     def _play_delay_changed(self):
         if self.play:
             self._timer.Stop()
-            self._timer.Start(self.play_delay * 1000)
+            self._timer.Start(self.play_delay*1000)
 
     def _make_play_timer(self):
         scene = self.scene
         if scene is None or scene.off_screen_rendering:
-            timer = NoUITimer(self.play_delay * 1000, self._play_event)
+            timer = NoUITimer(self.play_delay*1000, self._play_event)
         else:
             from pyface.timer.api import Timer
-            timer = Timer(self.play_delay * 1000, self._play_event)
+            timer = Timer(self.play_delay*1000, self._play_event)
         return timer
 
     def _find_sibling_datasets(self):
@@ -308,11 +308,20 @@ class FileDataSource(Source):
 
     def _update_files_fired(self):
         # First get all the siblings before we change the current file list.
-        siblings = self._find_sibling_datasets() if self.sync_timestep else []
-        fname = self.base_file_name
-        file_list = get_file_list(fname)
-        if len(file_list) == 0:
-            file_list = [fname]
-        self.file_list = file_list
-        for sibling in siblings:
-            sibling.update_files = True
+        if self._in_update_files:
+            return
+        try:
+            self._in_update_files = True
+            if self.sync_timestep:
+                siblings = self._find_sibling_datasets()
+            else:
+                siblings = []
+            fname = self.base_file_name
+            file_list = get_file_list(fname)
+            if len(file_list) == 0:
+                file_list = [fname]
+            self.file_list = file_list
+            for sibling in siblings:
+                sibling.update_files = True
+        finally:
+            self._in_update_files = False

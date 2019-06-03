@@ -16,7 +16,6 @@ from mayavi.tests.common import get_example_data
 vtk_major_version = vtk.vtkVersion.GetVTKMajorVersion()
 vtk_minor_version = vtk.vtkVersion.GetVTKMinorVersion()
 
-
 class TestVTKFileReader(unittest.TestCase):
     def setUp(self):
         # Read a VTK data file.
@@ -30,7 +29,7 @@ class TestVTKFileReader(unittest.TestCase):
 
     def check(self, n_points, n_cells):
         """Do the actual testing."""
-        output = self.src.outputs[0]
+        output = self.src.get_output_dataset()
         self.assertEqual(output.number_of_points, n_points)
         self.assertEqual(output.number_of_cells, n_cells)
 
@@ -57,7 +56,6 @@ class TestVTKFileReader(unittest.TestCase):
     def test_field_file(self):
         self.src.initialize(get_example_data('fieldfile.vtk'))
         self.check(18, 3)
-
 
 if __name__ == '__main__':
     unittest.main()

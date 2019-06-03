@@ -5,6 +5,8 @@
 # Copyright (c) 2005-2016, Enthought, Inc.
 # License: BSD Style.
 
+import vtk
+
 # Enthought library imports.
 from traits.api import Instance, Bool, Enum
 from tvtk.api import tvtk
@@ -14,6 +16,7 @@ from tvtk.common import is_old_pipeline
 # Local imports.
 from mayavi.core.component import Component
 from mayavi.core.source import Source
+from mayavi.core.utils import get_new_output
 
 
 ######################################################################
@@ -46,25 +49,26 @@ class Actor(Component):
     texture = Instance(tvtk.Texture, record=True)
 
     # The texture coord generation mode.
-    tcoord_generator_mode = Enum(
-        'none',
-        'cylinder',
-        'sphere',
-        'plane',
-        desc='the mode for texture coord generation')
+    tcoord_generator_mode = Enum('none', 'cylinder', 'sphere', 'plane',
+                                 desc='the mode for texture coord generation')
 
     # Texture coord generator.
     tcoord_generator = Instance(tvtk.Object, allow_none=True)
+
+    # Composite data filter.
+    comp_data_geom_filter = Instance(tvtk.CompositeDataGeometryFilter)
 
     ######################################################################
     # `object` interface
     ######################################################################
     def __get_pure_state__(self):
         d = super(Actor, self).__get_pure_state__()
-        for attr in ('texture', 'texture_source_object', 'enable_texture',
-                     'tcoord_generator_mode', 'tcoord_generator'):
-            d.pop(attr, None)
+        for attr in ('texture', 'texture_source_object',
+                     'enable_texture', 'tcoord_generator_mode',
+                     'tcoord_generator'):
+            d.pop(attr,None)
         return d
+
 
     ######################################################################
     # `Component` interface
@@ -96,7 +100,11 @@ class Actor(Component):
                (len(self.inputs[0].outputs) == 0):
             return
 
-        self.configure_input(self.mapper, self.inputs[0].outputs[0])
+        input = self.inputs[0].outputs[0]
+        if input is None:
+            return
+
+        self._connect_mapper(input)
         self._tcoord_generator_mode_changed(self.tcoord_generator_mode)
         self.render()
 
@@ -138,6 +146,24 @@ class Actor(Component):
             old.on_trait_change(self.render, remove=True)
         new.on_trait_change(self.render)
 
+    def _get_correct_input(self, input):
+        do = get_new_output(input)
+        if do.is_a('vtkCompositeDataSet'):
+            cdgf = self.comp_data_geom_filter
+            cdgf.input_connection = input.output_port
+            return cdgf
+        else:
+            return input
+
+    def _comp_data_geom_filter_default(self):
+        return tvtk.CompositeDataGeometryFilter()
+
+    def _connect_mapper(self, input):
+        if input is None:
+            return
+        inp = self._get_correct_input(input)
+        self.configure_input(self.mapper, inp)
+
     def _mapper_changed(self, old, new):
         # Setup the handlers.
         self._setup_handlers(old, new)
@@ -146,7 +172,7 @@ class Actor(Component):
             self.set_lut(old.lookup_table)
         # Setup the inputs to the mapper.
         if (len(self.inputs) > 0) and (len(self.inputs[0].outputs) > 0):
-            self.configure_connection(new, self.inputs[0])
+            self._connect_mapper(self.inputs[0].outputs[0])
         # Setup the actor's mapper.
         actor = self.actor
         if actor is not None:
@@ -185,7 +211,7 @@ class Actor(Component):
         self._foreground_changed_for_scene(None, new.foreground)
 
     def _enable_texture_changed(self, value):
-        if self.texture_source_object is None:
+        if self.texture_source_object is None :
             self.actor.texture = None
             return
         if value:
@@ -204,17 +230,21 @@ class Actor(Component):
 
     def _change_texture_input(self):
         if self._can_object_give_image_data(self.texture_source_object):
-            self.configure_connection(self.texture, self.texture_source_object)
+            self.configure_connection(
+                self.texture, self.texture_source_object
+            )
             self.actor.texture = self.texture
         else:
             self.texture_source_object = None
 
-    def _texture_source_object_changed(self, old, new):
-        if old is not None:
-            old.on_trait_change(
-                self._change_texture_input, 'pipeline_changed', remove=True)
-        if new is not None:
-            new.on_trait_change(self._change_texture_input, 'pipeline_changed')
+    def _texture_source_object_changed(self,old,new):
+        if old is not None :
+            old.on_trait_change(self._change_texture_input,
+                                'pipeline_changed',
+                                remove=True)
+        if new is not None :
+            new.on_trait_change(self._change_texture_input,
+                                'pipeline_changed' )
 
         if new is not None:
             self._change_texture_input()
@@ -223,11 +253,11 @@ class Actor(Component):
             self.texture.input = None
             self.texture.input_connection = None
 
-    def _texture_changed(self, value):
+    def _texture_changed(self,value):
         # Setup the actor's texture.
         actor = self.actor
-        if actor is not None and (value.input is not None or
-                                  value.input_connection is not None):
+        if actor is not None and (value.input is not None
+                                  or value.input_connection is not None):
             actor.texture = value
             self.texture.on_trait_change(self.render)
 
@@ -243,16 +273,15 @@ class Actor(Component):
             old_tg.on_trait_change(self.render, remove=True)
         if value == 'none':
             self.tcoord_generator = None
-            self.configure_connection(self.mapper, inp[0])
+            self._connect_mapper(inp[0].outputs[0])
         else:
-            tg_dict = {
-                'cylinder': tvtk.TextureMapToCylinder,
-                'sphere': tvtk.TextureMapToSphere,
-                'plane': tvtk.TextureMapToPlane
-            }
+            tg_dict = {'cylinder': tvtk.TextureMapToCylinder,
+                       'sphere': tvtk.TextureMapToSphere,
+                       'plane': tvtk.TextureMapToPlane}
             tg = tg_dict[value]()
             self.tcoord_generator = tg
-            self.configure_connection(tg, inp[0])
+            actual_input = self._get_correct_input(inp[0].outputs[0])
+            self.configure_connection(tg, actual_input)
             self.configure_connection(self.mapper, tg)
         tg = self.tcoord_generator
         if tg is not None:

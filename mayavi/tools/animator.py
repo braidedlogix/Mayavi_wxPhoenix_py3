@@ -52,7 +52,8 @@ class Animator(HasTraits):
 
     start = Button('Start Animation')
     stop = Button('Stop Animation')
-    delay = Range(10, 100000, 500, desc='frequency with which timer is called')
+    delay = Range(10, 100000, 500,
+                  desc='frequency with which timer is called')
 
     # The internal timer we manage.
     timer = Any
@@ -60,18 +61,18 @@ class Animator(HasTraits):
     ######################################################################
     # User interface view
 
-    traits_view = View(
-        Group(
-            Item('start'), Item('stop'), show_labels=False),
-        Item('_'),
-        Item(name='delay'),
-        title='Animation Controller',
-        buttons=['OK'])
+    traits_view = View(Group(Item('start'),
+                             Item('stop'),
+                             show_labels=False),
+                       Item('_'),
+                       Item(name='delay'),
+                       title='Animation Controller',
+                       buttons=['OK'])
 
     ######################################################################
     # Initialize object
     def __init__(self, millisec, callable, *args, **kwargs):
-        """Constructor.
+        r"""Constructor.
 
         **Parameters**
 
@@ -125,10 +126,8 @@ class Animator(HasTraits):
 ###############################################################################
 # Decorators.
 
-
 def animate(func=None, delay=500, ui=True, support_movie=True):
-    """A convenient decorator to animate a generator that performs an
-    animation.
+    """A convenient decorator to animate a generator performing an animation.
 
     The `delay` parameter specifies the delay (in milliseconds) between calls
     to the decorated function. If `ui` is True, then a simple UI for the
@@ -240,6 +239,7 @@ def animate(func=None, delay=500, ui=True, support_movie=True):
 
         def decorator_call(self, func, *args, **kw):
             return self(*args, **kw)
+
 
     def _wrapper(function):
         # Needed to create the Wrapper in the right scope.

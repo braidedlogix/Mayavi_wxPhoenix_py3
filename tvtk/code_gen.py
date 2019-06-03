@@ -7,7 +7,7 @@
 
 from __future__ import print_function
 
-import vtk
+import vtk_module as vtk
 import os
 import os.path
 import zipfile
@@ -16,6 +16,7 @@ import shutil
 import glob
 import logging
 from optparse import OptionParser
+import sys
 
 # Local imports -- these should be relative imports since these are
 # imported before the package is installed.
@@ -27,6 +28,7 @@ except SystemError:
     from common import get_tvtk_name, camel2enthought
     from wrapper_gen import WrapperGenerator
     from special_gen import HelperGenerator
+
 
 logger = logging.getLogger(__name__)
 
@@ -84,8 +86,8 @@ class TVTKGenerator:
         v = vtk.vtkVersion()
         vtk_version = v.GetVTKVersion()[:3]
         vtk_src_version = v.GetVTKSourceVersion()
-        code = "vtk_build_version = \'%s\'\n" % (vtk_version)
-        code += "vtk_build_src_version = \'%s\'\n" % (vtk_src_version)
+        code = "vtk_build_version = \'%s\'\n"%(vtk_version)
+        code += "vtk_build_src_version = \'%s\'\n"%(vtk_src_version)
 
         with open(os.path.join(out_dir, 'vtk_version.py'), 'w') as f:
             f.write(code)
@@ -98,12 +100,18 @@ class TVTKGenerator:
             tree = wrap_gen.get_tree().tree
 
             classes = []
+            # This is another class we should not wrap and exists
+            # in version 8.1.0.
+            ignore = ['vtkOpenGLGL2PSHelperImpl']
+            include = ['VTKPythonAlgorithmBase']
             for node in wrap_gen.get_tree():
                 name = node.name
-                if not name.startswith('vtk') or name.startswith('vtkQt'):
+                if name in ignore:
                     continue
-                if not hasattr(vtk, name) or not hasattr(
-                        getattr(vtk, name), 'IsA'):  # noqa
+                if (name not in include and not name.startswith('vtk')) or \
+                    name.startswith('vtkQt'):
+                    continue
+                if not hasattr(vtk, name) or not hasattr(getattr(vtk, name), 'IsA'):  # noqa
                     # We need to wrap VTK classes that are derived
                     # from vtkObjectBase, the others are
                     # straightforward VTK classes that can be used as
@@ -118,8 +126,8 @@ class TVTKGenerator:
                 for node in nodes:
                     if node.name in classes:
                         tvtk_name = get_tvtk_name(node.name)
-                        logger.debug('Wrapping %s as %s' %
-                                     (node.name, tvtk_name))
+                        logger.debug(
+                            'Wrapping %s as %s' % (node.name, tvtk_name))
                         self._write_wrapper_class(node, tvtk_name)
                         helper_gen.add_class(tvtk_name, helper_file)
 
@@ -132,7 +140,7 @@ class TVTKGenerator:
         specified classes.
 
         """
-        # Wrappers for the ancesors are generated in order to get the
+        # Wrappers for the accesors are generated in order to get the
         # _updateable_traits_ information correctly.
         nodes = []
         for name in names:
@@ -148,7 +156,7 @@ class TVTKGenerator:
                 if i not in nodes:
                     nodes.insert(0, i)
         # Sort them as per their level.
-        nodes.sort(lambda x, y: cmp(x.level, y.level))
+        nodes.sort(key=lambda x: x.level)
 
         # Write code.
         for node in nodes:
@@ -169,7 +177,8 @@ class TVTKGenerator:
         cwd = os.getcwd()
         d = os.path.dirname(self.out_dir)
         os.chdir(d)
-        z = zipfile.PyZipFile(self.zip_name, 'w', zipfile.ZIP_DEFLATED)
+        z = zipfile.PyZipFile(self.zip_name, 'w',
+                              zipfile.ZIP_DEFLATED)
         if include_src:
             l = glob.glob(os.path.join('tvtk_classes', '*.py'))
             for x in l:
@@ -205,7 +214,10 @@ class TVTKGenerator:
         # The only reason this method is separate is to generate code
         # for an individual class when debugging.
         fname = camel2enthought(tvtk_name) + '.py'
-        out = open(os.path.join(self.out_dir, fname), 'w')
+        if sys.version_info[0] > 2:
+            out = open(os.path.join(self.out_dir, fname), 'w', encoding='utf-8')
+        else:
+            out = open(os.path.join(self.out_dir, fname), 'w')
         self.wrap_gen.generate_code(node, out)
         out.close()
 
@@ -213,7 +225,6 @@ class TVTKGenerator:
 ######################################################################
 # Utility functions.
 ######################################################################
-
 
 def main():
     usage = """usage: %prog [options] [vtk_classes]
@@ -224,41 +235,25 @@ code will be generated for all the VTK classes.
     """
     parser = OptionParser(usage)
     parser.add_option(
-        "-o",
-        "--output-dir",
-        action="store",
-        type="string",
-        dest="out_dir",
-        default='',
+        "-o", "--output-dir", action="store",
+        type="string", dest="out_dir", default='',
         help="Output directory in which to generate code.")
     parser.add_option(
-        "-n",
-        "--no-clean",
-        action="store_false",
-        dest="clean",
-        default=True,
+        "-n", "--no-clean", action="store_false",
+        dest="clean", default=True,
         help="Do not clean the temporary directory.")
     parser.add_option(
-        "-z",
-        "--no-zipfile",
-        action="store_false",
-        dest="zip",
-        default=True,
+        "-z", "--no-zipfile", action="store_false",
+        dest="zip", default=True,
         help="Do not create a ZIP file.")
     parser.add_option(
-        "-s",
-        "--source",
-        action="store_true",
-        dest="src",
-        default=False,
+        "-s", "--source", action="store_true",
+        dest="src", default=False,
         help="Include source files (*.py) in "
-        "addition to *.pyc files in the ZIP file.")
+             "addition to *.pyc files in the ZIP file.")
     parser.add_option(
-        "-v",
-        "--verbose",
-        action="store_true",
-        dest="verbose",
-        default=False,
+        "-v", "--verbose", action="store_true",
+        dest="verbose", default=False,
         help="Verbose output for debugging")
 
     (options, args) = parser.parse_args()
