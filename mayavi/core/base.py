@@ -361,15 +361,18 @@ class Base(TreeNodeObject):
 
         For the base class, do not add anything to the children list.
         """
-        if ((not preference_manager.root.show_helper_nodes or
-             len(self.children) > 0) or self._adder_node_class is None or
-            (not self.type == ' scene' and 'none' in self.output_info.datasets)
-                # We can't use isinstance, as we would have circular
-                # imports
-            ):
-            return self.children
-        else:
-            return [self._adder_node_class(object=self), ]
+        try:
+            if ((not preference_manager.root.show_helper_nodes or
+                 len(self.children) > 0) or self._adder_node_class is None or
+                (not self.type == ' scene' and 'none' in self.output_info.datasets)
+                    # We can't use isinstance, as we would have circular
+                    # imports
+                ):
+                return self.children
+            else:
+                return [self._adder_node_class(object=self), ]
+        except:
+            return None#[self._adder_node_class(object=self), ]
 
     @on_trait_change('children[]')
     def _trigger_children_ui_list(self, old, new):
