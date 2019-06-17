@@ -205,8 +205,8 @@ class SceneWithBrowser(SplitPanel):
         """ Creates the left hand side or top depending on the style. """
         self._create_scene(parent)
         self.browser = PipelineBrowser(self.scene)
-        if parent is not None:
-            parent.show()
+        #if parent is not None:
+        #    parent.show()
         self.browser.show(parent=parent)
         return self.browser._ui.control
 
